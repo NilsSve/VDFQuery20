@@ -1,0 +1,28 @@
+# Files to be ignored by git in a DataFlex workspace
+
+# AppSrc
+**/AppSrc/**/*.prn
+**/AppSrc/**/*.dep
+**/AppSrc/**/*.dbg
+**/AppSrc/**/*.exe.manifest
+**/AppSrc/**/*.err
+**/AppSrc/**/*.fld
+**/AppSrc/**/*.pbg
+**/AppSrc/**/*.pdp
+**/AppSrc/**/*.pkd
+**/AppSrc/**/*.prp
+
+# IdeSrc
+**/IdeSrc/*.dsk
+**/IdeSrc/*.loc
+**/IdeSrc/*.mtd
+
+# Programs
+**/Programs/*.dbg
+**/Programs/*.exe
+**/Programs/*.exe.manifest
+**/Programs/*.log
+
+# DataFlex 26 package checkouts and the resolved-dependency lock
+DfPkg/
+*.sws.lock

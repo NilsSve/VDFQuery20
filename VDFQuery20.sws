@@ -1,11 +1,21 @@
-[Properties]
-Version=20.0
-[WorkspacePaths]
-ConfigFile=.\Programs\Config.ws
-[Projects]
-Project0=dbquery.src
-Project1=grdemo.src
-Project2=testdate.src
-[Conditionals]
-Is$WebApp=False
-Is$Win64=True
+{
+    "dependencies": [
+        {
+            "source": "https://github.com/NilsSve/Library-vwin32fh.git",
+            "sws": "StudioLibrary/vWin32fh-Library-DF26.0.sws",
+            "version": "5432741c37c80be755e78f5f9d45ba8329fddcaf"
+        }
+    ],
+    "description": "VDFQuery for DataFlex 26: Sture Andersen's DataFlex 20 port of the legacy VDFQuery library, kept as a migration aid. This fork ships no vwin32fh copy of its own and depends on the vwin32fh package instead.",
+    "df": 26.0,
+    "package": {
+        "df-min": 26.0,
+        "version": "20.0.0"
+    },
+    "projects": [
+        "dbquery.src",
+        "grdemo.src",
+        "testdate.src"
+    ],
+    "workspaceName": "VDFQuery20"
+}
