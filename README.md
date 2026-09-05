@@ -16,9 +16,7 @@ Sture Andersen
 April, 2021
 
 **This has been forked to NilsSve to be used with DataFlex 26 and later.**
-The original ships its own, old copy of Wil van Antwerpen's vWin32fh files. In a workspace that
-also uses the current vwin32fh package, that old copy wins the search path and the whole
-application compiles against it. This fork removes those files from AppSrc and declares the
+The original ships its own, old copy of Wil van Antwerpen's vWin32fh files. This fork removes those files from AppSrc and declares the
 dependency in its workspace file instead, so adding this package brings in
-https://github.com/NilsSve/Library-vwin32fh (StudioLibrary/vWin32fh-Library-DF26.0.sws) automatically.
+https://github.com/NilsSve/Library-vwin32fh (StudioLibrary/vWin32fh-Library-DF26.0.sws) automatically, that compiles with DF 26 and up.
 The workspace file is DataFlex 26 JSON. For DataFlex 20 to 25 use the original repository.
