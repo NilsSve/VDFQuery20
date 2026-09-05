@@ -14,3 +14,7 @@ If you are new to VDFQuery you should keep it so. Look for more modern libraries
 
 Sture Andersen
 April, 2021
+
+**This has been forked to NilsSve to be used with DF 26 and later.
+The problem with the original is that it uses an old version of vWin32fh files (Wil van Antwerpen's library).
+This repo has removed all vWin32fh files from AppSrc. Thus, this repo is dependent on the NilsSve/vWin32fh repo.**
