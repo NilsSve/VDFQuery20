@@ -26,3 +26,6 @@
 # DataFlex 26 package checkouts and the resolved-dependency lock
 DfPkg/
 *.sws.lock
+
+# DFRefactor's own backup mirror of the workspace - not source
+DFRefactor_Backup/
