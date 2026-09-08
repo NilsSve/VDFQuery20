@@ -27,7 +27,7 @@ procedure wObs global string str#
   integer iArg max# self# focus#
   string msg# line# lsModule lsPath
   move "" to msg#
-  if wObsHasNotRunYet eq 0 begin
+  if (wObsHasNotRunYet = 0) begin
     get module_name to lsModule
     move (uppercase(lsModule)) to lsModule
 //  move (replace("LWS",lsModule,"")) to lsModule
@@ -36,21 +36,21 @@ procedure wObs global string str#
 
     if (SEQ_FileExists(wObsFileName)=SEQIT_FILE) begin
       get SEQ_FindFileAlongDFPath wObsFileName to lsPath
-      if lsPath eq "" get SEQ_EraseFile wObsFileName to wObsHasNotRunYet
+      if (lsPath = "") get SEQ_EraseFile wObsFileName to wObsHasNotRunYet
       else get SEQ_EraseFile (SEQ_ComposeAbsoluteFileName(lsPath,wObsFileName)) to wObsHasNotRunYet
     end
     send SEQ_AppendLineClose wObsFileName "************************************"
   end
   move 1 to wObsHasNotRunYet
   for iArg from 1 to num_arguments
-    MoveStr iArg& to line# // tricky way to parse passed arguments
-    if iArg eq 1 send SEQ_AppendLineClose wObsFileName (sSysTime()+" | "+line#)
+    Move iArg& to line# // tricky way to parse passed arguments
+    if (iArg = 1) send SEQ_AppendLineClose wObsFileName (sSysTime()+" | "+line#)
     else         send SEQ_AppendLineClose wObsFileName ("        "+" | "+line#)
     move (msg#+line#) to msg#
-    if iArg ne num_arguments move (msg#+character(10)) to msg#
+    if (iArg <> num_arguments) move (msg#+character(10)) to msg#
   loop
   send SEQ_AppendLineClose wObsFileName "------------------------------------"
-  ifnot wObsQuietMode begin
+  If (Not(wObsQuietMode)) begin
     move (HowManyItems(msg#,character(10))) to max#
     send obs msg#
   end

@@ -2,7 +2,7 @@
 Use aps.pkg         // Auto Positioning and Sizing classes for VDF
 Use Set.utl      // cArray, cSet and cStack classes
 Use Buttons.utl  // Button texts
-Use Language     // Default language setup
+Use Language.pkg     // Default language setup
 
 #IF LNG_DEFAULT=LNG_ENGLISH
  define t.wizbtn.back   for "< Back"
@@ -107,9 +107,9 @@ class aps.WizardPanel is a aps.BasicPanel
     integer size_class#
     if num_arguments move tmp_size_class# to size_class#
     else move WizSize_Normal to size_class#
-    if size_class# eq WIZSIZE_SMALL  set minimum_size to 100 200
-    if size_class# eq WIZSIZE_NORMAL set minimum_size to 150 300
-    if size_class# eq WIZSIZE_LARGE  set minimum_size to 200 400
+    if (size_class# = WIZSIZE_SMALL) set minimum_size to 100 200
+    if (size_class# = WIZSIZE_NORMAL) set minimum_size to 150 300
+    if (size_class# = WIZSIZE_LARGE) set minimum_size to 200 400
   end_procedure
   procedure Register_WizardPage integer obj#
     set value of (oPages(self)) item (item_count(oPages(self))) to obj#
@@ -123,7 +123,7 @@ class aps.WizardPanel is a aps.BasicPanel
     get piCurrentPage to liCurrentPage
     get value of (oPages(self)) item liCurrentPage to obj#
     if (iPageValidate(obj#)) begin
-      if label# eq t.wizbtn.finish send close_panel_ok
+      if (label# = t.wizbtn.finish) send close_panel_ok
       else begin
         get iNextPage liCurrentPage to liNextPage
         get value of (oPages(self)) item liNextPage to obj#
@@ -159,14 +159,14 @@ class aps.WizardPanel is a aps.BasicPanel
     integer cur_pg# new_page_obj# cur_page_obj#
     get piCurrentPage to cur_pg#
     move (value(oPages(self),new_pg#)) to new_page_obj#
-    if cur_pg# ne -1 move (value(oPages(self),cur_pg#)) to cur_page_obj#
+    if (cur_pg# <> -1) move (value(oPages(self),cur_pg#)) to cur_page_obj#
     if (cur_page_obj# and new_page_obj#) send deactivate to cur_page_obj#
     if new_page_obj# begin
       send popup_group to new_page_obj#
       move new_pg# to cur_pg#
     end
     set object_shadow_state of (oBtn1(self)) to (cur_pg#=0)
-    if cur_pg# eq (item_count(oPages(self))-1) set label of (oBtn2(self)) to t.wizbtn.finish
+    if (cur_pg# = (item_count(oPages(self))-1)) set label of (oBtn2(self)) to t.wizbtn.finish
     else set label of (oBtn2(self)) to t.wizbtn.next
     set piCurrentPage to cur_pg#
   end_procedure
@@ -202,8 +202,8 @@ class aps.WizardPage is a Container
     integer max_row# max_column# self#
     get p_max_row to max_row#
     get p_max_column to max_column#
-    if max_row# gt (p_max_row_on_tabdialog(self)) set p_max_row_on_tabdialog to max_row#
-    if max_column# gt (p_max_column_on_tabdialog(self)) set p_max_column_on_tabdialog to max_column#
+    if (max_row# > (p_max_row_on_tabdialog(self))) set p_max_row_on_tabdialog to max_row#
+    if (max_column# > (p_max_column_on_tabdialog(self))) set p_max_column_on_tabdialog to max_column#
     forward send end_construct_object
     move self to self#
     send Register_WizardPage self# // Register with parent object:

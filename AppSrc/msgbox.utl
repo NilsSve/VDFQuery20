@@ -1,88 +1,89 @@
 Use language.pkg
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 #IF LNG_DEFAULT=LNG_DUTCH
- #REPLACE t.MsgBox.Question "Vraag"
- #REPLACE t.MsgBox.Message  "Mededeling"
- #REPLACE t.MsgBox.Yes      "Ja"
- #REPLACE t.MsgBox.No       "Nee"
+ Define t.MsgBox.Question for "Vraag"
+ Define t.MsgBox.Message for "Mededeling"
+ Define t.MsgBox.Yes    for "Ja"
+ Define t.MsgBox.No     for "Nee"
 #ENDIF
 #IF LNG_DEFAULT=LNG_SPANISH // 03/10/2002 25/01/2004 Pepe GuimarÆes Moose Software  pg@moose-software.com
- #REPLACE t.MsgBox.Question "Pregunta"
- #REPLACE t.MsgBox.Message  "Mensaje"
- #REPLACE t.MsgBox.Yes      "Si"
- #REPLACE t.MsgBox.No       "No"
+ Define t.MsgBox.Question for "Pregunta"
+ Define t.MsgBox.Message for "Mensaje"
+ Define t.MsgBox.Yes    for "Si"
+ Define t.MsgBox.No     for "No"
 #ENDIF
 #IF LNG_DEFAULT=LNG_ENGLISH
- #REPLACE t.MsgBox.Question "Question"
- #REPLACE t.MsgBox.Message  "Message"
- #REPLACE t.MsgBox.Yes      "Yes"
- #REPLACE t.MsgBox.No       "No"
+ Define t.MsgBox.Question for "Question"
+ Define t.MsgBox.Message for "Message"
+ Define t.MsgBox.Yes    for "Yes"
+ Define t.MsgBox.No     for "No"
 #ENDIF
 #IF LNG_DEFAULT=LNG_DANISH
- #REPLACE t.MsgBox.Question "Sp›rgsm†l"
- #REPLACE t.MsgBox.Message  "Besked"
- #REPLACE t.MsgBox.Yes      "Ja"
- #REPLACE t.MsgBox.No       "Nej"
+ Define t.MsgBox.Question for "Sp›rgsm†l"
+ Define t.MsgBox.Message for "Besked"
+ Define t.MsgBox.Yes    for "Ja"
+ Define t.MsgBox.No     for "Nej"
 #ENDIF
 #IF LNG_DEFAULT=LNG_SWEDISH
- #REPLACE t.MsgBox.Question "Fr†ga"
- #REPLACE t.MsgBox.Message  "Meddelande"
- #REPLACE t.MsgBox.Yes      "Ja"
- #REPLACE t.MsgBox.No       "Nej"
+ Define t.MsgBox.Question for "Fr†ga"
+ Define t.MsgBox.Message for "Meddelande"
+ Define t.MsgBox.Yes    for "Ja"
+ Define t.MsgBox.No     for "Nej"
 #ENDIF
 #IF LNG_DEFAULT=LNG_NORWEGIAN
- #REPLACE t.MsgBox.Question "Sp›rsm†l"
- #REPLACE t.MsgBox.Message  "Beskjed"
- #REPLACE t.MsgBox.Yes      "Ja"
- #REPLACE t.MsgBox.No       "Nei"
+ Define t.MsgBox.Question for "Sp›rsm†l"
+ Define t.MsgBox.Message for "Beskjed"
+ Define t.MsgBox.Yes    for "Ja"
+ Define t.MsgBox.No     for "Nei"
 #ENDIF
 #IF LNG_DEFAULT=LNG_GERMAN
- #REPLACE t.MsgBox.Question "Frage"
- #REPLACE t.MsgBox.Message  "Nachricht"
- #REPLACE t.MsgBox.Yes      "Ja"
- #REPLACE t.MsgBox.No       "Nein"
+ Define t.MsgBox.Question for "Frage"
+ Define t.MsgBox.Message for "Nachricht"
+ Define t.MsgBox.Yes    for "Ja"
+ Define t.MsgBox.No     for "Nein"
 #ENDIF
 #IF LNG_DEFAULT=LNG_PORTUGUESE
- #REPLACE t.MsgBox.Question "QuestÆo"
- #REPLACE t.MsgBox.Message  "Mensagem"
- #REPLACE t.MsgBox.Yes      "Sim"
- #REPLACE t.MsgBox.No       "NÆo"
+ Define t.MsgBox.Question for "QuestÆo"
+ Define t.MsgBox.Message for "Mensagem"
+ Define t.MsgBox.Yes    for "Sim"
+ Define t.MsgBox.No     for "NÆo"
 #ENDIF
 #If LNG_DEFAULT=LNG_FRENCH
- #REPLACE t.MsgBox.Question "Question"
- #REPLACE t.MsgBox.Message  "Message"
- #REPLACE t.MsgBox.Yes      "Oui"
- #REPLACE t.MsgBox.No       "Non"
+ Define t.MsgBox.Question for "Question"
+ Define t.MsgBox.Message for "Message"
+ Define t.MsgBox.Yes    for "Oui"
+ Define t.MsgBox.No     for "Non"
 #ENDIF
 #IF LNG_DEFAULT=LNG_ITALIAN // 16/10/2002 Zanni Paolo
- #REPLACE t.MsgBox.Question "Domanda"
- #REPLACE t.MsgBox.Message  "Messaggio"
- #REPLACE t.MsgBox.Yes      "Si"
- #REPLACE t.MsgBox.No       "No"
+ Define t.MsgBox.Question for "Domanda"
+ Define t.MsgBox.Message for "Messaggio"
+ Define t.MsgBox.Yes    for "Si"
+ Define t.MsgBox.No     for "No"
 #ENDIF
 
 // ======================================================================
 //                           OBS MESSAGE
 // ======================================================================
-Use MsgBox      // DAC class
+Use MsgBox.pkg      // DAC class
 Use Buttons.utl // Button texts
+Use cCJGrid.pkg
 
 procedure obs global string str#
   integer iArg max# self# focus#
   string msg# line#
   move "" to msg#
   for iArg from 1 to num_arguments
-    MoveStr iArg& to line# // tricky way to parse passed arguments
+    Move iArg& to line# // tricky way to parse passed arguments
     move (msg#+line#) to msg#
-    if iArg ne num_arguments move (msg#+character(10)) to msg#
+    if (iArg <> num_arguments) move (msg#+character(10)) to msg#
   loop
   move self to self#
   get focus of desktop to focus#
-  if focus# gt desktop move focus# to self
+  if (focus# > desktop) move focus# to self
   send info_box msg# t.MsgBox.Message
   move self# to self
 end_procedure
@@ -99,9 +100,41 @@ object oConfirm_List is a aps.ModalPanel
   object lbl is a aps.textbox
   end_object
   send aps_goto_max_row
-  object lst is a aps.list
+  object lst is a cCJGrid
+      // TODO: lst was a aps.list - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 105 150
-    set select_mode to no_select
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Move someValue to TheData[iRow].sValue[iCol1]
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   procedure close_panel_ok
     set pResult to 1
@@ -172,4 +205,3 @@ end_function
 
 function MB_CancelOnKeypress global string str# returns integer
 end_function
-

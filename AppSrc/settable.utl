@@ -28,7 +28,7 @@ class cSetOfTables is a cArray
     get row_count to iMax
     decrement iMax
     for iRow from 0 to iMax
-      if sRoot eq (uppercase(psRootName.i(self,iRow))) function_return iRow
+      if (sRoot = (uppercase(psRootName.i(self,iRow)))) function_return iRow
     loop
     function_return -1
   end_function
@@ -61,8 +61,8 @@ class cSetOfTables is a cArray
   procedure Add_Rootname string sRoot
     integer iRow
     get SEQ_FindDataFileFromRootName sRoot to sRoot
-    if sRoot ne "" begin
-      if (sFindRoot.s(self,sRoot)) eq -1 begin
+    if (sRoot <> "") begin
+      if ((sFindRoot.s(self,sRoot)) = -1) begin
         get row_count to iRow
         set psRootName.i iRow to sRoot
       end
@@ -81,7 +81,7 @@ class cSetOfTables is a cArray
     repeat
       move (API_AttrValue_FLSTNAV(DF_FILE_NEXT_USED,iFile)) to iFile
       if iFile send Add_FileListEntry iFile
-    until iFile eq 0
+    until (iFile = 0)
   end_procedure
 
   procedure Add_RootNamesInDir_Help string sDir integer iIncSubDir
@@ -145,4 +145,3 @@ class cSetOfTables is a cArray
     send Add_RootNamesInPath (psCurrentMakePath(iAllWorkspaces))
   end_procedure
 end_class // cSetOfTables
-

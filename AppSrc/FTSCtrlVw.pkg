@@ -52,6 +52,7 @@ object oFTS_OpenTablesDialog is a aps.ModalPanel label "Open FTS tables"
     set Fontweight to 900
   end_object
   send aps_goto_max_row
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oExisting is a aps.Grid
     send GridPrepare_AddColumn ""                            AFT_ASCII6
     send GridPrepare_AddColumn "Existing sets of FTS tables" AFT_ASCII40
@@ -99,6 +100,7 @@ object oFTS_OpenTablesDialog is a aps.ModalPanel label "Open FTS tables"
     set Fontweight to 900
   end_object
   send aps_goto_max_row
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oControllerGrid is a aps.Grid
     set peAnchors to (anTop+anLeft+anRight+anBottom)
     Set peResizeColumn to rcSelectedColumn // make sure mode is correct
@@ -164,7 +166,7 @@ object oFTS_OpenTablesDialog is a aps.ModalPanel label "Open FTS tables"
       if (lhFTS<>0 and lsPrefix<>"") begin
         set psRootNamePrefix of (phTableAccessObject(lhFTS)) to lsPrefix
         get DoOpenTables of (phTableAccessObject(lhFTS)) to lbOpen
-        ifnot lbOpen begin
+        If (Not(lbOpen)) begin
           error 214 "tables could not be opened"
           move 0 to lbOpen
           move 0 to lhFTS
@@ -233,6 +235,7 @@ object oFTS_ControlView is a aps.View label "FTS Control Panel"
         set Fontweight to 900
       end_object
       send aps_goto_max_row
+      // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
       object oGrid is a aps.Grid
         send GridPrepare_AddColumn "Table"             AFT_ASCII10
         send GridPrepare_AddColumn "User display name" AFT_ASCII32
@@ -309,6 +312,7 @@ object oFTS_ControlView is a aps.View label "FTS Control Panel"
         on_item "Search" send DoSearch
       end_object
       send aps_goto_max_row
+      // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
       object oGrid is a aps.Grid
         set size to 200 0
         send GridPrepare_AddColumn "Field"  AFT_NUMERIC3.0
@@ -409,6 +413,7 @@ object oFTS_ControlView is a aps.View label "FTS Control Panel"
           send update_list
         end_procedure
       end_object
+      // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
       object oResultGrid is a aps.Grid snap SL_RIGHT
         set peAnchors to (anTop+anRight+anBottom)
         set size to 160 0
@@ -421,11 +426,11 @@ object oFTS_ControlView is a aps.View label "FTS Control Panel"
         on_key KEY_CTRL+KEY_R send sort_data
 
         function iSpecialSortValueOnColumn.i integer column# returns integer
-          if column# eq 0 function_Return 1
+          if (column# = 0) function_Return 1
         end_function
 
         function sSortValue.ii integer column# integer itm# returns string
-          if column# eq 0 function_return (IntToStrR(value(self,itm#),4))
+          if (column# = 0) function_return (IntToStrR(value(self,itm#),4))
         end_function
 
         procedure sort_data.i integer column#
@@ -534,4 +539,3 @@ send aps_SetMinimumDialogSize (oFTS_ControlView(self))
 procedure Popup_FTS_ControlPanel
   send popup of oFTS_ControlView
 end_procedure
-

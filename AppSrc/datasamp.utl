@@ -25,7 +25,7 @@ class cDataSamplerSet is a cSet
     get row_count to max#
     decrement max#
     for row# from 0 to max#
-      if (psValue.i(self,row#)) eq value# function_return row#
+      if ((psValue.i(self,row#)) = value#) function_return row#
     loop
     function_return -1
   end_function
@@ -39,7 +39,7 @@ class cDataSamplerSet is a cSet
   procedure element_add string value#
     integer row#
     get iFind.s value# to row#
-    if row# eq -1 begin
+    if (row# = -1) begin
       get row_count to row#
       set piCount.i row# to 1
       set psValue.i row# to value#
@@ -74,8 +74,8 @@ class cDataSampler is a cArray
   function sMinMax.is integer row# string value# returns string
     integer type#
     get piType.i row# to type#
-    if type# eq DF_DATE move (date(integer(value#))) to value#
-    if type# eq DF_BCD  move (trim(value#)) to value#
+    if (type# = DF_DATE) move (date(integer(value#))) to value#
+    if (type# = DF_BCD) move (trim(value#)) to value#
     function_return value#
   end_function
   function sMin.i integer row# returns string
@@ -105,7 +105,7 @@ class cDataSampler is a cArray
   function iSetID.i integer row# returns integer
     integer set#
     get piSet.i row# to set#
-    ifnot set# begin
+    If (Not(set#)) begin
       object oSet is a cDataSamplerSet
         move self to set#
       end_object
@@ -121,15 +121,15 @@ class cDataSampler is a cArray
       set piCount.i row# to 0
       set piNullCount.i row# to 0
       get piType.i row# to type#
-      if type# eq DF_BCD  begin
+      if (type# = DF_BCD) begin
         set pnMin.i row# to 99999999999999.99999999
         set pnMax.i row# to -9999999999999.99999999
       end
-      if type# eq DF_DATE begin
+      if (type# = DF_DATE) begin
         set pnMin.i row# to LargestPossibleDate
         set pnMax.i row# to 0
       end
-      if type# eq DF_ASCII begin
+      if (type# = DF_ASCII) begin
       end
       if (piDiscrete.i(self,row#)) set piSet.i row# to (iSetID.i(self,row#))
     loop
@@ -140,20 +140,20 @@ class cDataSampler is a cArray
     set piCount.i row# to (piCount.i(self,row#)+1)
     get piType.i row# to type#
     if (piDiscrete.i(self,row#)) send element_add to (piSet.i(self,row#)) value#
-    if type# eq DF_BCD begin
+    if (type# = DF_BCD) begin
       move value# to nval#
-      if nval# eq 0 set piNullCount.i row# to (piNullCount.i(self,row#)+1)
-      if nval# lt (pnMin.i(self,row#)) set pnMin.i row# to nval#
-      if nval# gt (pnMax.i(self,row#)) set pnMax.i row# to nval#
+      if (nval# = 0) set piNullCount.i row# to (piNullCount.i(self,row#)+1)
+      if (nval# < (pnMin.i(self,row#))) set pnMin.i row# to nval#
+      if (nval# > (pnMax.i(self,row#))) set pnMax.i row# to nval#
     end
-    if type# eq DF_DATE begin
+    if (type# = DF_DATE) begin
       move value# to ival#
-      if ival# eq 0 set piNullCount.i row# to (piNullCount.i(self,row#)+1)
-      if ival# lt (pnMin.i(self,row#)) set pnMin.i row# to ival#
-      if ival# gt (pnMax.i(self,row#)) set pnMax.i row# to ival#
+      if (ival# = 0) set piNullCount.i row# to (piNullCount.i(self,row#)+1)
+      if (ival# < (pnMin.i(self,row#))) set pnMin.i row# to ival#
+      if (ival# > (pnMax.i(self,row#))) set pnMax.i row# to ival#
     end
-    if type# eq DF_ASCII begin
-      if value# eq "" set piNullCount.i row# to (piNullCount.i(self,row#)+1)
+    if (type# = DF_ASCII) begin
+      if (value# = "") set piNullCount.i row# to (piNullCount.i(self,row#)+1)
     end
   end_procedure
 end_class // cDataSampler
@@ -220,7 +220,7 @@ class cdbDataSampler is a cDataSampler
         if relate# relate file#
         send auto_add_values
         increment rec#
-        if ((rec#/25)*25) eq rec# begin
+        if (((rec#/25)*25) = rec#) begin
           if display_wait# begin
             send batch_update2 to oBatchCompanion# (string(rec#)+" records scanned")
             if (batch_interrupt(oBatchCompanion#)) move 0 to found#

@@ -19,7 +19,18 @@ Class VPE_Preview is a cWinControl
   End_Procedure // Construct_Object
 End_Class // VPE_Preview
 
+#IFDEF IS$WIN64
+External_Function VPE_MoveWindow "MoveWindow" User32.DLL ;
+    Handle hwnd ;
+    integer x ;
+    integer y ;
+    integer width ;
+    integer height ;
+    integer repaint ;
+    Returns integer
+#ELSE
 External_Function VPE_MoveWindow "MoveWindow" User32.DLL dword hwnd integer x integer y integer width integer height integer repaint returns integer
+#ENDIF
 
 DEFINE_OBJECT_GROUP OG_VpePreview
   Object VPE_Embedded_Preview is a aps.View Label (OG_Param(0))
@@ -28,7 +39,7 @@ DEFINE_OBJECT_GROUP OG_VpePreview
     Set p_Top_Margin to 0
     Set p_Left_Margin to 0
     Send Aps_Init
-    if gsVdfQuery_Icon# ne "" set icon to gsVdfQuery_Icon#
+    if (gsVdfQuery_Icon# <> "") set icon to gsVdfQuery_Icon#
 
     Property Integer phDoc 0
     on_key kCancel send close_panel

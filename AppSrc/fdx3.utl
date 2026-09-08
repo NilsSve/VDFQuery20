@@ -12,7 +12,7 @@
 Use Fdx_Attr.nui // FDX compatible attribute functions
 Use DBMS.utl     // Basic DBMS functions
 Use Strings.nui  // String manipulation for VDF
-Use FieldInf     // Global field info objects
+Use FieldInf.pkg     // Global field info objects
 Use Fdx2.utl     // FDX aware object for displaying a table definiton
 Use Files.utl    // Utilities for handling file related stuff
 Use FDX.nui      // cFDX class
@@ -242,7 +242,7 @@ class cFdxFileMultiSelector is a aps.Grid
     integer row# max#
     get Row_Count to max#
     for row# from 0 to (max#-1)
-      ifnot (Row_Shadow_State(self,row#)) if (integer(value(self,row#*5+1))=file#) set select_state item (row#*5) to select#
+      If (Not((Row_Shadow_State(self,row#)))) if (integer(value(self,row#*5+1))=file#) set select_state item (row#*5) to select#
     loop
     set dynamic_update_state to true // Force repaint
   end_procedure
@@ -262,7 +262,7 @@ class cFdxFileMultiSelector is a aps.Grid
     function_return select#
   end_function
   procedure set Row_Select_State integer row# integer select#
-    ifnot (item_shadow_state(self,row#*5)) set select_state item (row#*5) to select#
+    If (Not((item_shadow_state(self,row#*5)))) set select_state item (row#*5) to select#
   end_procedure
   function Row_File integer row# returns integer
     function_return (value(self,row#*5+1))
@@ -306,7 +306,7 @@ class cFdxFileMultiSelector is a aps.Grid
       get Row_Count to max#
       for row# from 0 to (max#-1)
         move (value(self,row#*5+by#)) to str#
-        if by# eq 1 move (IntToStrR(str#,4)) to str#
+        if (by# = 1) move (IntToStrR(str#,4)) to str#
         move (integer(value(self,row#*5+1))) to file#
         move (select_state(self,row#*5)) to select#
         move (pad(str#,30)+IntToStrR(file#,4)+IntToStrR(select#,1)) to str#
@@ -360,10 +360,10 @@ class cFdxFileMultiSelector is a aps.Grid
 
     if (piNo_Alias_State# and element_find(oRootNames(self),uppercase(RootName#))<>-1) move 0 to AddFile#
     else begin
-      if piBad_Entries_State# ne BAD_ENTRIES_NO_CHECK begin
+      if (piBad_Entries_State# <> BAD_ENTRIES_NO_CHECK) begin
         move (iFileAvailable.i(self,file#)) to driver_type#
         move (not(driver_type#)) to bad#
-        ifnot bad# move (not(DriverFilter_Include(self,driver_type#))) to bad#
+        If (Not(bad#)) move (not(DriverFilter_Include(self,driver_type#))) to bad#
       end
 
       if (bad# and piBad_Entries_State#=BAD_ENTRIES_EXCLUDE) move 0 to AddFile#
@@ -384,7 +384,7 @@ class cFdxFileMultiSelector is a aps.Grid
   procedure item_change integer i1# integer i2# returns integer
     integer rval# row_from# row_to#
     forward get msg_item_change i1# i2# to rval#
-    if (i1#/5) ne (i2#/5) send row_change (i1#/5) (i2#/5)
+    if ((i1#/5) <> (i2#/5)) send row_change (i1#/5) (i2#/5)
     procedure_return rval#
   end_procedure
   procedure select_toggling integer itm# integer i#
@@ -405,7 +405,7 @@ class cFdxFileMultiSelector is a aps.Grid
     repeat
       move (FDX_AttrValue_FLSTNAV(oFDX#,DF_FILE_NEXT_USED,file#)) to file#
       if file# send add_file.i file#
-    until file# eq 0
+    until (file# = 0)
     send update_select_display
     set dynamic_update_state to true
     send wait_off
@@ -414,7 +414,7 @@ class cFdxFileMultiSelector is a aps.Grid
     integer file# oFDX#
     get piFDX_Server to oFDX#
     set dynamic_update_state to false
-    ifnot oFDX# begin
+    If (Not(oFDX#)) begin
       send wait_on
       send delete_data
       send delete_data to (oRootNames(self))
@@ -422,7 +422,7 @@ class cFdxFileMultiSelector is a aps.Grid
       repeat
         move (FDX_AttrValue_FLSTNAV(oFDX#,DF_FILE_NEXT_OPENED,file#)) to file#
         if file# send add_file.i file#
-      until file# eq 0
+      until (file# = 0)
       send update_select_display
       send wait_off
     end
@@ -484,7 +484,7 @@ class cFdxFileMultiSelector is a aps.Grid
     integer max# row# st#
     get Row_Count to max#
     for row# from 0 to (max#-1)
-      ifnot (Row_Shadow_State(self,row#)) begin
+      If (Not((Row_Shadow_State(self,row#)))) begin
         get Row_Select_State Row# to st#
         if (st# or uppercase(Row_RootName(self,row#))<>"FLEXERRS") set Row_Select_State Row# to (not(st#))
       end
@@ -500,7 +500,7 @@ class cFdxFileMultiSelector is a aps.Grid
     string str#
     get piFDX_Server to oFDX#
     if oFDX# begin
-      ifnot (Row_Shadow_State(self,current_row(self))) begin
+      If (Not((Row_Shadow_State(self,current_row(self))))) begin
         get sParentFiles.i of oFDX# (Current_File(self)) to str#
         move (HowManyIntegers(str#)) to max#
         for itm# from 1 to max#
@@ -517,7 +517,7 @@ class cFdxFileMultiSelector is a aps.Grid
     string str#
     get piFDX_Server to oFDX#
     if oFDX# begin
-      ifnot (Row_Shadow_State(self,current_row(self))) begin
+      If (Not((Row_Shadow_State(self,current_row(self))))) begin
         get sChildFiles.i of oFDX# (Current_File(self)) to str#
         move (HowManyIntegers(str#)) to max#
         for itm# from 1 to max#
@@ -536,8 +536,8 @@ class cFdxFileMultiSelector is a aps.Grid
     move "³" to str#
     for row# from 0 to (max#-1)
       get Row_RootName row# to rn#
-      ifnot (uppercase(rn#)) eq "FLEXERRS" begin
-        ifnot ("³"+uppercase(rn#)+"³") in str# begin
+      ifnot ((uppercase(rn#)) = "FLEXERRS") begin
+        If (Not(str# contains ("³"+uppercase(rn#)+"³"))) begin
           set Row_Select_State Row# to true
           move (str#+uppercase(rn#)+"³") to str#
         end
@@ -562,7 +562,7 @@ class cFdxFileMultiSelector is a aps.Grid
   end_procedure
   procedure select_open
     integer max# row# open# file#
-    ifnot (piFDX_Server(self)) begin
+    If (Not((piFDX_Server(self)))) begin
       get Row_Count to max#
       for row# from 0 to (max#-1)
         get Row_File row# to file#
@@ -575,7 +575,7 @@ class cFdxFileMultiSelector is a aps.Grid
 
   procedure Callback_Selected_Files integer msg# integer tmp_obj#
     integer obj# max# row# open# file#
-    if num_arguments gt 1 move tmp_obj# to obj#
+    if (num_arguments > 1) move tmp_obj# to obj#
     else move self to obj#
     get Row_Count to max#
     for row# from 0 to (max#-1)
@@ -588,7 +588,7 @@ class cFdxFileMultiSelector is a aps.Grid
 
   procedure Callback_All_Files integer msg# integer tmp_obj#
     integer obj# max# row# open# file#
-    if num_arguments gt 1 move tmp_obj# to obj#
+    if (num_arguments > 1) move tmp_obj# to obj#
     else move self to obj#
     get Row_Count to max#
     for row# from 0 to (max#-1)
@@ -612,7 +612,7 @@ class cFdxFileMultiSelector is a aps.Grid
   procedure Callback_General integer msg# integer obj# integer selected# integer shaded# integer master_tmp#
     integer row# max# file# is_selected# is_shaded# master# ok#
     string check# root#
-    if num_arguments lt 5 move 0 to master#
+    if (num_arguments < 5) move 0 to master#
     else move master_tmp# to master#
     move ";" to check#
     get Row_Count to max#
@@ -622,7 +622,7 @@ class cFdxFileMultiSelector is a aps.Grid
       if ((selected#=-1 or selected#=is_selected#) and (shaded#=-1 or shaded#=is_shaded#)) begin
         if master# begin
           move (trim(lowercase(Row_RootName(self,row#)))) to root#
-          if (";"+root#+";") in check# move 0 to ok#
+          if (check# contains (";"+root#+";")) move 0 to ok#
           else begin
             move (check#+root#+";") to check#
             move 1 to ok#
@@ -657,16 +657,16 @@ class cFdxFileMultiSelector is a aps.Grid
     string str#
     get Seq_New_Channel to ch#
     direct_input channel ch# fn#
-    if [~seqeof] begin
+    if (Not(seqeof)) begin
       send wait_on
       readln str#
-      ifnot str# eq "LFSELECT1.0" send obs "Incompatible format"
+      ifnot (str# = "LFSELECT1.0") send obs "Incompatible format"
       else begin
         repeat
           readln file#
           readln st#
           move (seqeof) to fin#
-          ifnot fin# if st# set file_select_state file# to st#
+          If (Not(fin#)) if st# set file_select_state file# to st#
         until fin#
       end
       send wait_off
@@ -679,7 +679,7 @@ class cFdxFileMultiSelector is a aps.Grid
   procedure load_current_selection.browse
     string fn#
     move (SEQ_SelectFile("Load filelist selection","Filelist selections (*.fsl)|*.FSL")) to fn#
-    if fn# ne "" send load_current_selection fn#
+    if (fn# <> "") send load_current_selection fn#
   end_procedure
   procedure save_current_selection string fn#
     integer ch# row# max# file# st#
@@ -701,16 +701,16 @@ class cFdxFileMultiSelector is a aps.Grid
   procedure save_current_selection.browse
     string fn#
     move (SEQ_SelectOutFile("Save filelist selection","Filelist selections (*.fsl)|*.FSL")) to fn#
-    if fn# ne "" send save_current_selection fn#
+    if (fn# <> "") send save_current_selection fn#
   end_procedure
   procedure display_file_things
-    if (item_count(self)) ifnot (Row_Shadow_State(self,Current_Row(self))) send FDX_ModalDisplayFileAttributes (piFDX_Server(self)) (Current_File(self))
+    if (item_count(self)) If (Not((Row_Shadow_State(self,Current_Row(self))))) send FDX_ModalDisplayFileAttributes (piFDX_Server(self)) (Current_File(self))
   end_procedure
   procedure display_file_location
     integer fdx# file#
     number ts#
     string path#
-    ifnot (Row_Shadow_State(self,Current_Row(self))) begin
+    If (Not((Row_Shadow_State(self,Current_Row(self))))) begin
       get piFDX_Server to fdx#
       get Current_File to file#
       get sDatPath.i of fdx# file# to path#

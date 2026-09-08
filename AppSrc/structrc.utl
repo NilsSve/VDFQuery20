@@ -9,16 +9,16 @@ Use Strings.nui  // String manipulation for VDF
 Use Files.utl    // Utilities for handling file related stuff
 
 function sRSOP_Text.i global integer op# returns string
-  if op# eq RSOP_BEGIN           function_return "Initial definiton"
-  if op# eq RSOP_CREATEFIELD     function_return "Create field"
-  if op# eq RSOP_DELETEFIELD     function_return "Delete field"
-  if op# eq RSOP_DELETEINDEX     function_return "Delete index"
-  if op# eq RSOP_SETFILEATTR     function_return "Set "
-  if op# eq RSOP_SETFIELDATTR    function_return "Set "
-  if op# eq RSOP_SETINDEXATTR    function_return "Set "
-  if op# eq RSOP_SETINDEXSEGATTR function_return "Set "
-  if op# eq RSOP_TRUNCATED       function_return "Restructure truncated!"
-  if op# eq RSOP_ERROR_OCCURRED  function_return "Error: "
+  if (op# = RSOP_BEGIN) function_return "Initial definiton"
+  if (op# = RSOP_CREATEFIELD) function_return "Create field"
+  if (op# = RSOP_DELETEFIELD) function_return "Delete field"
+  if (op# = RSOP_DELETEINDEX) function_return "Delete index"
+  if (op# = RSOP_SETFILEATTR) function_return "Set "
+  if (op# = RSOP_SETFIELDATTR) function_return "Set "
+  if (op# = RSOP_SETINDEXATTR) function_return "Set "
+  if (op# = RSOP_SETINDEXSEGATTR) function_return "Set "
+  if (op# = RSOP_TRUNCATED) function_return "Restructure truncated!"
+  if (op# = RSOP_ERROR_OCCURRED) function_return "Error: "
 end_function
 
 desktop_section
@@ -45,15 +45,15 @@ desktop_section
       get psValue.i     row# to value#
       move (string(IntToStrRzf(row#+1,length(string(row_count(self)+1))))) to rval#
       move (rval#*sRSOP_Text.i(op#)) to rval#
-      if op# eq RSOP_BEGIN        move (rval#*value#) to rval#
-      if op# eq RSOP_CREATEFIELD  move (rval#*value#*"at"*string(field#)*"type: "*API_Attr_DisplayValueName(DF_FIELD_TYPE,index#)) to rval#
-      if op# eq RSOP_DELETEFIELD  move (rval#*string(field#)) to rval#
-      if op# eq RSOP_DELETEINDEX  move (rval#*string(index#)) to rval#
-      if op# eq RSOP_SETFILEATTR  move (rval#*API_Attr_Name(attr#)*"to"*API_Attr_ValueName(attr#,value#)) to rval#
-      if op# eq RSOP_SETFIELDATTR move (rval#*API_Attr_Name(attr#)*"field"*string(field#)*"to"*API_Attr_ValueName(attr#,value#)) to rval#
-      if op# eq RSOP_SETINDEXATTR move (rval#*API_Attr_Name(attr#)*"index"*string(index#)*"to"*API_Attr_ValueName(attr#,value#)) to rval#
-      if op# eq RSOP_SETINDEXSEGATTR move (rval#*API_Attr_Name(attr#)*"index"*string(index#)*"segment"*string(seg#)*"to"*API_Attr_ValueName(attr#,value#)) to rval#
-      if op# eq RSOP_ERROR_OCCURRED move (rval#*value#) to rval#
+      if (op# = RSOP_BEGIN) move (rval#*value#) to rval#
+      if (op# = RSOP_CREATEFIELD) move (rval#*value#*"at"*string(field#)*"type: "*API_Attr_DisplayValueName(DF_FIELD_TYPE,index#)) to rval#
+      if (op# = RSOP_DELETEFIELD) move (rval#*string(field#)) to rval#
+      if (op# = RSOP_DELETEINDEX) move (rval#*string(index#)) to rval#
+      if (op# = RSOP_SETFILEATTR) move (rval#*API_Attr_Name(attr#)*"to"*API_Attr_ValueName(attr#,value#)) to rval#
+      if (op# = RSOP_SETFIELDATTR) move (rval#*API_Attr_Name(attr#)*"field"*string(field#)*"to"*API_Attr_ValueName(attr#,value#)) to rval#
+      if (op# = RSOP_SETINDEXATTR) move (rval#*API_Attr_Name(attr#)*"index"*string(index#)*"to"*API_Attr_ValueName(attr#,value#)) to rval#
+      if (op# = RSOP_SETINDEXSEGATTR) move (rval#*API_Attr_Name(attr#)*"index"*string(index#)*"segment"*string(seg#)*"to"*API_Attr_ValueName(attr#,value#)) to rval#
+      if (op# = RSOP_ERROR_OCCURRED) move (rval#*value#) to rval#
       function_return rval#
     end_function
     procedure reset
@@ -79,8 +79,8 @@ desktop_section
     procedure RegisterUpdate integer file# integer op# integer attr# integer field# integer index# integer seg# string value#
       integer row# obj# ch#
       string fn#
-      if op# eq RSOP_BEGIN send reset
-      if op# eq RSOP_END begin
+      if (op# = RSOP_BEGIN) send reset
+      if (op# = RSOP_END) begin
         get sRootInclPath of oRestructurer# to fn#
         move (fn#+".rst") to fn#
         move (SEQ_DirectOutput(fn#)) to ch#
@@ -124,7 +124,7 @@ desktop_section
       integer ch#
       string fn#
       move (SEQ_SelectOutFile("Save restructure trace","Restructure trace (*.rst)|*.RST")) to fn#
-      if fn# ne "" begin
+      if (fn# <> "") begin
         move (SEQ_DirectOutput(fn#)) to ch#
         send seq_write ch#
         send SEQ_CloseOutput ch#
@@ -148,7 +148,7 @@ desktop_section
     End_Procedure    
     Procedure load_trace_file String fn#
       integer ch#
-      if fn# ne "" begin
+      if (fn# <> "") begin
         move (SEQ_DirectInput(fn#)) to ch#
         send reset
         send seq_read ch#
@@ -219,4 +219,3 @@ class cRSTraceList is a aps.List
     send fill_list // visual clue something happened
   end_procedure
 end_class // cRSTraceList
-

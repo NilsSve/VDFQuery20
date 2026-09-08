@@ -1,25 +1,53 @@
 // Use FdxCheck.vw  // View for interfacing validity check of table definitions
 
 Use FdxCheck.pkg // Classes for displaying validity check of table definitions
+Use cCJGrid.pkg
 
 register_object oGrp
 register_object oFrm_ErrorText
 object oFdxCheck_Vw is a aps.View label "Check definitions"
   property integer piDoRunOnActivate 0
   on_key KCANCEL send close_panel
-  object oLst is a cFdxCheckErrorList
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxCheckErrorList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+
     procedure OnErrorChange string full_error_text# integer error_class#
       set value of (oFrm_ErrorText(oGrp(self))) item 0 to full_error_text#
       set label of (oFrm_ErrorText(oGrp(self))) to (sErrorClassText.i(self,error_class#)+":")
     end_procedure
+
     procedure update_display_counter integer errors# integer warnings# string detail_level_text#
       string str#
       move "# error(s) and # warning(s), displaying #" to str#
-      replace "#" in str# with errors#
-      replace "#" in str# with warnings#
-      replace "#" in str# with (lowercase(detail_level_text#))
-      send UpdateTotal str#
+      Move (Replace("#", str#, errors#)) to str#
+      Move (Replace("#", str#, warnings#)) to str#
+      Move (Replace("#", str#, (lowercase(detail_level_text#)))) to str#
+//      send UpdateTotal str#
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oTotal is a aps.TextBox snap SL_DOWN
     set fixed_size to 0 200
@@ -64,7 +92,7 @@ object oFdxCheck_Vw is a aps.View label "Check definitions"
   procedure DoDisplayDefinitionFromCheckView
     integer vw# sz#
     move (oFdxDisplayFileAttributes(self)) to vw#
-    ifnot (active_state(vw#)) begin
+    If (Not((active_state(vw#)))) begin
       send Activate_Table_Definition
       set location to 5 5
       get size to sz#

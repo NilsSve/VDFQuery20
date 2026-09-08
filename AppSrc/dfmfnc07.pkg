@@ -41,7 +41,7 @@ Object oDfmFnc07 is a fdxrpt.ModalClient label "Create selected DEF/FD files"
     get piFDX_Server to oFDX#
     move (FDX_AttrValue_FILELIST(oFDX#,DF_FILE_ROOT_NAME,file#)) to root#
     move (FDX_AttrValue_FILELIST(oFDX#,DF_FILE_LOGICAL_NAME,file#)) to dfname#
-    if dir# ne "" move (SEQ_ComposeAbsoluteFileName(dir#,root#)) to root#
+    if (dir# <> "") move (SEQ_ComposeAbsoluteFileName(dir#,root#)) to root#
     if (DBMS_OpenFileAs(root#,file#,DF_SHARE,0)) begin
       if (iCreateDEF(self)) Output_Aux_File DF_AUX_FILE_DEF For file# Number file# to (dfname#+".DEF")
       if (iCreateFD(self)) Output_Aux_File DF_AUX_FILE_FD For file# Number file# to (dfname#+".FD")
@@ -52,7 +52,7 @@ Object oDfmFnc07 is a fdxrpt.ModalClient label "Create selected DEF/FD files"
     integer update_filelist# select_count#
     string dir# filelist#
     get File_Select_Count of (DFMatrix_SelectorObject()) to select_count#
-    ifnot select_count# send obs "No tables selected!"
+    If (Not(select_count#)) send obs "No tables selected!"
     else begin
       send Callback_Filelist_Entries 1 0 // This does the actual work!
       send obs "Done"

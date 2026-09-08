@@ -48,7 +48,7 @@ end_desktop_section
                   get piType.i liRow to liType
                   if (liType<>DF_OVERLAP) begin
                     get piLength.i liRow to liLength
-                    if liType eq DF_BCD move (liLength/2) to liLength
+                    if (liType = DF_BCD) move (liLength/2) to liLength
                     move (liRval+liLength) to liRval
                   end
                 loop
@@ -81,7 +81,7 @@ end_desktop_section
                 get row_count to liRow
                 set psName.i   liRow to lsName
                 set piType.i   liRow to liType
-                if liType eq DF_BCD begin
+                if (liType = DF_BCD) begin
                   move (lnLength-integer(lnLength)*10) to liPrecision
                   move (integer(lnLength)) to lnLength
                   set piLength.i liRow to (lnLength+liPrecision)
@@ -291,7 +291,7 @@ class cTableCreator is a cTblCrFieldList
       set AttrValue_FIELD of lhFDX DF_FIELD_RELATED_FILE  liFile (liRow+1) to (piRelFile.i(lhAppDbTable,liRow))
       set AttrValue_FIELD of lhFDX DF_FIELD_RELATED_FIELD liFile (liRow+1) to (piRelField.i(lhAppDbTable,liRow))
       set AttrValue_FIELD of lhFDX DF_FIELD_INDEX         liFile (liRow+1) to (piMainIndex.i(lhAppDbTable,liRow))
-      if liFieldType eq DF_OVERLAP begin
+      if (liFieldType = DF_OVERLAP) begin
         set AttrValue_FIELD of lhFDX DF_FIELD_OFFSET      liFile (liRow+1) to (piOverlapOffset.i(lhAppDbTable,liRow))
       end
     loop
@@ -329,4 +329,3 @@ class cTableCreator is a cTblCrFieldList
     end
   end_procedure
 end_class // cTableCreator
-

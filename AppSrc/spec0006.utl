@@ -14,18 +14,18 @@ Use Strings.nui  // String manipulation for VDF
 function MakeStringConstant global string str# returns string
   integer len# pos#
   string char# rval# current_quote#
-  ifnot "'" in str# function_return ("'"+str#+"'")
-  ifnot '"' in str# function_return ('"'+str#+'"')
+  If (Not(str# contains "'")) function_return ("'"+str#+"'")
+  If (Not(str# contains '"')) function_return ('"'+str#+'"')
   move "" to rval#
   move (length(str#)) to len#
-  if (left(str#,1)) eq '"' move "'" to current_quote#
+  if ((left(str#,1)) = '"') move "'" to current_quote#
   else move '"' to current_quote#
   move current_quote# to rval#
   for pos# from 0 to len#
     move (mid(str#,1,pos#)) to char#
-    if char# eq current_quote# begin
+    if (char# = current_quote#) begin
       move (rval#+current_quote#+"+") to rval#
-      if current_quote# eq "'" move '"' to current_quote#
+      if (current_quote# = "'") move '"' to current_quote#
       else move "'" to current_quote#
       move (rval#+current_quote#) to rval#
     end
@@ -38,18 +38,18 @@ end_function
 function MakeStringConstantMax255Help global string str# returns string
   integer len# pos#
   string char# rval# current_quote#
-  ifnot "'" in str# function_return ("'"+str#+"'")
-  ifnot '"' in str# function_return ('"'+str#+'"')
+  If (Not(str# contains "'")) function_return ("'"+str#+"'")
+  If (Not(str# contains '"')) function_return ('"'+str#+'"')
   move "" to rval#
   move (length(str#)) to len#
-  if (left(str#,1)) eq '"' move "'" to current_quote#
+  if ((left(str#,1)) = '"') move "'" to current_quote#
   else move '"' to current_quote#
   move current_quote# to rval#
   for pos# from 0 to len#
     move (mid(str#,1,pos#)) to char#
-    if char# eq current_quote# begin
+    if (char# = current_quote#) begin
       move (rval#+current_quote#+"+") to rval#
-      if current_quote# eq "'" move '"' to current_quote#
+      if (current_quote# = "'") move '"' to current_quote#
       else move "'" to current_quote#
       move (rval#+current_quote#) to rval#
     end
@@ -71,4 +71,3 @@ function MakeStringConstantMax255 global string str# returns string
   loop
   function_return lsRval
 end_function
-

@@ -23,7 +23,7 @@ Use DocAttach.nui // Class for putting files 'attached' to records into one dire
                         for liArticle from 0 to liMax
                           if (integer(value(self,liArticle))) begin
                             get bEvalArticle of lhResultSet liArticle to lbOK
-                            ifnot lbOK begin
+                            If (Not(lbOK)) begin
                               set value item liArticle to 0
                               increment liDecrement
                             end
@@ -147,20 +147,20 @@ Use DocAttach.nui // Class for putting files 'attached' to records into one dire
                           clear liFile // clear FTArtPhr
                           set_field_value liFile 1 to liArticle // move liArticle to FTArtPhr.Article_Id
 
-                                                  if liMax ge  0 set_field_value liFile  2 to (piWordId.i(lhWordSplitter, 0))
-                                                  if liMax ge  1 set_field_value liFile  3 to (piWordId.i(lhWordSplitter, 1))
-                                                  if liMax ge  2 set_field_value liFile  4 to (piWordId.i(lhWordSplitter, 2))
-                                                  if liMax ge  3 set_field_value liFile  5 to (piWordId.i(lhWordSplitter, 3))
-                                                  if liMax ge  4 set_field_value liFile  6 to (piWordId.i(lhWordSplitter, 4))
-                                                  if liMax ge  5 set_field_value liFile  7 to (piWordId.i(lhWordSplitter, 5))
-                          if liPhraseLength ge  7 if liMax ge  6 set_field_value liFile  8 to (piWordId.i(lhWordSplitter, 6))
-                          if liPhraseLength ge  8 if liMax ge  7 set_field_value liFile  9 to (piWordId.i(lhWordSplitter, 7))
-                          if liPhraseLength ge  9 if liMax ge  8 set_field_value liFile 10 to (piWordId.i(lhWordSplitter, 8))
-                          if liPhraseLength ge 10 if liMax ge  9 set_field_value liFile 11 to (piWordId.i(lhWordSplitter, 9))
-                          if liPhraseLength ge 11 if liMax ge 10 set_field_value liFile 12 to (piWordId.i(lhWordSplitter,10))
-                          if liPhraseLength ge 12 if liMax ge 11 set_field_value liFile 13 to (piWordId.i(lhWordSplitter,11))
-                          if liPhraseLength ge 13 if liMax ge 12 set_field_value liFile 14 to (piWordId.i(lhWordSplitter,12))
-                          if liPhraseLength ge 14 if liMax ge 13 set_field_value liFile 15 to (piWordId.i(lhWordSplitter,13))
+                                                  if (liMax >= 0) set_field_value liFile 2 to (piWordId.i(lhWordSplitter, 0))
+                                                  if (liMax >= 1) set_field_value liFile 3 to (piWordId.i(lhWordSplitter, 1))
+                                                  if (liMax >= 2) set_field_value liFile 4 to (piWordId.i(lhWordSplitter, 2))
+                                                  if (liMax >= 3) set_field_value liFile 5 to (piWordId.i(lhWordSplitter, 3))
+                                                  if (liMax >= 4) set_field_value liFile 6 to (piWordId.i(lhWordSplitter, 4))
+                                                  if (liMax >= 5) set_field_value liFile 7 to (piWordId.i(lhWordSplitter, 5))
+                          if (liPhraseLength ge) 7 if (liMax >= 6) set_field_value liFile 8 to (piWordId.i(lhWordSplitter, 6))
+                          if (liPhraseLength ge) 8 if (liMax >= 7) set_field_value liFile 9 to (piWordId.i(lhWordSplitter, 7))
+                          if (liPhraseLength ge) 9 if (liMax >= 8) set_field_value liFile 10 to (piWordId.i(lhWordSplitter, 8))
+                          if ((liPhraseLength >= 10) and (liMax >= 9)) set_field_value liFile 11 to (piWordId.i(lhWordSplitter, 9))
+                          if ((liPhraseLength >= 11) and (liMax >= 10)) set_field_value liFile 12 to (piWordId.i(lhWordSplitter,10))
+                          if ((liPhraseLength >= 12) and (liMax >= 11)) set_field_value liFile 13 to (piWordId.i(lhWordSplitter,11))
+                          if ((liPhraseLength >= 13) and (liMax >= 12)) set_field_value liFile 14 to (piWordId.i(lhWordSplitter,12))
+                          if ((liPhraseLength >= 14) and (liMax >= 13)) set_field_value liFile 15 to (piWordId.i(lhWordSplitter,13))
 
                           vfind liFile 1 EQ
                           move (found) to lbFound
@@ -169,59 +169,59 @@ Use DocAttach.nui // Class for putting files 'attached' to records into one dire
                             move (liArticle=liValue) to lbFound
                           end
 
-                          if lbFound if liMax ge 0 begin
+                          if lbFound if (liMax >= 0) begin
                             get_field_value liFile  2 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 0)) to lbFound
                           end
-                          if lbFound if liMax ge 1 begin
+                          if lbFound if (liMax >= 1) begin
                             get_field_value liFile  3 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 1)) to lbFound
                           end
-                          if lbFound if liMax ge 2 begin
+                          if lbFound if (liMax >= 2) begin
                             get_field_value liFile  4 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 2)) to lbFound
                           end
-                          if lbFound if liMax ge 3 begin
+                          if lbFound if (liMax >= 3) begin
                             get_field_value liFile  5 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 3)) to lbFound
                           end
-                          if lbFound if liMax ge 4 begin
+                          if lbFound if (liMax >= 4) begin
                             get_field_value liFile  6 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 4)) to lbFound
                           end
-                          if lbFound if liMax ge 5 begin
+                          if lbFound if (liMax >= 5) begin
                             get_field_value liFile  7 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 5)) to lbFound
                           end
-                          if liPhraseLength ge  7 if lbFound if liMax ge 6 begin
+                          if ((liPhraseLength >= 7) and lbFound and (liMax >= 6)) begin
                             get_field_value liFile  8 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 6)) to lbFound
                           end
-                          if liPhraseLength ge  8 if lbFound if liMax ge 7 begin
+                          if ((liPhraseLength >= 8) and lbFound and (liMax >= 7)) begin
                             get_field_value liFile  9 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 7)) to lbFound
                           end
-                          if liPhraseLength ge  9 if lbFound if liMax ge 8 begin
+                          if ((liPhraseLength >= 9) and lbFound and (liMax >= 8)) begin
                             get_field_value liFile 10 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 8)) to lbFound
                           end
-                          if liPhraseLength ge 10 if lbFound if liMax ge 9 begin
+                          if ((liPhraseLength >= 10) and lbFound and (liMax >= 9)) begin
                             get_field_value liFile 11 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 9)) to lbFound
                           end
-                          if liPhraseLength ge 11 if lbFound if liMax ge 10 begin
+                          if ((liPhraseLength >= 11) and lbFound and (liMax >= 10)) begin
                             get_field_value liFile 12 to liValue
                             move (liValue=piWordId.i(lhWordSplitter,10)) to lbFound
                           end
-                          if liPhraseLength ge 12 if lbFound if liMax ge 11 begin
+                          if ((liPhraseLength >= 12) and lbFound and (liMax >= 11)) begin
                             get_field_value liFile 13 to liValue
                             move (liValue=piWordId.i(lhWordSplitter,11)) to lbFound
                           end
-                          if liPhraseLength ge 13 if lbFound if liMax ge 12 begin
+                          if ((liPhraseLength >= 13) and lbFound and (liMax >= 12)) begin
                             get_field_value liFile 14 to liValue
                             move (liValue=piWordId.i(lhWordSplitter,12)) to lbFound
                           end
-                          if liPhraseLength ge 14 if lbFound if liMax ge 13 begin
+                          if ((liPhraseLength >= 14) and lbFound and (liMax >= 13)) begin
                             get_field_value liFile 15 to liValue
                             move (liValue=piWordId.i(lhWordSplitter,13)) to lbFound
                           end
@@ -279,11 +279,11 @@ Use DocAttach.nui // Class for putting files 'attached' to records into one dire
 
                         send delete_data
 
-                        if liMaxArticles eq 0 move 999999 to liMaxArticles
+                        if (liMaxArticles = 0) move 999999 to liMaxArticles
 
                         move (oPrivateWordSplitter(self)) to lhWordSplitter
                         get row_count of lhWordSplitter to liMax
-                        ifnot liMax function_return 0
+                        If (Not(liMax)) function_return 0
                         decrement liMax
                         move 0 to liArticleCount
 
@@ -292,77 +292,77 @@ Use DocAttach.nui // Class for putting files 'attached' to records into one dire
 
                         clear liFile //clear FTArtPhr
 
-                                                if liMax ge  0 set_field_value liFile  2 to (piWordId.i(lhWordSplitter, 0))
-                                                if liMax ge  1 set_field_value liFile  3 to (piWordId.i(lhWordSplitter, 1))
-                                                if liMax ge  2 set_field_value liFile  4 to (piWordId.i(lhWordSplitter, 2))
-                                                if liMax ge  3 set_field_value liFile  5 to (piWordId.i(lhWordSplitter, 3))
-                                                if liMax ge  4 set_field_value liFile  6 to (piWordId.i(lhWordSplitter, 4))
-                                                if liMax ge  5 set_field_value liFile  7 to (piWordId.i(lhWordSplitter, 5))
-                        if liPhraseLength ge  7 if liMax ge  6 set_field_value liFile  8 to (piWordId.i(lhWordSplitter, 6))
-                        if liPhraseLength ge  8 if liMax ge  7 set_field_value liFile  9 to (piWordId.i(lhWordSplitter, 7))
-                        if liPhraseLength ge  9 if liMax ge  8 set_field_value liFile 10 to (piWordId.i(lhWordSplitter, 8))
-                        if liPhraseLength ge 10 if liMax ge  9 set_field_value liFile 11 to (piWordId.i(lhWordSplitter, 9))
-                        if liPhraseLength ge 11 if liMax ge 10 set_field_value liFile 12 to (piWordId.i(lhWordSplitter,10))
-                        if liPhraseLength ge 12 if liMax ge 11 set_field_value liFile 13 to (piWordId.i(lhWordSplitter,11))
-                        if liPhraseLength ge 13 if liMax ge 12 set_field_value liFile 14 to (piWordId.i(lhWordSplitter,12))
-                        if liPhraseLength ge 14 if liMax ge 13 set_field_value liFile 15 to (piWordId.i(lhWordSplitter,13))
+                                                if (liMax >= 0) set_field_value liFile 2 to (piWordId.i(lhWordSplitter, 0))
+                                                if (liMax >= 1) set_field_value liFile 3 to (piWordId.i(lhWordSplitter, 1))
+                                                if (liMax >= 2) set_field_value liFile 4 to (piWordId.i(lhWordSplitter, 2))
+                                                if (liMax >= 3) set_field_value liFile 5 to (piWordId.i(lhWordSplitter, 3))
+                                                if (liMax >= 4) set_field_value liFile 6 to (piWordId.i(lhWordSplitter, 4))
+                                                if (liMax >= 5) set_field_value liFile 7 to (piWordId.i(lhWordSplitter, 5))
+                        if (liPhraseLength ge) 7 if (liMax >= 6) set_field_value liFile 8 to (piWordId.i(lhWordSplitter, 6))
+                        if (liPhraseLength ge) 8 if (liMax >= 7) set_field_value liFile 9 to (piWordId.i(lhWordSplitter, 7))
+                        if (liPhraseLength ge) 9 if (liMax >= 8) set_field_value liFile 10 to (piWordId.i(lhWordSplitter, 8))
+                        if ((liPhraseLength >= 10) and (liMax >= 9)) set_field_value liFile 11 to (piWordId.i(lhWordSplitter, 9))
+                        if ((liPhraseLength >= 11) and (liMax >= 10)) set_field_value liFile 12 to (piWordId.i(lhWordSplitter,10))
+                        if ((liPhraseLength >= 12) and (liMax >= 11)) set_field_value liFile 13 to (piWordId.i(lhWordSplitter,11))
+                        if ((liPhraseLength >= 13) and (liMax >= 12)) set_field_value liFile 14 to (piWordId.i(lhWordSplitter,12))
+                        if ((liPhraseLength >= 14) and (liMax >= 13)) set_field_value liFile 15 to (piWordId.i(lhWordSplitter,13))
 
                         repeat
                           vfind liFile 2 GT // find gt FTArtPhr by index.2
                           move (found) to lbFound
-                          if lbFound if liMax ge 0 begin
+                          if lbFound if (liMax >= 0) begin
                             get_field_value liFile  2 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 0)) to lbFound
                           end
-                          if lbFound if liMax ge 1 begin
+                          if lbFound if (liMax >= 1) begin
                             get_field_value liFile  3 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 1)) to lbFound
                           end
-                          if lbFound if liMax ge 2 begin
+                          if lbFound if (liMax >= 2) begin
                             get_field_value liFile  4 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 2)) to lbFound
                           end
-                          if lbFound if liMax ge 3 begin
+                          if lbFound if (liMax >= 3) begin
                             get_field_value liFile  5 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 3)) to lbFound
                           end
-                          if lbFound if liMax ge 4 begin
+                          if lbFound if (liMax >= 4) begin
                             get_field_value liFile  6 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 4)) to lbFound
                           end
-                          if lbFound if liMax ge 5 begin
+                          if lbFound if (liMax >= 5) begin
                             get_field_value liFile  7 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 5)) to lbFound
                           end
-                          if liPhraseLength ge  7 if lbFound if liMax ge 6 begin
+                          if ((liPhraseLength >= 7) and lbFound and (liMax >= 6)) begin
                             get_field_value liFile  8 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 6)) to lbFound
                           end
-                          if liPhraseLength ge  8 if lbFound if liMax ge 7 begin
+                          if ((liPhraseLength >= 8) and lbFound and (liMax >= 7)) begin
                             get_field_value liFile  9 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 7)) to lbFound
                           end
-                          if liPhraseLength ge  9 if lbFound if liMax ge 8 begin
+                          if ((liPhraseLength >= 9) and lbFound and (liMax >= 8)) begin
                             get_field_value liFile 10 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 8)) to lbFound
                           end
-                          if liPhraseLength ge 10 if lbFound if liMax ge 9 begin
+                          if ((liPhraseLength >= 10) and lbFound and (liMax >= 9)) begin
                             get_field_value liFile 11 to liValue
                             move (liValue=piWordId.i(lhWordSplitter, 9)) to lbFound
                           end
-                          if liPhraseLength ge 11 if lbFound if liMax ge 10 begin
+                          if ((liPhraseLength >= 11) and lbFound and (liMax >= 10)) begin
                             get_field_value liFile 12 to liValue
                             move (liValue=piWordId.i(lhWordSplitter,10)) to lbFound
                           end
-                          if liPhraseLength ge 12 if lbFound if liMax ge 11 begin
+                          if ((liPhraseLength >= 12) and lbFound and (liMax >= 11)) begin
                             get_field_value liFile 13 to liValue
                             move (liValue=piWordId.i(lhWordSplitter,11)) to lbFound
                           end
-                          if liPhraseLength ge 13 if lbFound if liMax ge 12 begin
+                          if ((liPhraseLength >= 13) and lbFound and (liMax >= 12)) begin
                             get_field_value liFile 14 to liValue
                             move (liValue=piWordId.i(lhWordSplitter,12)) to lbFound
                           end
-                          if liPhraseLength ge 14 if lbFound if liMax ge 13 begin
+                          if ((liPhraseLength >= 14) and lbFound and (liMax >= 13)) begin
                             get_field_value liFile 15 to liValue
                             move (liValue=piWordId.i(lhWordSplitter,13)) to lbFound
                           end
@@ -517,7 +517,7 @@ class cFTS_Searcher is a cArray
     // If lbIsPhrase is false, we still have to examine whether we have to treat it as
     // a phrase. This is due to words like this: WINERR=2. We have to break it up in order
     // to see if it's actually a phrase.
-    ifnot lbIsPhrase begin
+    If (Not(lbIsPhrase)) begin
       get phWordsplitterObject to lhWordSplitter
       send DoReset to lhWordSplitter
       send DoAddText to lhWordSplitter lsSearchString
@@ -562,7 +562,7 @@ class cFTS_Searcher is a cArray
                      get ExtractWord lsSearchString " " liItm to lsWord
 
                      // First we sort out the negative positive thing:
-                     ifnot lbInPhrase begin
+                     If (Not(lbInPhrase)) begin
                        if (left(lsWord,1)="-") begin
                          move DFTRUE to lbNegative
                          move (trim(StringRightBut(lsWord,1))) to lsWord // Note lsWord may be empty after this
@@ -630,11 +630,11 @@ class cFTS_Searcher is a cArray
                    move FTIS_NO_ERROR to liError
 
                    if liRow begin // not the first row
-                     ifnot (pbNegative.i(self,liRow)) begin
+                     If (Not((pbNegative.i(self,liRow)))) begin
                        // We only do this if we have less than 1000 estimated:
                        if (liEstimatedHits<1000 and liCurrentResultSize>25) get iBuildTheSet of lhResultObj to liError
                      end
-                     ifnot liError get bDoLogicalAnd of (phResultObj.i(self,0)) lhResultObj to liError
+                     If (Not(liError)) get bDoLogicalAnd of (phResultObj.i(self,0)) lhResultObj to liError
                    end
                    else begin // First row
 //                   if (liEstimatedHits>5000) move FTIS_TOO_MANY to liError
@@ -682,11 +682,11 @@ class cFTS_Searcher is a cArray
                      move 0 to ft_searcher@max_time
                    end
 
-                   ifnot liError begin
+                   If (Not(liError)) begin
                      send CalculateMaxPossibleHits
                      send PrioritizeTheSearch
                      if (row_count(self)) begin
-                       ifnot (pbNegative.i(self,0)) begin
+                       If (Not((pbNegative.i(self,0)))) begin
                          get phResultObj.i 0 to lhResultSet
                          get row_count to liMax
                          move 0 to liRow
@@ -696,14 +696,14 @@ class cFTS_Searcher is a cArray
                            get piArticleCount of lhResultSet to liCurrentResultSize
                            increment liRow
                          end
-                         ifnot liError send BuildFinalSet
+                         If (Not(liError)) send BuildFinalSet
                        end
                        else move FTIS_NO_POSITIVE to liError
                      end
                      else move FTIS_MISSING_VALUE to liError
                    end
                //    send DoReset
-                   ifnot liError get DoPostSearchProcessing to liError
+                   If (Not(liError)) get DoPostSearchProcessing to liError
 
                    function_return liError
                  end_function // iDoSearch
@@ -741,14 +741,14 @@ class cFTS_Searcher is a cArray
     date ldDate
     string lsSearchString
     string lsTime
-    string lsStartTime lsStopTime // Used for measuring the duration of the search
+    tWinSystemTime stStartTime stStopTime // Used for measuring the duration of the search
     string lsFileName     // Name of sequential file where search result will be written
     number lnElap         // Very temporarily
 
     move (oFinalSet(self)) to lhFinalSet
 
     // Mark the time we started the search:
-    get MilliSeconds_Systime to lsStartTime
+    get MilliSeconds_Systime to stStartTime
 
     // Open output to file in whichs we will store the result:
     get CurrentRecordAbsoluteFileName of oResultAttacher to lsFileName
@@ -812,7 +812,7 @@ class cFTS_Searcher is a cArray
     end
 
     send SEQ_CloseOutput liChannel
-    get MilliSeconds_Systime to lsStopTime // Mark the stoptime
+    get MilliSeconds_Systime to stStopTime // Mark the stoptime
 
     if (liError=FTIS_NO_ERROR and liArticleCount=0) move FTIS_NO_ITEMS_FOUND to liError
 
@@ -820,7 +820,7 @@ class cFTS_Searcher is a cArray
       set_field_value liSearchFile 4  to (dSysDate())                // SEARCH_DATE
       set_field_value liSearchFile 5  to (sSysTime())                // SEARCH_TIME
       set_field_value liSearchFile 6  to liArticleCount              // RESULT_COUNT
-      move (MilliSeconds_Elapsed(lsStartTime,lsStopTime)) to lnElap
+      move (MilliSeconds_Elapsed(stStartTime,stStopTime)) to lnElap
       set_field_value liSearchFile 7  to lnElap                      // EXECUTION_TIME
       set_field_value liSearchFile 11 to liError                     // ERROR_CODE
       saverecord liSearchFile

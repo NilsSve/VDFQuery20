@@ -66,7 +66,7 @@ Class cConv2000List is a aps.Grid
       send add_item msg_none (psRootName.i(iObj,iRow))
       get piStatus.i of iObj iRow to iStatus
       move (Y2K_TableStatusText(iStatus)) to sStatusText
-      if iStatus eq Y2K_CONVERTED begin
+      if (iStatus = Y2K_CONVERTED) begin
 //      move (sStatusText+" (# dates in # records)") to sStatusText
         move ("(# dates in # records)") to sStatusText
 //        replace "#" in sStatusText with (piAux2.i(iObj,iRow)) to sStatusText

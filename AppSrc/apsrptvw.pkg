@@ -1,6 +1,6 @@
 // Use ApsRptVw.pkg // aps.ReportView
 use APS.pkg
-use dfrptvw
+use dfrptvw.pkg
 
 class aps.ReportView is a ReportView startmac APS.STARTMAC_LABEL
   procedure construct_object
@@ -110,7 +110,7 @@ end_class
 procedure register_constrain_object for cObject integer itm#
   integer self# tmp#
   move self to self#
-  if num_arguments gt 0 move itm# to tmp#
+  if (num_arguments > 0) move itm# to tmp#
   else move (item_count(oConstraintValues(self))) to tmp#
   set constraint_object tmp# to self#
 end_procedure

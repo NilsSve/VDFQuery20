@@ -24,7 +24,7 @@
 Use VdfBase.pkg // Define FMAC_VERSION and FMAC_REVISION
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use seq_chnl.pkg // Defines global sequential device management operations (DAW)
@@ -44,17 +44,17 @@ function SEQ_UniqueFileName global string lsPreFix returns string
   move 12 to count# // max number of retries
   move 1 to loop#
   get Seq_New_Channel to ch#      // This method and Seq_Release_Channel are
-  if ch# lt 0 function_return ""  // located in seq_chnl.pkg
+  if (ch# < 0) function_return "" // located in seq_chnl.pkg
   send Seq_Release_Channel ch#    // We only need it for a second
   repeat
     move (random(9999)) to unique#
     direct_input channel ch# (lsPreFix+string(unique#)+".tmp")
     move (count#-1) to count#
-    [seqeof] move 0 to loop#
-    if loop# if count# le 0 move 0 to loop#
+    If (seqeof) move (0) to loop#
+    if loop# if (count# <= 0) move 0 to loop#
     close_input channel ch#
   until (not(loop#))
-  if count# le 0 function_return "" // failure
+  if (count# <= 0) function_return "" // failure
   function_return (lsPreFix+string(unique#)+".tmp")
 end_function
 
@@ -69,18 +69,18 @@ function SEQ_UniqueFileNamePath global string lsPath string lsPreFix returns str
   move 12 to count# // max number of retries
   move 1 to loop#
   get Seq_New_Channel to ch#      // This method and Seq_Release_Channel are
-  if ch# lt 0 function_return ""  // located in seq_chnl.pkg
+  if (ch# < 0) function_return "" // located in seq_chnl.pkg
   send Seq_Release_Channel ch#    // We only need it for a second
   repeat
     move (random(9999)) to unique#
     get SEQ_ComposeAbsoluteFileName lsPath (lsPreFix+string(unique#)+"."+SEQ_UniqueFileNamePath$ext) to lsFileName
     direct_input channel ch# lsFileName
     move (count#-1) to count#
-    [seqeof] move 0 to loop#
-    if loop# if count# le 0 move 0 to loop#
+    If (seqeof) move (0) to loop#
+    if loop# if (count# <= 0) move 0 to loop#
     close_input channel ch#
   until (not(loop#))
-  if count# le 0 function_return "" // failure
+  if (count# <= 0) function_return "" // failure
   function_return lsFileName
 end_function
 
@@ -111,9 +111,9 @@ define SEQIT_DIRECTORY for 2
      function SEQ_FileExists global string lsFile returns integer
        integer liRval liChannel
        string lsStr
-       if lsFile eq "" function_return SEQIT_NONE
+       if (lsFile = "") function_return SEQIT_NONE
        get Seq_New_Channel to liChannel      // This method and Seq_Release_Channel are
-       if liChannel lt 0 function_return 1   // located in seq_chnl.pkg
+       if (liChannel < 0) function_return 1 // located in seq_chnl.pkg
 
        SEQ_FileExists$Test$ShowLn "1 SEQ_FileExists:" (">"+lsFile+"<") "on channel " liChannel
 
@@ -122,13 +122,13 @@ define SEQIT_DIRECTORY for 2
 
        SEQ_FileExists$Test$ShowLn "2 (liRval): " liRval
 
-       ifnot liRval begin
+       If (Not(liRval)) begin
          get SEQ_ExtractPathFromFileName lsFile to lsStr
          SEQ_FileExists$Test$ShowLn "3 (lsStr): " lsStr
-         if lsStr eq "" begin // There's no path in the file name
+         if (lsStr = "") begin // There's no path in the file name
            get SEQ_FindFileAlongDFPath lsFile to lsStr
            SEQ_FileExists$Test$ShowLn "4 (lsStr): " lsStr
-           if lsStr ne "" begin
+           if (lsStr <> "") begin
              get SEQ_ComposeAbsoluteFileName lsStr lsFile to lsFile
              SEQ_FileExists$Test$ShowLn "5 (lsFile): " lsFile
              close_input channel liChannel
@@ -154,7 +154,7 @@ function SEQ_FileSize global string fn# returns number
   // This function returns the size of file <fn#> in bytes.
   integer ch#
   number rval#
-  ifnot (SEQ_FileExists(fn#)=SEQIT_FILE) function_return 0
+  If (Not((SEQ_FileExists(fn#)=SEQIT_FILE))) function_return 0
   get Seq_New_Channel to ch#
   send Seq_Release_Channel ch#
   move (StringOemToAnsi(fn#)) to fn#
@@ -165,16 +165,16 @@ function SEQ_FileSize global string fn# returns number
 end_function
 
 function SEQ_SizeToStringHelp global number XB# returns string
-  if XB# ge 1000 function_return (NumToStr(XB#,0))
-  if XB# ge 100 function_return (NumToStr(XB#,1))
-  if XB# ge 10 function_return (NumToStr(XB#,2))
+  if (XB# >= 1000) function_return (NumToStr(XB#,0))
+  if (XB# >= 100) function_return (NumToStr(XB#,1))
+  if (XB# >= 10) function_return (NumToStr(XB#,2))
   function_return (NumToStr(XB#,3))
 end_function
 
 function SEQ_FileSizeToString global number bytes# returns string
-  if bytes# ge FS_GIGABYTE function_return (SEQ_SizeToStringHelp(bytes#/FS_GIGABYTE)+" GB")
-  else if bytes# ge FS_MEGABYTE function_return (SEQ_SizeToStringHelp(bytes#/FS_MEGABYTE)+" MB")
-  else if bytes# ge FS_KILOBYTE function_return (SEQ_SizeToStringHelp(bytes#/FS_KILOBYTE)+" KB")
+  if (bytes# >= FS_GIGABYTE) function_return (SEQ_SizeToStringHelp(bytes#/FS_GIGABYTE)+" GB")
+  else if (bytes# >= FS_MEGABYTE) function_return (SEQ_SizeToStringHelp(bytes#/FS_MEGABYTE)+" MB")
+  else if (bytes# >= FS_KILOBYTE) function_return (SEQ_SizeToStringHelp(bytes#/FS_KILOBYTE)+" KB")
   function_return bytes#
 end_function
 
@@ -189,11 +189,11 @@ function SEQ_FileLineCount global string fn# returns integer
   move (StringOemToAnsi(fn#)) to fn#
   direct_input channel ch# fn#
   move 0 to rval#
-  ifnot [seqeof] begin
+  If (Not(seqeof)) begin
     repeat
       readln str#
-      [~seqeof] increment rval#
-    [~seqeof] loop
+      If (Not(seqeof)) increment rval#
+    Until (seqeof)
   end
   close_input channel ch#
   function_return rval#
@@ -290,7 +290,7 @@ function SEQ_ReadLnProbe global integer liChannel returns string
   if lbSneakMode decrement liPos
   set_channel_position liChannel to liPos
   if lbSneakMode read_block channel liChannel lsValue 1
-  indicate seqeof as lbSeqEof ne 0
+  Move (lbSeqEof <> 0) to seqeof
   function_return lsRval
 end_function
 
@@ -301,7 +301,7 @@ function SEQ_ReadFileAsOneString global string lsFileName returns string
   string lsValue
   get SEQ_FileSize lsFileName to lnSize
   if (lnSize>0) begin
-    get_argument_size To liArgSz
+    // get_argument_size To liArgSz
     if (liArgSz<lnSize) error 421 "File too big. Adjust arg size."
 
     get SEQ_DirectInput lsFileName to liChannel
@@ -325,13 +325,13 @@ procedure SEQ_AppendOutputImageClose global string lsFileName integer liImg
   integer liChannel liAuxChannel liSeqEof
   string lsLine
   get SEQ_DirectInput ("image: "+string(liImg)) to liAuxChannel
-  if liAuxChannel ge 0 begin
+  if (liAuxChannel >= 0) begin
     get SEQ_AppendOutput lsFileName to liChannel
 
     repeat
       readln channel liAuxChannel lsLine
       move (SeqEof) to liSeqEof
-      ifnot liSeqEof writeln channel liChannel (rtrim(lsLine))
+      If (Not(liSeqEof)) writeln channel liChannel (rtrim(lsLine))
     until liSeqEof
 
     send SEQ_CloseInput liAuxChannel
@@ -343,12 +343,12 @@ procedure SEQ_WriteImage global integer liChannel integer liImage
   integer liAuxChannel liSeqEof
   string lsLine
   get SEQ_DirectInput ("image: "+string(liImage)) to liAuxChannel
-  if liAuxChannel ge 0 begin
+  if (liAuxChannel >= 0) begin
     repeat
       readln channel liAuxChannel lsLine
       move (trim(lsLine)) to lsLine
       move (SeqEof) to liSeqEof
-      ifnot liSeqEof writeln channel liChannel lsLine
+      If (Not(liSeqEof)) writeln channel liChannel lsLine
     until liSeqEof
     send SEQ_CloseInput liAuxChannel
   end
@@ -359,7 +359,7 @@ procedure SEQ_WriteFile global integer liChannel string lsFile
   get SEQ_FileSize lsFile to liSize
   if liSize begin
     get SEQ_DirectInput ("binary:"+lsFile) to liChannelIn
-    if liChannelIn ge 0 begin
+    if (liChannelIn >= 0) begin
       move (liSize/250) to liIterations
       move (liSize-(liIterations*250)) to liRest
       for liCount from 1 to liIterations
@@ -383,10 +383,10 @@ function SEQ_FindFileAlongPath global string path# string fn# returns string
   move (sysconf(SYSCONF_DIR_SEPARATOR)) to dir_sep#   // \
   move (sysconf(SYSCONF_PATH_SEPARATOR)) to path_sep# // ;
   move (replaces(dir_sep#,fn#,"")) to fn#
-  while path# ne ""
-    if path_sep# in path# begin
+  while (path# <> "")
+    if (path# contains path_sep#) begin
       move (left(path#,pos(path_sep#,path#)-1)) to str#
-      replace (str#+path_sep#) in path# with ""
+      Move (Replace((str#+path_sep#), path#, "")) to path#
     end
     else begin
       move path# to str#
@@ -400,10 +400,10 @@ function SEQ_FindFileAlongPath global string path# string fn# returns string
     direct_input channel ch# ("DIR:"+StringOemToAnsi(tmp#))
     move (seqeof) to eof#
     close_input channel ch#
-    ifnot eof# begin
+    If (Not(eof#)) begin
       if (StringBeginsWith(str#,"."+dir_sep#)) begin
         get_current_directory to cur_dir#
-        replace "." in str# with cur_dir#
+        Move (Replace(".", str#, cur_dir#)) to str#
       end
       function_return str#
     end
@@ -414,7 +414,7 @@ end_function
 function SEQ_DfPath global returns string
   string path#
   get_attribute DF_OPEN_PATH to path# // Oem fixed!
-  move (ToOem(path#)) to path#
+  move (Utf8ToOem(path#)) to path#
   function_return path#
 end_function
 
@@ -423,7 +423,7 @@ function SEQ_FirstDirInDfPath global returns string
   get SEQ_DfPath to lsDir
   move (SysConf(SYSCONF_PATH_SEPARATOR)) to lsPathSep
   get ExtractItem lsDir lsPathSep 1 to lsDir
-  function_return (ToOem(lsDir))
+  function_return (Utf8ToOem(lsDir))
 end_function
 
 function SEQ_FindFileAlongDFPath global string fn# returns string
@@ -437,8 +437,8 @@ function SEQ_ExtractPathFromFileName global string lsFile returns string
   string lsDirSep
   move (sysconf(SYSCONF_DIR_SEPARATOR)) to lsDirSep
   if (right(lsFile,1)=lsDirSep) move (StringLeftBut(lsFile,1)) to lsFile
-  if lsDirSep in lsFile function_return (StripFromLastOccurance(lsFile,lsDirSep))
-  if ":" in lsFile function_return (StripFromLastOccurance(lsFile,":"))
+  if (lsFile contains lsDirSep) function_return (StripFromLastOccurance(lsFile,lsDirSep))
+  if (lsFile contains ":") function_return (StripFromLastOccurance(lsFile,":"))
   function_return ""
 end_function
 
@@ -447,8 +447,8 @@ end_function
 function SEQ_ExtractExtensionFromFileName global string fn# returns string
   string dir_sep#
   move (sysconf(SYSCONF_DIR_SEPARATOR)) to dir_sep#
-  if dir_sep# in fn# move (GetFromLastOccurance(fn#,dir_sep#)) to fn#
-  if "." in fn# function_return (replace(".",GetFromLastOccurance(fn#,"."),""))
+  if (fn# contains dir_sep#) move (GetFromLastOccurance(fn#,dir_sep#)) to fn#
+  if (fn# contains ".") function_return (replace(".",GetFromLastOccurance(fn#,"."),""))
   function_return ""
 end_function
 
@@ -456,14 +456,14 @@ end_function
 //> Function SEQ_ExtractRootNameFromFileName expects a file name or a file !!!!
 //> mask as an argument. Only then will it return the rootname of that file.
 function SEQ_ExtractRootNameFromFileName global string fn# returns string
-  local string dir_sep#
+  string dir_sep#
   move (sysconf(SYSCONF_DIR_SEPARATOR)) to dir_sep#
-  if dir_sep# in fn# begin
+  if (fn# contains dir_sep#) begin
     move (GetFromLastOccurance(fn#,dir_sep#)) to fn#
     move (replace(dir_sep#,fn#,"")) to fn#
   end
-  if ":"      in fn# move (GetFromLastOccurance(fn#,":"))      to fn#
-  if "." in fn# function_return (replace(".",StripFromLastOccurance(fn#,"."),""))
+  if (fn# contains ":") move (GetFromLastOccurance(fn#,":")) to fn#
+  if (fn# contains ".") function_return (replace(".",StripFromLastOccurance(fn#,"."),""))
   function_return fn#
 end_function
 
@@ -471,11 +471,11 @@ end_function
 function SEQ_RemovePathFromFileName global string fn# returns string
   string dir_sep#
   move (sysconf(SYSCONF_DIR_SEPARATOR)) to dir_sep#
-  if dir_sep# in fn# begin
+  if (fn# contains dir_sep#) begin
     move (GetFromLastOccurance(fn#,dir_sep#)) to fn#
     function_return (StringRightBut(fn#,1))
   end
-  if ":" in fn# begin
+  if (fn# contains ":") begin
     move (GetFromLastOccurance(fn#,dir_sep#)) to fn#
     move (GetFromLastOccurance(fn#,":")) to fn#
   end
@@ -484,11 +484,11 @@ end_function
 
 function SEQ_TranslatePathToAbsolute global string lsPath returns string
   string lsRval lsDirSep lsCurDir
-  if lsPath eq "" move "." to lsPath
+  if (lsPath = "") move "." to lsPath
   move (sysconf(SYSCONF_DIR_SEPARATOR)) to lsDirSep // "/" or "\"
   get_current_directory to lsCurDir
-  if (StringBeginsWith(lsPath,"."+lsDirSep)) replace "." in lsPath with lsCurDir
-  if lsPath eq "." move lsCurDir to lsPath
+  if (StringBeginsWith(lsPath,"."+lsDirSep)) Move (Replace(".", lsPath, lsCurDir)) to lsPath
+  if (lsPath = ".") move lsCurDir to lsPath
   if (right(lsPath,1)=lsDirSep and right(lsPath,2)<>(":"+lsDirSep)) move (StringLeftBut(lsPath,1)) to lsPath
   function_return lsPath
 end_function
@@ -501,7 +501,7 @@ function SEQ_ComposeAbsoluteFileName global string sDir string fn# returns strin
   move (replace(SEQ_ExtractPathFromFileName(fn#),fn#,"")) to fn# // Remove path if present anyway!
   //move (SEQ_ExtractPathFromFileName(sDir)) to sDir
   move (sysconf(SYSCONF_DIR_SEPARATOR)) to dir_sep#
-  if sDir eq "" get_current_directory to sDir
+  if (sDir = "") get_current_directory to sDir
   if (right(sDir,1)<>dir_sep#) move (sDir+dir_sep#) to sDir
   function_return (sDir+fn#)
 end_function
@@ -531,10 +531,10 @@ end_function
 function SEQ_ConvertToAbsoluteFileName global string sFileName returns string
   string sDir
 //  showln "SEQ_ConvertToAbsoluteFileName " sFileName
-  if (SEQ_FileExists(sFileName)) ne SEQIT_NONE begin
+  if ((SEQ_FileExists(sFileName)) <> SEQIT_NONE) begin
 //    showln "Does exists"
     get SEQ_ExtractPathFromFileName sFileName to sDir
-    if sDir eq "" begin
+    if (sDir = "") begin
       get SEQ_FindFileAlongDFPath sFileName to sDir
       get SEQ_ComposeAbsoluteFileName sDir sFileName to sFileName
     end
@@ -551,9 +551,9 @@ function SEQ_FindDataFileFromRootName global string lsRoot returns string
   string lsExt lsPath
   // This procedure
   move (lowercase(right(lsRoot,4))) to lsExt
-  ifnot (lsExt=".dat" or lsExt=".int") move (lsRoot+".DAT") to lsRoot
+  If (Not((lsExt=".dat" or lsExt=".int"))) move (lsRoot+".DAT") to lsRoot
 
-  if (SEQ_ExtractPathFromFileName(lsRoot)) eq "" begin
+  if ((SEQ_ExtractPathFromFileName(lsRoot)) = "") begin
     move (SEQ_FindFileAlongDFPath(lsRoot)) to lsPath
     move (SEQ_ComposeAbsoluteFileName(lsPath,lsRoot)) to lsRoot
   end
@@ -562,7 +562,7 @@ function SEQ_FindDataFileFromRootName global string lsRoot returns string
   function_return lsRoot
 end_function
 
-[found ~found] begin // Sneaky way of skipping code
+If (found and (Not(found))) begin // Sneaky way of skipping code
   files.no$err: // This serves as an empty low-level error handler routine
   return
 end
@@ -575,15 +575,15 @@ function SEQ_FileModTime global string fn# returns number
   date date#
   number rval#
   move (StringOemToAnsi(fn#)) to fn#
-  ifnot (SEQ_FileExists(fn#)) function_return 0
+  If (Not((SEQ_FileExists(fn#)))) function_return 0
   move |VI31 to err_label# //copy ON ERROR label
   on error gosub files.no$err // If file is open get_file_mod_time
-  indicate err false          // command will fail.
+  Move (false) to err // command will fail.
   get_file_mod_time fn# to date# h# m# s# // VDF6: 4358 DFRUNCON(31e): 4630
 //  showln "get_file_mod_time " date# " " h# " " m# " " s#
-  indicate err false
+  Move (false) to err
   move err_label# to |VI31 //restore original ON ERROR label
-  indicate err false
+  Move (false) to err
   move (Date2to4(date#)) to date#
   move (TS_Compose2(date#,h#,m#,s#)) to rval#
   function_return rval#
@@ -594,10 +594,10 @@ procedure set SEQ_FileModTime global string lsFile number lnTime
   date date#
   number rval#
   string lsTime
-  ifnot (SEQ_FileExists(lsFile)) procedure_return
+  If (Not((SEQ_FileExists(lsFile)))) procedure_return
   move |VI31 to err_label# //copy ON ERROR label
   on error gosub files.no$err
-  indicate err false
+  Move (false) to err
   get TS_ExtractDate lnTime to date#
   get TS_ExtractTime lnTime to lsTime
   move (mid(lsTime,2,1)) to h#
@@ -609,9 +609,9 @@ procedure set SEQ_FileModTime global string lsFile number lnTime
   move (StringOemToAnsi(lsFile)) to lsFile
   set_file_mod_time lsFile to date# h# m# s# // Faulty Faulty Faulty
   set_attribute DF_DATE_FORMAT to liDateFormat
-  indicate err false
+  Move (false) to err
   move err_label# to |VI31 //restore original ON ERROR label
-  indicate err false
+  Move (false) to err
 end_procedure // set SEQ_FileModTime
 
 procedure SEQ_CallBack_DirsInPath global string path# integer msg# integer obj#
@@ -622,13 +622,13 @@ procedure SEQ_CallBack_DirsInPath global string path# integer msg# integer obj#
   move "" to dir#
   for pos# from 1 to len#
     move (mid(path#,1,pos#)) to char#
-    if char# eq sep# begin
-      if dir# ne "" send msg# to obj# dir#
+    if (char# = sep#) begin
+      if (dir# <> "") send msg# to obj# dir#
       move "" to dir#
     end
     else move (dir#+char#) to dir#
   loop
-  if dir# ne "" send msg# to obj# dir#
+  if (dir# <> "") send msg# to obj# dir#
 end_procedure
 
 function SEQ_RemoveRedundantDirs global string path# returns string
@@ -640,20 +640,20 @@ function SEQ_RemoveRedundantDirs global string path# returns string
   move "|" to rval#
   for pos# from 1 to len#
     move (mid(path#,1,pos#)) to char#
-    if char# eq sep# begin
-      if dir# ne "" begin
+    if (char# = sep#) begin
+      if (dir# <> "") begin
         move (SEQ_TranslatePathToAbsolute(dir#)) to dir#
-        ifnot ("|"+lowercase(dir#)+"|") in (lowercase(rval#)) move (rval#+dir#+"|") to rval#
+        If (Not((lowercase(rval#)) contains ("|"+lowercase(dir#)+"|"))) move (rval#+dir#+"|") to rval#
         move "" to dir#
       end
     end
     else move (dir#+char#) to dir#
   loop
-  if dir# ne "" begin
+  if (dir# <> "") begin
     move (SEQ_TranslatePathToAbsolute(dir#)) to dir#
-    ifnot ("|"+lowercase(dir#)+"|") in (lowercase(rval#)) move (rval#+dir#+"|") to rval#
+    If (Not((lowercase(rval#)) contains ("|"+lowercase(dir#)+"|"))) move (rval#+dir#+"|") to rval#
   end
-  replace "|" in rval# with ""
+  Move (Replace("|", rval#, "")) to rval#
   move (replaces("|",rval#,sep#)) to rval#
   function_return rval#
 end_function
@@ -677,7 +677,7 @@ desktop_section
       move 0 to liCount
       if (lhMode=SEQCB_FILES_ONLY) begin
         for liItm from 0 to liMax
-          ifnot (left(value(self,liItm),1)="[") increment liCount
+          If (Not((left(value(self,liItm),1)="["))) increment liCount
         loop
         function_return liCount
       end
@@ -792,7 +792,7 @@ procedure SEQ_WriteRecordBuffer_LD global integer ch# integer file#
   write channel ch# // Set channel
   for fieldindex from 1 to max#
     get_attribute DF_FIELD_TYPE of file# fieldindex to type#
-    if type# ne DF_OVERLAP begin // Do not write overlap fields
+    if (type# <> DF_OVERLAP) begin // Do not write overlap fields
       if (type#=DF_ASCII and _gbProtectAscii$files ) move DF_TEXT to type# // Dirty, I know
       if (type#=DF_BINARY or type#=DF_TEXT) begin   // If TEXT or BINARY we
         move (length(indirect_file.recnum)) to len# // write(ln) the length
@@ -817,7 +817,7 @@ procedure SEQ_ReadRecordBuffer_LD global integer ch# integer file#
   read channel ch# // Set channel
   for fieldindex from 1 to max#
     get_attribute DF_FIELD_TYPE of file# fieldindex to type#
-    if type# ne DF_OVERLAP begin
+    if (type# <> DF_OVERLAP) begin
       if (type#=DF_ASCII and _gbProtectAscii$files ) move DF_TEXT to type# // Dirty, I know
       if (type#=DF_BINARY or type#=DF_TEXT) begin
         readln len#
@@ -841,7 +841,7 @@ procedure SEQ_ReadRecordBufferToArray_LD global integer liChannel integer liFile
   read channel liChannel // Set channel
   for liField from 1 to liMax
     get_attribute DF_FIELD_TYPE of liFile liField to liType
-    if liType ne DF_OVERLAP begin
+    if (liType <> DF_OVERLAP) begin
       if (liType=DF_ASCII and _gbProtectAscii$files ) move DF_TEXT to liType // Dirty, I know
       if (liType=DF_BINARY or liType=DF_TEXT) begin
         readln liLen
@@ -871,9 +871,9 @@ end_procedure
 
 // Returns true if delete was successful
 function SEQ_EraseFile global string lsFile returns integer
-  if (SEQ_FileExists(lsFile)) eq SEQIT_DIRECTORY function_return 0
+  if ((SEQ_FileExists(lsFile)) = SEQIT_DIRECTORY) function_return 0
   erasefile (StringOemToAnsi(lsFile))
-  if (SEQ_FileExists(lsFile)) eq SEQIT_NONE function_return 1
+  if ((SEQ_FileExists(lsFile)) = SEQIT_NONE) function_return 1
   // function_return 0
 end_function
 
@@ -904,7 +904,7 @@ function SEQ_ValidDrives global returns string
   for liPos from 1 to liLen
     move (mid(lsDrives,1,liPos)) to lsDrive
     valid_drive lsDrive lbError
-    ifnot lbError move (lsRval+lsDrive) to lsRval
+    If (Not(lbError)) move (lsRval+lsDrive) to lsRval
   loop
   function_return lsRval
 end_function
@@ -914,10 +914,10 @@ function SEQ_AppendFiles global string lsFile1 string lsFile2 returns integer
   move (lowercase(lsFile1)) to lsFile1
   move (lowercase(lsFile2)) to lsFile2
   move 0 to liRval // Failure
-  if lsFile1 ne lsFile2 begin
+  if (lsFile1 <> lsFile2) begin
     // Both files exists?
     get SEQ_AppendOutput lsFile1 to liChannelOut
-    if liChannelOut ge 0 begin
+    if (liChannelOut >= 0) begin
       send SEQ_WriteFile liChannelOut lsFile2
       move 1 to liRval // Let's just hope it's ok
     //get SEQ_FileSize lsFile2 to liSize
@@ -971,7 +971,7 @@ procedure SEQ_WriteHexByteStream global integer liChannel string lsHexBytes
     move (pos(left(lsHexByte,1),"0123456789ABCDEF")-1*16+pos(right(lsHexByte,1),"0123456789ABCDEF")-1) to liByteValue
     append giSeq$Temp (character(liByteValue))
     increment liByteCount
-    if liByteCount eq 250 begin
+    if (liByteCount = 250) begin
       write channel liChannel giSeq$Temp
       move 0 to liByteCount
       move "" to giSeq$Temp
@@ -1030,9 +1030,9 @@ class cChannelAdmin is an cArray // in/out device ch_pos
     get value item (liPointer*3+2) to liPosition
     if lbInput begin
       direct_input channel liCh lsDev
-      if liPosition gt 0 decrement liPosition
+      if (liPosition > 0) decrement liPosition
       set_channel_position liCh to liPosition
-      if liPosition gt 0 read_block channel liCh lsValue 1
+      if (liPosition > 0) read_block channel liCh lsValue 1
     end
     else append_output channel liCh (StringOemToAnsi(lsDev))
     //send obs ("restoring current activity ("+if(lbInput,"input","output")+") "+lsDev+" at position "+string(liPosition))
@@ -1112,7 +1112,7 @@ function SEQ_ChannelPosToLineCount global integer liChannel integer liPos return
   if lbSneakMode decrement liPushPos
   set_channel_position liChannel to liPushPos
   if lbSneakMode read_block channel liChannel lsValue 1
-  indicate seqeof as lbSeqEof ne 0
+  Move (lbSeqEof <> 0) to seqeof
   function_return liCount
 end_function
 
@@ -1128,11 +1128,11 @@ function SEQ_TextFromSeqInput global string sDevice returns string
   move "" to sRval
   move (character(10)) to sChar10
   get SEQ_DirectInput sDevice to liChannel
-  if liChannel ge 0 begin
+  if (liChannel >= 0) begin
     repeat
       readln sLine
       move (seqeof) to lbSeqEof
-      ifnot lbSeqEof move (sRval+sLine+sChar10) to sRval
+      If (Not(lbSeqEof)) move (sRval+sLine+sChar10) to sRval
     until lbSeqEof
   end
   send SEQ_CloseInput liChannel
@@ -1149,4 +1149,3 @@ function SEQ_TextFromDfField global integer iFile integer iField returns string
   // I have no idea whether this will work
   function_return (SEQ_TextFromSeqInput("dbms:"+string(iFile)+" "+string(iField)))
 end_function
-

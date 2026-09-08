@@ -28,7 +28,7 @@ function SortValue_Real global real lrValue returns string
   string lsSortValue lsExponent
   move lrValue to lsSortValue
   move (ExtractWord(lsSortValue,"e",2)) to lsExponent
-  if lsExponent ne "" replace ("e"+lsExponent) in lsSortValue with ""
+  if (lsExponent <> "") Move (Replace(("e"+lsExponent), lsSortValue, "")) to lsSortValue
   else move "    " to lsSortValue
   function_return (append(lsExponent,lsSortValue))
 end_function
@@ -52,19 +52,19 @@ function SortValue_Integer global integer liValue returns string
 end_function
 
 function SortValueAuto global integer liType string lsValue returns string
-  if liType eq ITMP_INTEGER Begin 
+  if (liType = ITMP_INTEGER) Begin
     function_return (SortValue_Integer(lsValue))
   end  
-  if liType eq ITMP_STRING  Begin 
+  if (liType = ITMP_STRING) Begin
     function_return (lsValue+" ")
   end  
-  if liType eq ITMP_REAL Begin 
+  if (liType = ITMP_REAL) Begin
     function_return (SortValue_Real(lsValue))
   end  
-  if liType eq ITMP_NUMBER Begin 
+  if (liType = ITMP_NUMBER) Begin
     function_return (SortValue_Number(lsValue))
   end  
-  if liType eq ITMP_DATE Begin 
+  if (liType = ITMP_DATE) Begin
     function_return (SortValue_Date(lsValue))
   end  
 end_function

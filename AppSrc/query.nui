@@ -2,7 +2,7 @@
 
 Use DataScan.utl // Data scan classes
 use QueryLng.pkg // Language dependant constants
-Use FieldInf     // Global field info objects and abstract field types
+Use FieldInf.pkg     // Global field info objects and abstract field types
 
 define DFQ.FORMAT.CD    for 1 // Comma delimited
 define DFQ.FORMAT.LD    for 2 // Line delimited
@@ -30,7 +30,7 @@ function DfQuery_ExcludeField global integer file# integer field# returns intege
   function_return (integer_value.ii(oDfQuery_ExcludeFields(self),file#,field#))
 end_function
 procedure set DfQuery_ExcludeField global integer file# integer field# integer value#
-  ifnot (file# or field#) move value# to Query$ExcludeAllRecnums
+  If (Not((file# or field#))) move value# to Query$ExcludeAllRecnums
   else set integer_value.ii of (oDfQuery_ExcludeFields(self)) file# field# to value#
 end_procedure
 
@@ -57,57 +57,57 @@ procedure set DfQuery_ExcludeFile global integer file# integer value#
 end_procedure
 
 function DfQuery_CompModeTxt_Short global integer comp# returns string
-  if comp# eq SC_COMP_EQ        function_return "="  //"EQ"
-  if comp# eq SC_COMP_LT        function_return "<"  //"LT"
-  if comp# eq SC_COMP_LE        function_return "<=" //"LE"
-  if comp# eq SC_COMP_GE        function_return ">=" //"GE"
-  if comp# eq SC_COMP_GT        function_return ">"  //"GT"
-  if comp# eq SC_COMP_NE        function_return "<>" //"NE"
-  if comp# eq SC_COMP_IN        function_return "IN"
-  if comp# eq SC_COMP_CIN       function_return "CIN"
-  if comp# eq SC_COMP_BETWEEN   function_return "x-y" //"BT"
-  if comp# eq SC_COMP_CBETWEEN  function_return "CBT"
-  if comp# eq SC_COMP_NOT_BLANK function_return '<>""'
-  if comp# eq SC_COMP_BLANK     function_return '=""'
-  if comp# eq SC_COMP_OR_LIST   function_return "in list"
+  if (comp# = SC_COMP_EQ) function_return "=" //"EQ"
+  if (comp# = SC_COMP_LT) function_return "<" //"LT"
+  if (comp# = SC_COMP_LE) function_return "<=" //"LE"
+  if (comp# = SC_COMP_GE) function_return ">=" //"GE"
+  if (comp# = SC_COMP_GT) function_return ">" //"GT"
+  if (comp# = SC_COMP_NE) function_return "<>" //"NE"
+  if (comp# = SC_COMP_IN) function_return "IN"
+  if (comp# = SC_COMP_CIN) function_return "CIN"
+  if (comp# = SC_COMP_BETWEEN) function_return "x-y" //"BT"
+  if (comp# = SC_COMP_CBETWEEN) function_return "CBT"
+  if (comp# = SC_COMP_NOT_BLANK) function_return '<>""'
+  if (comp# = SC_COMP_BLANK) function_return '=""'
+  if (comp# = SC_COMP_OR_LIST) function_return "in list"
 end_function
 
 function DfQuery_CompModeTxt_Long global integer comp# returns string
-  if comp# eq SC_COMP_EQ        function_return t.DfQuery.EQ
-  if comp# eq SC_COMP_LT        function_return t.DfQuery.LT
-  if comp# eq SC_COMP_LE        function_return t.DfQuery.LE
-  if comp# eq SC_COMP_GE        function_return t.DfQuery.GE
-  if comp# eq SC_COMP_GT        function_return t.DfQuery.GT
-  if comp# eq SC_COMP_NE        function_return t.DfQuery.NE
-  if comp# eq SC_COMP_IN        function_return t.DfQuery.IN
-  if comp# eq SC_COMP_CIN       function_return t.DfQuery.CIN
-  if comp# eq SC_COMP_BETWEEN   function_return t.DfQuery.BT
-  if comp# eq SC_COMP_CBETWEEN  function_return t.DfQuery.CBT
-  if comp# eq SC_COMP_NOT_BLANK function_return t.DfQuery.NB
-  if comp# eq SC_COMP_BLANK     function_return t.DfQuery.B
-  if comp# eq SC_COMP_OR_LIST   function_return t.DfQuery.OrL
+  if (comp# = SC_COMP_EQ) function_return t.DfQuery.EQ
+  if (comp# = SC_COMP_LT) function_return t.DfQuery.LT
+  if (comp# = SC_COMP_LE) function_return t.DfQuery.LE
+  if (comp# = SC_COMP_GE) function_return t.DfQuery.GE
+  if (comp# = SC_COMP_GT) function_return t.DfQuery.GT
+  if (comp# = SC_COMP_NE) function_return t.DfQuery.NE
+  if (comp# = SC_COMP_IN) function_return t.DfQuery.IN
+  if (comp# = SC_COMP_CIN) function_return t.DfQuery.CIN
+  if (comp# = SC_COMP_BETWEEN) function_return t.DfQuery.BT
+  if (comp# = SC_COMP_CBETWEEN) function_return t.DfQuery.CBT
+  if (comp# = SC_COMP_NOT_BLANK) function_return t.DfQuery.NB
+  if (comp# = SC_COMP_BLANK) function_return t.DfQuery.B
+  if (comp# = SC_COMP_OR_LIST) function_return t.DfQuery.OrL
 end_function
 
 function DfQuery_CritText integer type# integer comp# string str1# string str2# returns string
   date date1# date2#
   number num1# num2#
   string rval#
-  if type# eq ASCII_WINDOW move SC_TYPE_ASCII to type#
+  if (type# = ASCII_WINDOW) move SC_TYPE_ASCII to type#
   else begin
-    if type# eq DATE_WINDOW move SC_TYPE_DATE to type#
+    if (type# = DATE_WINDOW) move SC_TYPE_DATE to type#
     else move SC_TYPE_NUMERIC to type#
   end
 
-  if comp# eq SC_COMP_OR_LIST function_return (replaces("|",str1#,"; ")) // or-list
+  if (comp# = SC_COMP_OR_LIST) function_return (replaces("|",str1#,"; ")) // or-list
 
-  if type# eq SC_TYPE_ASCII begin
+  if (type# = SC_TYPE_ASCII) begin
     if (comp#=SC_COMP_BETWEEN or comp#=SC_COMP_CBETWEEN) begin
-      if (str1#+str2#) ne "" begin
-        if str1# eq "" move (t.DfQuery.lt_or_eq+str2#) to rval#
+      if ((str1#+str2#) <> "") begin
+        if (str1# = "") move (t.DfQuery.lt_or_eq+str2#) to rval#
         else begin
-          if str2# eq "" move (t.DfQuery.gt_or_eq+str1#) to rval#
+          if (str2# = "") move (t.DfQuery.gt_or_eq+str1#) to rval#
           else begin
-            if str1# gt str2# move t.DfQuery.illegal_interval to rval#
+            if (str1# > str2#) move t.DfQuery.illegal_interval to rval#
             else move ('"'+str1#+'"'+" - "+'"'+str2#+'"'+" "+t.DfQuery.both_incl) to rval#
           end
         end
@@ -116,16 +116,16 @@ function DfQuery_CritText integer type# integer comp# string str1# string str2# 
     end
     else move ('"'+str1#+'"') to rval# // EQ LT LE GE GT or NE
   end
-  if type# eq SC_TYPE_DATE begin
+  if (type# = SC_TYPE_DATE) begin
     move str1# to date1#
     if (comp#=SC_COMP_BETWEEN or comp#=SC_COMP_CBETWEEN) begin
       move str2# to date2#
       if (date1#+date2#) begin
-        ifnot date1# move (t.DfQuery.before+string(date2#)) to rval#
+        If (Not(date1#)) move (t.DfQuery.before+string(date2#)) to rval#
         else begin
-          ifnot date2# move (t.DfQuery.after+string(date1#)) to rval#
+          If (Not(date2#)) move (t.DfQuery.after+string(date1#)) to rval#
           else begin
-            if date1# gt date2# move t.DfQuery.illegal_interval to rval#
+            if (date1# > date2#) move t.DfQuery.illegal_interval to rval#
             else move (string(date1#)+" - "+string(date2#)+" "+t.DfQuery.both_incl) to rval#
           end
         end
@@ -133,11 +133,11 @@ function DfQuery_CritText integer type# integer comp# string str1# string str2# 
       else move t.DfQuery.no_limit to rval#
     end
     else begin // EQ LT LE GE GT or NE
-      if date1# ne 0 move date1# to rval#
+      if (date1# <> 0) move date1# to rval#
       else move t.DfQuery.no_limit to rval#
     end
   end
-  if type# eq SC_TYPE_NUMERIC begin
+  if (type# = SC_TYPE_NUMERIC) begin
     move str1# to num1#
     if (comp#=SC_COMP_BETWEEN or comp#=SC_COMP_CBETWEEN) begin
       move str2# to num2#
@@ -146,7 +146,7 @@ function DfQuery_CritText integer type# integer comp# string str1# string str2# 
         else begin
           if (num2#=0) move (t.DfQuery.gt_or_eq+string(num1#)) to rval#
           else begin
-            if num1# gt num2# move t.DfQuery.illegal_interval to rval#
+            if (num1# > num2#) move t.DfQuery.illegal_interval to rval#
             else move (string(num1#)+" - "+string(num2#)+" "+t.DfQuery.both_incl) to rval#
           end
         end
@@ -171,5 +171,4 @@ end_function
 procedure set VDfQuery_ExcludeField global integer file# integer field# integer value#
   set DfQuery_ExcludeField file# field# to value#
 end_procedure
-
 

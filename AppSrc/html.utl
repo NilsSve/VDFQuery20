@@ -42,7 +42,7 @@ class cAnsiToHtml_ConversionTable is an array
     string html# char#
     get item_count to max#
     move 0 to itm#
-    while itm# lt max#
+    while (itm# < max#)
       get value item itm# to char#
       increment itm#
       get value item itm# to html#
@@ -184,8 +184,8 @@ set pHtmlTrimCrState of oGlobalHtmlAttributes# to true
    Pointer psString
    integer iVoid bIsCString
    Move (ascii(Right(sString,1))=0) to bIsCString
-   If Not bISCString Append sString (character(0))
-   GetAddress Of sString To psString
+   If (Not(bISCString)) Append sString (character(0))
+   Move (AddressOf(sString)) to psString
    if bToAnsi Move (OEMToANSI(psString,psString)) To iVoid
    else       Move (ANSItoOEM(psString,psString)) To iVoid
    Function_Return (if(bIsCString, sString, cstring(sString)))
@@ -222,13 +222,38 @@ end_function
 function html_DfToHtmlTable global string str# returns string
   string rval#
   move (html_AnsiToHtml(ConvertChar(1,str#))) to rval#
-  if rval# eq "" move "&nbsp;" to rval#
+  if (rval# = "") move "&nbsp;" to rval#
   function_return rval#
 end_function
 
+// [DFRefactor] ANSI and wide side by side - the compiler picks (DataFlex 26 and later is Unicode).
+// Same DataFlex name on both arms, so no call site changes. A buffer handed to the wide
+// entry is WString, not String - check the ones that pass raw memory.
+#IF (!@ < 260)
+#IFDEF IS$WIN64
+External_Function HtmlShellExecute "ShellExecuteA" SHELL32.DLL ;
+    handle hwnd# ;
+    String lpszOp# ;
+    String lpszFile# ;
+    String lpszParams# ;
+    String lpszDir# ;
+    integer FsShowCmd# ;
+    Returns Handle
+#ELSE
 External_Function HtmlShellExecute "ShellExecuteA" SHELL32.DLL ;
   handle hwnd# String lpszOp# String lpszFile# String lpszParams# ;
   String lpszDir# integer FsShowCmd# returns integer
+#ENDIF
+#ELSE
+External_Function HtmlShellExecute "ShellExecuteW" SHELL32.DLL ;
+    handle hwnd# ;
+    WString lpszOp# ;
+    WString lpszFile# ;
+    WString lpszParams# ;
+    WString lpszDir# ;
+    integer FsShowCmd# ;
+    Returns Handle
+#ENDIF
 
 // This may be used to start any kind of document. Not just html docs.
 procedure html_StartDoc global string doc#
@@ -239,7 +264,7 @@ procedure html_StartDoc global string doc#
   // We assume that the document is in a directory along DFPATH or that
   // the directory path is part of the doc name:
   get SEQ_ExtractPathFromFileName doc# to dir# // Is a path specified?
-  if dir# eq "" get SEQ_FindFileAlongDFPath doc# to dir#
+  if (dir# = "") get SEQ_FindFileAlongDFPath doc# to dir#
   else move "" to dir#
   //                               Parameters   Directory
   move (HtmlShellExecute(scrhDC#,"Open",doc#,"",dir#,1)) to grb#
@@ -254,4 +279,3 @@ procedure html_WriteHeader global integer channel# string title#
   writeln (' <meta name="GENERATOR" content="'+pHtmlMT_Generator(oGlobalHtmlAttributes#)+'">')
   writeln '</head>'
 end_procedure
-

@@ -27,7 +27,7 @@ class cIntegerCodeToText is a cArray
     integer iMax iRow
     get row_count to iMax
     for iRow from 0 to (iMax-1)
-      if iCode eq (piCode.i(self,iRow)) function_return (psText.i(self,iRow))
+      if (iCode = (piCode.i(self,iRow))) function_return (psText.i(self,iRow))
     loop
     function_return ""
   end_function
@@ -53,7 +53,7 @@ class cIntegerCodeToText is a cArray
     get row_count to liMax
     decrement liMax
     for liRow from 0 to liMax
-      if liCode eq (piCode.i(self,liRow)) function_return liRow
+      if (liCode = (piCode.i(self,liRow))) function_return liRow
     loop
     function_return -1
   end_function

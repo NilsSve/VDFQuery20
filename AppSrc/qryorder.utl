@@ -8,11 +8,12 @@
 // **********************************************************************
 
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes (No User Interface)
-Use FieldInf     // Global field info objects and abstract field types
+Use FieldInf.pkg     // Global field info objects and abstract field types
 Use Collate.nui  // A little collating thing
 Use QryExpr.utl  // Expression handling for queries
 Use Query.nui    // Basic things needed for a query tool
 Use FdxIndex.utl // Index analysing functions
+Use cCJGrid.pkg
 
 #IF LNG_DEFAULT=LNG_DUTCH
  define t.QryOrder.Break      for "Break"
@@ -144,17 +145,17 @@ class cQueryOrderExpression is a cArray
         get piField.i liRow to liField
         get FieldInf_FieldValue liFile liField to lsValue
         get FieldInf_FieldType liFile liField to liType
-        if liType eq DF_DATE begin
+        if (liType = DF_DATE) begin
           move (integer(date(lsValue))) to lsValue
           move (NumToStrR(lsValue,0,6)) to lsValue
         end
-        if liType eq DF_BCD begin
+        if (liType = DF_BCD) begin
           get FieldInf_DecPoints liFile liField to liDec
           move lsValue to lnValue
           move (lnValue<0) to lbNegative
           if lbNegative move (abs(lnValue)) to lnValue
           move (NumToStrR(lnValue,liDec,14)) to lsValue
-          ifnot lbNegative move ("+"+lsValue) to lsValue
+          If (Not(lbNegative)) move ("+"+lsValue) to lsValue
           else             move (" "+lsValue) to lsValue
         end
       end
@@ -164,18 +165,18 @@ class cQueryOrderExpression is a cArray
         get sEvalExpression of (Query_ExprEvaluator(self)) (piExprId.i(lhExprArr,liExprRow)) to lsValue
         get piType.i of lhExprArr liExprRow to liType
 
-        if liType eq DF_DATE begin
+        if (liType = DF_DATE) begin
           move (integer(date(lsValue))) to lsValue
           move (NumToStrR(lsValue,0,6)) to lsValue
         end
-        if liType eq DF_BCD begin
+        if (liType = DF_BCD) begin
           get piWidth.i of lhExprArr liExprRow to liDec
 //        move (NumToStrR(lsValue,liDec,14)) to lsValue
           move lsValue to lnValue
           move (lnValue<0) to lbNegative
           if lbNegative move (abs(lnValue)) to lnValue
           move (NumToStrR(lnValue,liDec,14)) to lsValue
-          ifnot lbNegative move ("+"+lsValue) to lsValue
+          If (Not(lbNegative)) move ("+"+lsValue) to lsValue
           else             move (" "+lsValue) to lsValue
         end
       end
@@ -204,7 +205,7 @@ class cQueryOrderExpression is a cArray
       if (pbCapsLock.i(self,liRow)) move (uppercase(lsSegmentValue)) to lsSegmentValue
       if (pbReverse.i(self,liRow)) get sReverseValue.s lsSegmentValue to lsSegmentValue
       move (lsValue+lsSegmentValue) to lsValue
-      if liRow ne liMax move (lsValue+" ") to lsValue
+      if (liRow <> liMax) move (lsValue+" ") to lsValue
     loop
     function_return lsValue
   end_function
@@ -232,7 +233,7 @@ class cQueryOrderExpression is a cArray
     decrement liMax
     for liRow from 0 to liMax
       move (lsRval*sSegmentName(self,liRow)) to lsRval
-      if liRow ne liMax move (lsRval+",") to lsRval
+      if (liRow <> liMax) move (lsRval+",") to lsRval
     loop
     function_return lsRval
   end_procedure
@@ -268,7 +269,7 @@ class cQueryOrderExpression is a cArray
     get row_count to liMax
     decrement liMax
     for liRow from 0 to liMax
-      ifnot (piFile.i(self,liRow)) send CleanUp_MarkAsUsed to lhExprArr (piExprRow.i(self,liRow))
+      If (Not((piFile.i(self,liRow)))) send CleanUp_MarkAsUsed to lhExprArr (piExprRow.i(self,liRow))
     loop
   end_procedure
 
@@ -278,7 +279,7 @@ class cQueryOrderExpression is a cArray
     get row_count to liMax
     decrement liMax
     for liRow from 0 to liMax
-      ifnot (piFile.i(self,liRow)) begin
+      If (Not((piFile.i(self,liRow)))) begin
         get piExprRow.i liRow to liExprRow
         get pbCleanupNewRow.i of lhExprArr liExprRow to liExprRow
         set piExprRow.i liRow to liExprRow
@@ -514,7 +515,7 @@ class cFieldInf.IndexSelectList is a aps.list
       send add_item MSG_NONE "0: Recnum"
       send FDX_IndexCallback 0 liFile DF_INDEX_TYPE_ONLINE MSG_AddIndex self
       send FDX_IndexCallback 0 liFile DF_INDEX_TYPE_BATCH MSG_AddBatchIndex self
-      ifnot lbGenericIndicesOnly begin
+      If (Not(lbGenericIndicesOnly)) begin
         send add_item MSG_NONE "Ad hoc"
         set aux_value item (item_count(self)-1) to 1023
 
@@ -549,32 +550,102 @@ object oQueryDefineAdhocIndexPn is a aps.ModalPanel label t.QryOrder.Specify
   end_object
 
   property integer piResult DFFALSE
-  object oDBMS_Files is a cFieldInf.Table_List label t.DfQuery.DBMSfiles
+  object oDBMS_Files is a cCJGrid
+      // TODO: oDBMS_Files was a cFieldInf.Table_List - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 60 150
     set label_justification_mode to JMODE_TOP
     on_key kenter send next
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
     function bIncludeFile integer liFile returns integer
       function_return (DfQuery_ExcludeFile(liFile)<>DFQ_ALWAYS)
     end_function
+
     procedure OnNewFile integer liFile
       send notify_filechange liFile
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Move someValue to TheData[iRow].sValue[iCol1]
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object // oDBMS_Files
 
   send aps_goto_max_row
   send make_row_space
 
-  object oDBMS_Fields is a cFieldInf.Field_List
+  object oDBMS_Fields is a cCJGrid
+      // TODO: oDBMS_Fields was a cFieldInf.Field_List - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 72 150
     on_key kswitch send switch
     on_key kswitch_back send switch_back
     on_key kEnter Send do_add_field
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
     procedure OnFieldSelect
       Send do_add_field
     end_procedure
+
     function bIncludeField integer liFile integer liField returns integer
       function_return (not(DfQuery_ExcludeField(liFile,liField)))
     end_function
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Move someValue to TheData[iRow].sValue[iCol1]
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object // oDBMS_Files
 
   set label of (oDBMS_Fields(self)) to t.DfQuery.DBMSfields
@@ -585,8 +656,33 @@ object oQueryDefineAdhocIndexPn is a aps.ModalPanel label t.QryOrder.Specify
     send fill_list.i to (oDBMS_Fields(self)) file#
   end_procedure
 
-  object oLst is a cQueryOrderingGrid snap SL_RIGHT relative_to (oDBMS_Files(self))
+  object oLst is a cCJGrid
+      // TODO: oLst was a cQueryOrderingGrid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 137 0
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
 
   procedure do_add_field
@@ -654,7 +750,7 @@ object oQueryDefineAdhocIndexPn is a aps.ModalPanel label t.QryOrder.Specify
     set phServer of (oLst(self)) to lhQueryOrderExpression
     send fill_list to (oLst(self))
     forward send popup
-    ifnot (piResult(self)) send DoCopyFromOtherObject to lhQueryOrderExpression lhExpr
+    If (Not((piResult(self)))) send DoCopyFromOtherObject to lhQueryOrderExpression lhExpr
     function_return (piResult(self))
   end_function
 end_object // oQueryDefineAdhocIndexPn

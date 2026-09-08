@@ -21,7 +21,7 @@
 //>   send RestoreFiles to (oOpenStat(self)) // Restore
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes
@@ -56,22 +56,27 @@ Use DBMS.nui     // Basic DBMS functions
               move 0 to liRow
               move 0 to lbStop
               repeat
-                if liRow lt liMax begin
+                if (liRow < liMax) begin
                   get piFile.i     liRow to liFile
                   get piMode.i     liRow to liMode
                   get piIdx.i      liRow to liIndex
                   get psRootName.i liRow to lsRootName
-                  if lsRootName eq "" get iOpen_File.ii liFile liMode to lbOpen
-                  else                get DBMS_OpenFileAs lsRootName liFile liMode liIndex to lbOpen
+                  if (lsRootName = "") ;
+		    get iOpen_File.ii liFile liMode to lbOpen
+                  else ;
+		    get DBMS_OpenFileAs lsRootName liFile liMode liIndex to lbOpen
 
-                  ifnot lbOpen begin
+                  If (Not(lbOpen)) begin
                     move 1 to lbStop
-                    ifnot lbQuiet error 772 ("File: "+string(liFile)+" can't be opened ("+lsRootName+")")
+                    If (Not(lbQuiet)) ;
+		      error 772 ("File: "+string(liFile)+" can't be opened ("+lsRootName+")")
                     move liFile to liRval
                   end
-                  else increment liRow
+                  else ;
+		    increment liRow
                 end
-                else move 1 to lbStop
+                else ;
+		  move 1 to lbStop
               until lbStop
               function_return liRval
             end_function
@@ -87,11 +92,14 @@ Use DBMS.nui     // Basic DBMS functions
                 repeat
                   if (piFile.i(self,liRow)=liFile) begin
                     move (psRootName.i(self,liRow)) to lsRval
-                    if lsRval eq "" get_attribute DF_FILE_ROOT_NAME of liFile to lsRval
+                    if (lsRval = "") ;
+		      get_attribute DF_FILE_ROOT_NAME of liFile to lsRval
                     move 1 to lbFin
                   end
-                  ifnot lbFin increment liRow
-                  if liRow ge liMax move 1 to lbFin
+                  If (Not(lbFin)) ;
+		    increment liRow
+                  if (liRow >= liMax) ;
+		    move 1 to lbFin
                 until lbFin
               end
               function_return lsRval
@@ -184,7 +192,7 @@ class cTablesOpenStatus is a cArray
         set piDriver.i       liFile to (DBMS_FileDriverType(liFile))
         set psWhereIsIt.i    liFile to lsWhereIsIt
       end
-    until liFile eq 0
+    until (liFile = 0)
   end_procedure
   procedure CloseAllFiles
     Close DF_ALL
@@ -194,8 +202,8 @@ class cTablesOpenStatus is a cArray
     move 0 to liFile
     repeat
       get_attribute DF_FILE_NEXT_OPENED of liFile to liFile
-      if liFile if (DBMS_FileDriverType(liFile)) eq liDriver close liFile
-    until liFile eq 0
+      if liFile if ((DBMS_FileDriverType(liFile)) = liDriver) close liFile
+    until (liFile = 0)
   end_procedure
   //> Close the ones that weren't open at the time of the last snapshot
   procedure RestoreClosed
@@ -203,8 +211,8 @@ class cTablesOpenStatus is a cArray
     move 0 to liFile
     repeat
       get_attribute DF_FILE_NEXT_OPENED of liFile to liFile
-      if liFile ifnot (piIsOpen.i(self,liFile)) close liFile
-    until liFile eq 0
+      if liFile If (Not((piIsOpen.i(self,liFile)))) close liFile
+    until (liFile = 0)
   end_procedure
   //> Open the ones that were open at the time of the last snapshot
   procedure RestoreOpened
@@ -221,10 +229,10 @@ class cTablesOpenStatus is a cArray
         get piFileAlias.i    liFile to liFileAlias
         get psPhysicalName.i liFile to lsPhysicalName
         get psRootName.i     liFile to lsRootName
-        if (uppercase(lsPhysicalName)) ne (uppercase(lsRootName)) begin
+        if ((uppercase(lsPhysicalName)) <> (uppercase(lsRootName))) begin
           move (DBMS_OpenFileAs(lsPhysicalName,liFile,liFileOpenMode,0)) to lbOpen
-          ifnot lbOpen begin
-            ifnot lbQuiet begin
+          If (Not(lbOpen)) begin
+            If (Not(lbQuiet)) begin
               error 666 ("Can't restore open files (file: "+string(liFile)+")")
               error 666 ("Name: "+lsPhysicalName+"!")
             end
@@ -238,7 +246,7 @@ class cTablesOpenStatus is a cArray
         //send obs "File Mode:" (string(liFileMode)) "File Alias:" (string(liFileAlias))
         end
         else begin
-          ifnot lbQuiet begin
+          If (Not(lbQuiet)) begin
             error 668 "Error: Cannot reconnect to database!" //"(Sounds serious, but it isn't)" "Restart program (not the computer)" (uppercase(lsPhysicalName)) (uppercase(lsRootName)) (string(liFileOpenMode)) (string(liFileMode))
           end
           set cTablesOpenStatus.pbRestoreOpened to false
@@ -271,7 +279,7 @@ class cTablesOpenStatus is a cArray
         writeln channel liChannel ("File:"+string(liFile))
         writeln "File Mode:" (string(liFileMode)) "File Alias:" (string(liFileAlias))
       end
-    until liFile eq 0
+    until (liFile = 0)
     close_output channel liChannel
     send Seq_Release_Channel liChannel
   end_procedure
@@ -284,7 +292,8 @@ class cTablesOpenStatus is a cArray
   function iOpen_File.ii integer liFile integer liMode returns integer
     string lsPhysicalName
     get psPhysicalName.i liFile to lsPhysicalName
-    if lsPhysicalName ne "" function_return (DBMS_OpenFileAs(lsPhysicalName,liFile,liMode,0))
+    if (lsPhysicalName <> "") ;
+      function_return (DBMS_OpenFileAs(lsPhysicalName,liFile,liMode,0))
     function_return (DBMS_OpenFile(liFile,liMode,0))
   end_function
 end_class // cTablesOpenStatus
@@ -320,4 +329,3 @@ procedure FlushAllDataFlexBuffers global
   send CloseAllFilesOnDriver to lhObj DBMS_DRIVER_DATAFLEX
   send RestoreOpened to lhObj
 end_procedure
-

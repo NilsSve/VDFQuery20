@@ -48,7 +48,7 @@ class cFdxRecordBuffer is a cArray
 
     for liField from 1 to liMaxField
       get FDX_AttrValue_FIELD lhFdx DF_FIELD_TYPE liFile liField to liType
-      if liType eq DF_BINARY begin
+      if (liType = DF_BINARY) begin
         set pbBinaryFieldsPresent to DFTRUE
         procedure_return
       end
@@ -85,11 +85,11 @@ class cFdxRecordBuffer is a cArray
 
     for liField from 1 to liMaxField
       get FDX_AttrValue_FIELD lhFdx DF_FIELD_TYPE liFile liField to liType
-      if liType ne DF_OVERLAP begin
+      if (liType <> DF_OVERLAP) begin
         if (liType=DF_BINARY or liType=DF_TEXT) begin
           readln liLen
           read_block lsValue liLen
-          if liType eq DF_TEXT set value item liField to lsValue
+          if (liType = DF_TEXT) set value item liField to lsValue
         end
         else begin
           readln lsValue
@@ -106,7 +106,7 @@ class cFdxRecordBuffer is a cArray
       if lbSneakMode decrement liPos
       set_channel_position liChannel to liPos
       if lbSneakMode read_block channel liChannel lsValue 1
-      indicate seqeof as lbSeqEof ne 0
+      Move (lbSeqEof <> 0) to seqeof
     end
     function_return (not(lbSeqEof))
   end_function
@@ -122,7 +122,7 @@ class cFdxRecordBuffer is a cArray
 
       for liField from 1 to liMaxField
         get FDX_AttrValue_FIELD lhFdx DF_FIELD_TYPE liFile liField to liType
-        if liType ne DF_OVERLAP begin
+        if (liType <> DF_OVERLAP) begin
           if (liType=DF_BINARY or liType=DF_TEXT) begin
             readln liLen
             read_block channel liChannel lsValue liLen
@@ -362,7 +362,7 @@ class cFDXDataFile is a cArray
                      clear liFile
                      send SEQ_ReadRecordBuffer_LD liFile
                      move (SeqEof) to liFinish
-                     ifnot liFinish begin
+                     If (Not(liFinish)) begin
                        saverecord liFile
                        increment liReccount
                        send DoWaitUpdate (string(liReccount)+" records read")

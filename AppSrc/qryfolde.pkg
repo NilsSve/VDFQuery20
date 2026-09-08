@@ -3,7 +3,7 @@ Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, c
 Use Files.utl    // Utilities for handling file related stuff (No User Interface)
 Use DfDir.nui    // Identify the location DF files and directories
 Use WinUser.nui  // User_Windows_User_Name function
-Use Language     // Set default languange if not set by compiler command line
+Use Language.pkg     // Set default languange if not set by compiler command line
 Use WildCard.nui // vdfq_WildCardMatch function
 
 #IF LNG_DEFAULT=LNG_DUTCH
@@ -85,8 +85,8 @@ desktop_section
       integer liExists lbCreateError
       get SEQ_FileExists lsDir to liExists
       if (liExists=SEQIT_NONE) begin
-        get wvaWin32_CreateDirectory (ToAnsi(lsDir)) to lbCreateError
-        ifnot lbCreateError get SEQ_FileExists lsDir to liExists
+        get wvaWin32_CreateDirectory (Utf8ToAnsi(lsDir)) to lbCreateError
+        If (Not(lbCreateError)) get SEQ_FileExists lsDir to liExists
       end
       function_return (liExists=SEQIT_DIRECTORY)
     end_function
@@ -143,7 +143,7 @@ desktop_section
         get sQryCurrentUserName to lsUser
         get Files_AppendPath lsDir lsUser to lsRval
         get bCreateDir lsRval to lbOK
-        ifnot lbOK move "" to lsRval
+        If (Not(lbOK)) move "" to lsRval
       end
       else move "" to lsRval
       function_return lsRval
@@ -160,7 +160,7 @@ desktop_section
         move (lsUser*t.qryfolder.name.OutPostFix) to lsUser
         get Files_AppendPath lsDir lsUser to lsRval
         get bCreateDir lsRval to lbOK
-        ifnot lbOK move "" to lsRval
+        If (Not(lbOK)) move "" to lsRval
       end
       else move "" to lsRval
       function_return lsRval

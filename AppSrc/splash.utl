@@ -13,47 +13,47 @@ class cSplashGraphicArea is a GraphicArea
     integer color#
     string str#
     get AppInfo itm# to str#
-    if str# ne "" begin
-      if itm# eq AI_TITLE begin
+    if (str# <> "") begin
+      if (itm# = AI_TITLE) begin
         send SetTTFont "Arial" 80 0 1 1 0
         send SetTextColor clBlack
         send SetTextAlign (VDFGR_TA_CENTER+VDFGR_TA_VCENTER)
         send AddText str# 2500 5000
       end
-      if itm# eq AI_SUBTITLE begin
+      if (itm# = AI_SUBTITLE) begin
         send SetTTFont "Arial" 50 0 1 1 0
         send SetTextColor clBlack
         send SetTextAlign (VDFGR_TA_CENTER+VDFGR_TA_VCENTER)
         send AddText "for" 5000 5000
         send AddText str# 7500 5000
       end
-      if itm# eq AI_SUBTITLE2 begin
+      if (itm# = AI_SUBTITLE2) begin
         send SetTTFont "Arial" 12 0 1 0 0
         send SetTextColor clWhite
         send SetTextAlign (VDFGR_TA_CENTER+VDFGR_TA_VCENTER)
         send AddText str# 8700 5000
       end
-      if itm# eq AI_VERSION begin
+      if (itm# = AI_VERSION) begin
         send SetTTFont "Arial" 12 0 1 0 0
         send SetTextColor clWhite
         send SetTextAlign (VDFGR_TA_LEFT+VDFGR_TA_BOTTOM)
         send AddText ("Version "+str#) 9500 500
       end
-      if itm# eq AI_REVISION begin
+      if (itm# = AI_REVISION) begin
       end
-      if itm# eq AI_AUTHOR begin
+      if (itm# = AI_AUTHOR) begin
         send SetTextAlign (VDFGR_TA_RIGHT+VDFGR_TA_BOTTOM)
         send SetTextColor clWhite
         send AddText str# 9500 9500
       end
-      if itm# eq AI_WATERMARK begin
+      if (itm# = AI_WATERMARK) begin
         get iWaterMarkColor to color#
         send SetTTFont "Arial" 180 0 1 1 0
         send SetTextAlign (VDFGR_TA_CENTER+VDFGR_TA_VCENTER)
         send SetTextColor color#
         send AddText str# 5000 5000
       end
-      if itm# eq AI_RELEASEDATE begin
+      if (itm# = AI_RELEASEDATE) begin
       end
     end
   end_procedure
@@ -107,13 +107,17 @@ class cGraphicSplash is a ToolPanel
   end_procedure
   function iRandomBackColor returns integer
     integer rval#
-    sysdate rval# rval# rval# rval#
+//    sysdate rval# rval# rval# rval#
+    Move (Date(CurrentDateTime())) to rval#
+    Move (DateGetHour(CurrentDateTime())) to rval#
+    Move (DateGetMinute(CurrentDateTime())) to rval#
+    Move (DateGetSecond(CurrentDateTime())) to rval#
     move (mod(rval#,5)) to rval#
-    if rval# eq 0 move clRed to rval#
-    if rval# eq 1 move clGreen to rval#
-    if rval# eq 2 move clBlue to rval#
-    if rval# eq 3 move clYellow to rval#
-    if rval# eq 4 move clWhite to rval#
+    if (rval# = 0) move clRed to rval#
+    if (rval# = 1) move clGreen to rval#
+    if (rval# = 2) move clBlue to rval#
+    if (rval# = 3) move clYellow to rval#
+    if (rval# = 4) move clWhite to rval#
     set piBackColor to rval#
     function_return rval#
   end_function

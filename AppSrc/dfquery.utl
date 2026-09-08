@@ -157,7 +157,7 @@ class cQueryBreakInfo is a cArray
 //    get piExprRow.i liLevel to liExprRow
 //    get sEvalExpression of (Query_ExprEvaluator(self)) (piExprId.i(lhExprArr,liExprRow)) to lsRval
 //  end
-    if lsRval eq "" move "    " to lsRval // Make evident that field is empty!
+    if (lsRval = "") move "    " to lsRval // Make evident that field is empty!
     else move (trim(lsRval)) to lsRval
     move (psLabel.i(self,liLevel)) to lsLabel
     function_return (lsLabel+lsRval)
@@ -299,7 +299,7 @@ class cQueryDefinition is a cArray
     string lsValue
     set value item DFQ_DESTINATION     to DFQ.DEST.SCREEN
     get API_OtherAttr_Value OA_DFPRINTER to lsValue
-    if lsValue eq "" move "LST:" to lsValue
+    if (lsValue = "") move "LST:" to lsValue
     set value item DFQ_PORT            to lsValue
     set value item DFQ_FILE_NAME       to "dataflex.out"
     set value item DFQ_FORMAT          to DFQ.FORMAT.PRINT
@@ -333,19 +333,19 @@ class cQueryDefinition is a cArray
           get SEQ_ReadLn liChannel to lsValue
           move (lsValue="") to lbFin
           if (seqeof) move 1 to lbFin // Emergency break
-          ifnot lbFin begin
+          If (Not(lbFin)) begin
             // The line we're standing with here contains a file, a field and a comperator mode
             get ExtractInteger lsValue 1 to liFile
             get ExtractInteger lsValue 2 to liField
             get ExtractInteger lsValue 3 to liComp
             get SEQ_ReadLn liChannel to lsValue // And this is the value to compare against
-                 if liComp eq 1 move SC_COMP_EQ to liComp // EQ   The SC_COMP_XX are defined in DataScan.utl
-            else if liComp eq 2 move SC_COMP_GT to liComp // GT
-            else if liComp eq 3 move SC_COMP_LT to liComp // LT
-            else if liComp eq 4 move SC_COMP_NE to liComp // NE
-            else if liComp eq 5 move SC_COMP_GE to liComp // GE
-            else if liComp eq 6 move SC_COMP_LE to liComp // LE
-            else if liComp eq 7 move SC_COMP_IN to liComp // IN
+                 if (liComp = 1) move SC_COMP_EQ to liComp // EQ   The SC_COMP_XX are defined in DataScan.utl
+            else if (liComp = 2) move SC_COMP_GT to liComp // GT
+            else if (liComp = 3) move SC_COMP_LT to liComp // LT
+            else if (liComp = 4) move SC_COMP_NE to liComp // NE
+            else if (liComp = 5) move SC_COMP_GE to liComp // GE
+            else if (liComp = 6) move SC_COMP_LE to liComp // LE
+            else if (liComp = 7) move SC_COMP_IN to liComp // IN
             open liFile
             send AddCriteria to (oQueryDefCriteria(self)) liFile liField (FieldInf_FieldLabel_Short(liFile,liField)) liComp lsValue ""
           end
@@ -357,7 +357,7 @@ class cQueryDefinition is a cArray
           get SEQ_ReadLn liChannel to lsValue
           move (lsValue="") to lbFin
           if (seqeof) move 1 to lbFin // Emergency break
-          ifnot lbFin begin
+          If (Not(lbFin)) begin
             // The line we're standing with here contains a file, a field, a width, an X, bool: CR, bool: Total
             get ExtractInteger lsValue 1 to liFile
             get ExtractInteger lsValue 2 to liField
@@ -576,10 +576,10 @@ object oDFQ_DataScanner is a cReport_Info
     else begin
       set pbHandleByOutputObject to (liFormat=DFQ.FORMAT.PRINT)
       if (pbHandleByOutputObject(self)) begin
-        if liDestination eq DFQ.DEST.PRINTER set pDestination of lhOutput to DEST_PRINTER
-        if liDestination eq DFQ.DEST.SCREEN  set pDestination of lhOutput to DEST_SCREEN
-        if liDestination eq DFQ.DEST.FILE    set pDestination of lhOutput to DEST_FILE
-        if liDestination eq DFQ.DEST.EMAIL   set pDestination of lhOutput to DEST_EMAIL
+        if (liDestination = DFQ.DEST.PRINTER) set pDestination of lhOutput to DEST_PRINTER
+        if (liDestination = DFQ.DEST.SCREEN) set pDestination of lhOutput to DEST_SCREEN
+        if (liDestination = DFQ.DEST.FILE) set pDestination of lhOutput to DEST_FILE
+        if (liDestination = DFQ.DEST.EMAIL) set pDestination of lhOutput to DEST_EMAIL
         set pPageLength  of lhOutput to (value(lhDef,DFQ_LINES_PER_PAGE))
         set pOutFileName of lhOutput to (value(lhDef,DFQ_FILE_NAME))
         set pPrinterPort of lhOutput to (value(lhDef,DFQ_PORT))
@@ -602,8 +602,8 @@ object oDFQ_DataScanner is a cReport_Info
           else begin
             if (liFileExists=SEQIT_FILE) begin
               get SEQ_Filename_Exists_Action lsFileName DFTRUE to liAction
-              if liAction eq 1 get SEQ_AppendOutput lsFileName to liChannel
-              if liAction eq 2 get SEQ_DirectOutput lsFileName to liChannel
+              if (liAction = 1) get SEQ_AppendOutput lsFileName to liChannel
+              if (liAction = 2) get SEQ_DirectOutput lsFileName to liChannel
             end
             else get SEQ_DirectOutput lsFileName to liChannel
             if (liChannel>=0) begin
@@ -656,14 +656,14 @@ object oDFQ_DataScanner is a cReport_Info
         end
         else set value of lhValues item (item_count(lhValues)) to lsName
       loop
-      if lsLine ne "" begin
+      if (lsLine <> "") begin
         send writeln_no_headers to lhOutput lsLine
         move "" to lsLine
       end
 
       for liItem from 0 to (item_count(lhValues)-1)
         get value of lhValues item liItem to lsName
-        if lsName ne "" send writeln_no_headers to lhOutput lsName
+        if (lsName <> "") send writeln_no_headers to lhOutput lsName
       loop
       send delete_data to lhValues
       send writeln_no_headers to lhOutput "--------------------------------------------------------------------------"
@@ -708,7 +708,7 @@ object oDFQ_DataScanner is a cReport_Info
           end
         loop
       end
-      if lsLine ne "" begin
+      if (lsLine <> "") begin
         send writeln to lhOutput lsLine
         move "" to lsLine
       end
@@ -738,7 +738,7 @@ object oDFQ_DataScanner is a cReport_Info
               decrement liMax
               for liItem from 0 to liMax
                 get rpt_field_name liItem to lsValue
-                if liItem ne liMax write channel liChannel (lsValue+lsSeparator)
+                if (liItem <> liMax) write channel liChannel (lsValue+lsSeparator)
                 else writeln channel liChannel lsValue
               loop
             end_procedure
@@ -750,14 +750,14 @@ object oDFQ_DataScanner is a cReport_Info
     get value of lhDef item DFQ_DESTINATION to liDestination
     get value of lhDef item DFQ_FORMAT to liFormat
     move "to #" to lsDestination
-    if liDestination eq DFQ.DEST.PRINTER move (replace("#",lsDestination,"printer")) to lsDestination
-    if liDestination eq DFQ.DEST.SCREEN  move (replace("#",lsDestination,"screen")) to lsDestination
-    if liDestination eq DFQ.DEST.FILE begin
+    if (liDestination = DFQ.DEST.PRINTER) move (replace("#",lsDestination,"printer")) to lsDestination
+    if (liDestination = DFQ.DEST.SCREEN) move (replace("#",lsDestination,"screen")) to lsDestination
+    if (liDestination = DFQ.DEST.FILE) begin
       move (replace("#",lsDestination,"file")) to lsDestination
       get value of lhDef item DFQ_FILE_NAME to lsFileName
       move (lsDestination+" ("+lsFileName+")") to lsDestination
     end
-    if liDestination eq DFQ.DEST.EMAIL  move (replace("#",lsDestination,"e-mail")) to lsDestination
+    if (liDestination = DFQ.DEST.EMAIL) move (replace("#",lsDestination,"e-mail")) to lsDestination
     send StartPanel to (oDFQueryWait(self)) "Generating report" (pReportTitle(self)) lsDestination "Press any key to interrupt..."
     set piRecIntCount to 0
     set piRecInt to (value(lhDef,DFQ_UPDATE_FREQ))
@@ -820,7 +820,7 @@ object oDFQ_DataScanner is a cReport_Info
   end_procedure                // pInterrupted
 
   function sFormatValue.siii string lsValue integer liType integer liWidth integer liDec returns string
-    if liType eq DF_BCD begin
+    if (liType = DF_BCD) begin
       move (NumToStr(lsValue,liDec)) to lsValue
       if (length(lsValue)>liWidth) move (repeat("#",liWidth)) to lsValue // Column not wide enough
       else move (RightShift(lsValue,liWidth)) to lsValue
@@ -891,10 +891,10 @@ object oDFQ_DataScanner is a cReport_Info
         else begin // DFQ.FORMAT.CD or DFQ.FORMAT.LD
           if (liType=DF_TEXT or liType=DF_BINARY) begin // Text or binary
             move (length(lsValue)) to liLen
-            if liFormat eq DFQ.FORMAT.CD begin // Comma delimited
+            if (liFormat = DFQ.FORMAT.CD) begin // Comma delimited
               move (replaces('"',lsValue,"'")) to lsValue
               move ('"'+Text_CompressSubstCr(lsValue," ")+'"') to lsValue
-              if liItem ne liMax write channel liChannel (lsValue+lsSeparator)
+              if (liItem <> liMax) write channel liChannel (lsValue+lsSeparator)
               else writeln channel liChannel lsValue
             end
             else begin // Line delimited
@@ -904,10 +904,10 @@ object oDFQ_DataScanner is a cReport_Info
           end
           else begin // Everything but text or binary
             move (rtrim(lsValue)) to lsValue
-            if liFormat eq DFQ.FORMAT.CD begin
-              if liType eq DF_ASCII move (replaces('"',lsValue,"'")) to lsValue
-              if liType ne DF_DATE move ('"'+lsValue+'"') to lsValue
-              if liItem ne liMax write channel liChannel (lsValue+lsSeparator)
+            if (liFormat = DFQ.FORMAT.CD) begin
+              if (liType = DF_ASCII) move (replaces('"',lsValue,"'")) to lsValue
+              if (liType <> DF_DATE) move ('"'+lsValue+'"') to lsValue
+              if (liItem <> liMax) write channel liChannel (lsValue+lsSeparator)
               else writeln channel liChannel lsValue
             end
             else begin // DFQ.FORMAT.LD
@@ -918,15 +918,15 @@ object oDFQ_DataScanner is a cReport_Info
       end // IfNot lbTotalsOnly
     loop
     if (liFormat=DFQ.FORMAT.PRINT) begin
-      if lsLine ne "" begin
+      if (lsLine <> "") begin
         send writeln to lhOutput lsLine
         move "" to lsLine
       end
-      ifnot lbTotalsOnly begin
+      If (Not(lbTotalsOnly)) begin
         for liItem from 0 to (item_count(lhValues)-1)
           get value of (oValues(self)) item liItem to lsValue
           move (Text_RemoveTrailingCr(lsValue)) to lsValue
-          if lsValue ne "" begin
+          if (lsValue <> "") begin
             send print_text lsValue
           end
         loop
@@ -978,7 +978,7 @@ object oDFQ_DataScanner is a cReport_Info
     repeat
       decrement liLevel
       move (liLevel<0 or pbSelect.i(lhBreakInfo,liLevel)) to lbFin
-      ifnot lbFin ;
+      If (Not(lbFin)) ;
         move (sBreakField_Value.i(lhBreakInfo,liLevel)+", "+lsValue) to lsValue
     until lbFin
     send print_subheader lsValue liLogicalLevel
@@ -1018,6 +1018,6 @@ object oDFQ_DataScanner is a cReport_Info
         send handle_subtotal liLevel
         send Drop_Level to (oTotals(self))
       end
-    loop
+    loop
   end_procedure
 end_object // oDFQ_DataScanner

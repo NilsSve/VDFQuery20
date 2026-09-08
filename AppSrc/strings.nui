@@ -58,22 +58,22 @@
 Use VdfBase.pkg // Define FMAC_VERSION and FMAC_REVISION
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes
 
 // Returns the string of length len# inside which src# is right justified:
 Function RightShift global string src# integer len# returns string
-  trim src# to src#
-  if (length(src#)) lt len# insert (left(pad("",len#),len#-length(src#))) in src# at 1
+  Move (Trim(src#)) to src#
+  if ((length(src#)) < len#) Move (Insert((left(pad("",len#),len#-length(src#))),src#,1)) to src#
   function_return (left(src#,len#))
 End_Function
 
 // Returns the string of length len# inside which src# is centered:
 Function CenterString global string src# integer len# returns string
-  trim src# to src#
-  if (length(src#)) lt len# insert (left(pad("",len#),len#-length(src#)/2)) in src# at 1
+  Move (Trim(src#)) to src#
+  if ((length(src#)) < len#) Move (Insert((left(pad("",len#),len#-length(src#)/2)),src#,1)) to src#
   function_return (left(src#,len#))
 End_Function
 
@@ -85,8 +85,8 @@ End_Function
 
 // Number converting functions:
 
-#REPLACE NUMTOSTR_THOUSANDS_SEPARATOR_OFF 0
-#REPLACE NUMTOSTR_THOUSANDS_SEPARATOR_ON  1
+Define NUMTOSTR_THOUSANDS_SEPARATOR_OFF for 0
+Define NUMTOSTR_THOUSANDS_SEPARATOR_ON for 1
 integer NumToStringConversionMode#
 
 string str.Chr10   1
@@ -107,18 +107,18 @@ end_function
 function InsertThousandsSep global string str# returns string
   integer pos# tmp# neg#
   string sep#
-  trim str# to str#
+  Move (Trim(str#)) to str#
   move (left(str#,1)="-") to neg#
   if neg# get StringRightBut str# 1 to str#
   get_attribute DF_DECIMAL_SEPARATOR to pos#
-  character pos# to sep#
+  Move (Character(pos#)) to sep#
   move (pos(sep#,str#)) to pos#
-  ifnot pos# move (length(str#)+1) to pos#
+  If (Not(pos#)) move (length(str#)+1) to pos#
   get_attribute DF_THOUSANDS_SEPARATOR to tmp#
-  character tmp# to sep#
-  while pos# gt 4
+  Move (Character(tmp#)) to sep#
+  while (pos# > 4)
     move (pos#-3) to pos#
-    insert sep# in str# at pos#
+    Move (Insert(sep#,str#,pos#)) to str#
   loop
   if neg# move ("-"+str#) to str#
   function_return str#
@@ -133,18 +133,18 @@ Function NumToStr global number src# integer dcp# returns string
   integer pos#
   number correction#
   string rval# radix#
-  if dcp# lt 0 function_return (NumToStr(src#*(10^dcp#),0)+left("00000000",-dcp#))
+  if (dcp# < 0) function_return (NumToStr(src#*(10^dcp#),0)+left("00000000",-dcp#))
   move (0.5/(10^dcp#)) to correction#
 //    move (0.5/(10^dcp#)+src#) to src# // This does not always work with VDF 6.x!!!
-  if src# ge 0 move (correction#+src#) to src#
+  if (src# >= 0) move (correction#+src#) to src#
   else move (src#-correction#) to src#
   get_attribute DF_DECIMAL_SEPARATOR to pos# // Overload
-  character pos# to radix# // End overload
+  Move (Character(pos#)) to radix# // End overload
   move src# to rval#
-  ifnot (pos(radix#,rval#)) append rval# radix#
+  If (Not((pos(radix#,rval#)))) append rval# radix#
   append rval# "00000000"
   move (pos(radix#,rval#)) to pos#
-  if dcp# eq 0 decrement pos#
+  if (dcp# = 0) decrement pos#
   move (left(rval#,pos#+dcp#)) to rval#
   if NumToStringConversionMode# move (InsertThousandsSep(rval#)) to rval#
   function_return rval#
@@ -203,11 +203,11 @@ End_Function
 Function NumberOfDecs global number src# returns integer
   integer count#
   string tmp# radix#
-  if src# eq 0 function_return 0 // Special case
+  if (src# = 0) function_return 0 // Special case
   move src# to tmp# // This removes superfluous decimals
   get_attribute DF_DECIMAL_SEPARATOR to count# // Overload
-  character count# to radix# // End overload
-  if radix# in src# function_return (length(tmp#)-pos(radix#,tmp#))
+  Move (Character(count#)) to radix# // End overload
+  if (src# contains radix#) function_return (length(tmp#)-pos(radix#,tmp#))
   move 0 to count#
   while (right(tmp#,1)="0")
     move (left(tmp#,length(tmp#)-1)) to tmp#
@@ -240,13 +240,13 @@ End_Procedure
 Function StripFromLastOccurance global string src# string val# returns string
   integer len# search_len#
   string tmp#
-  length val# to search_len#
-  if search_len# eq 0 function_return src#
+  Move (Length(val#)) to search_len#
+  if (search_len# = 0) function_return src#
   repeat
-    length src# to len#
-    if len# le search_len# function_return ""
+    Move (Length(src#)) to len#
+    if (len# <= search_len#) function_return ""
     move (right(src#,search_len#)) to tmp#
-    if tmp# eq val# function_return (left(src#,len#-search_len#))
+    if (tmp# = val#) function_return (left(src#,len#-search_len#))
     move (left(src#,len#-1)) to src#
   loop
 End_Function
@@ -271,16 +271,16 @@ Function ExtractWord global string src# string dlm# integer itm# returns string
   move 0 to in_item#
   move (length(src#)) to len#
   for pos# from 1 to len#
-    mid src# to atom# 1 pos#
+    Move (Mid(src#, 1, pos#)) to atom#
     if in_item# begin
-      if atom# in dlm# move 0 to in_item#
-      else if count# eq itm# append rval# atom#
+      if (dlm# contains atom#) move 0 to in_item#
+      else if (count# = itm#) append rval# atom#
     end
     else begin
-      ifnot atom# in dlm# begin
+      If (Not(dlm# contains atom#)) begin
         increment count#
         move 1 to in_item#
-        if count# eq itm# move atom# to rval#
+        if (count# = itm#) move atom# to rval#
       end
     end
   loop
@@ -298,12 +298,12 @@ Function HowManyWords global string src# string dlm# returns integer
   move 0 to in_item#
   move (length(src#)) to len#
   for pos# from 1 to len#
-    mid src# to atom# 1 pos#
+    Move (Mid(src#, 1, pos#)) to atom#
     if in_item# begin
-      if atom# in dlm# move 0 to in_item#
+      if (dlm# contains atom#) move 0 to in_item#
     end
     else begin
-      ifnot atom# in dlm# begin
+      If (Not(dlm# contains atom#)) begin
         increment count#
         move 1 to in_item#
       end
@@ -322,12 +322,12 @@ Function ExtractWord2 global string src# string dlm# integer itm# returns string
   move 1 to count#
   move (length(src#)) to len#
   for pos# from 1 to len#
-    mid src# to char# 1 pos#
-    if char# in dlm# begin
-      if itm# eq count# function_return rval#
+    Move (Mid(src#, 1, pos#)) to char#
+    if (dlm# contains char#) begin
+      if (itm# = count#) function_return rval#
       increment count#
     end
-    else if itm# eq count# move (rval#+char#) to rval#
+    else if (itm# = count#) move (rval#+char#) to rval#
   loop
   function_return rval#
 End_Function
@@ -338,8 +338,8 @@ Function HowManyWords2 global string src# string dlm# returns integer
   move 1 to count#
   move (length(src#)) to len#
   for pos# from 1 to len#
-    mid src# to char# 1 pos#
-    if char# in dlm# increment count#
+    Move (Mid(src#, 1, pos#)) to char#
+    if (dlm# contains char#) increment count#
   loop
   function_return count#
 end_function
@@ -352,16 +352,16 @@ Function ExtractItemNeg global string src# string lch# integer itm# returns stri
   move 0 to in_item#
   move (length(src#)) to len#
   for pos# from 1 to len#
-    mid src# to atom# 1 pos#
+    Move (Mid(src#, 1, pos#)) to atom#
     if in_item# begin
-      ifnot atom# in lch# move 0 to in_item#
-      else if count# eq itm# append rval# atom#
+      If (Not(lch# contains atom#)) move 0 to in_item#
+      else if (count# = itm#) append rval# atom#
     end
     else begin
-      if atom# in lch# begin
+      if (lch# contains atom#) begin
         increment count#
         move 1 to in_item#
-        if count# eq itm# move atom# to rval#
+        if (count# = itm#) move atom# to rval#
       end
     end
   loop
@@ -382,8 +382,8 @@ function HowManyIntegers global string str# returns integer
   move 0 to rval#
   move (length(str#)) to len#
   for pos# from 1 to len#
-    if (mid(str#,1,pos#)) in "0123456789" begin
-      ifnot in_int# begin
+    if ("0123456789" contains (mid(str#,1,pos#))) begin
+      If (Not(in_int#)) begin
         increment rval#
         move 1 to in_int#
       end
@@ -395,7 +395,7 @@ end_function
 
 function IsIntegerPresent global string str# integer int# returns integer
   integer max# itm#
-  if str# eq "" function_return 0
+  if (str# = "") function_return 0
   move (HowManyIntegers(str#)) to max#
   for itm# from 1 to max#
     if (ExtractInteger(str#,itm#)=int#) function_return 1
@@ -416,9 +416,9 @@ end_function
 //                    etc...
 function StringIncrementId global string id# integer len# returns string
   string char#
-  if (mid(id#,1,len#-1)) eq "~" begin
+  if ((mid(id#,1,len#-1)) = "~") begin
     move (mid(id#,1,len#)) to char#
-    if (ascii(char#)) lt 93 function_return (overstrike(character(ascii(char#)+1),id#,len#))
+    if ((ascii(char#)) < 93) function_return (overstrike(character(ascii(char#)+1),id#,len#))
     else function_return ""
   end
   function_return (overstrike("~1",id#,len#-1))
@@ -432,10 +432,10 @@ function StringUppercaseFirstLetters global string str# returns string
   move 0 to in_word#
   for pos# from 1 to len#
     move (mid(str#,1,pos#)) to char#
-    if char# eq "" move 0 to in_word#
+    if (char# = "") move 0 to in_word#
     else begin
-      ifnot in_word# begin
-        uppercase char# to char#
+      If (Not(in_word#)) begin
+        Move (Uppercase(char#)) to char#
         move 1 to in_word#
       end
     end
@@ -464,11 +464,11 @@ function StringIsNumber global string lsString integer liDecSep returns integer
   move (length(lsString)) to liLen
   for liPos from 1 to liLen
     move (mid(lsString,1,liPos)) to lsChar
-    if (ascii(lsChar)) eq liDecSep begin
+    if ((ascii(lsChar)) = liDecSep) begin
       if liDecSepFound function_return 0
       move 1 to liDecSepFound
     end
-    else ifnot ("0123456789" contains lsChar) function_return 0
+    else If (Not(("0123456789" contains lsChar))) function_return 0
   loop
   function_return liRval
 end_function
@@ -478,40 +478,40 @@ function StringIsInteger global string lsString returns integer
   if (left(lsString,1)="-") move (replace("-",lsString,"")) to lsString
   move (length(lsString)) to liLen
   for liPos from 1 to liLen
-    ifnot (pos(mid(lsString,1,liPos),"0123456789")) function_return DFFALSE
+    If (Not((pos(mid(lsString,1,liPos),"0123456789")))) function_return DFFALSE
   loop
   function_return DFTRUE
 end_function
 
 function StringFieldType global integer liType returns string
-  if liType eq DF_ASCII   function_return "ASCII"
-  if liType eq DF_BCD     function_return "Number"
-  if liType eq DF_DATE    function_return "Date"
-  if liType eq DF_OVERLAP function_return "Overlap"
-  if liType eq DF_TEXT    function_return "Text"
-  if liType eq DF_BINARY  function_return "Binary"
+  if (liType = DF_ASCII) function_return "ASCII"
+  if (liType = DF_BCD) function_return "Number"
+  if (liType = DF_DATE) function_return "Date"
+  if (liType = DF_OVERLAP) function_return "Overlap"
+  if (liType = DF_TEXT) function_return "Text"
+  if (liType = DF_BINARY) function_return "Binary"
   function_return "Un-defined"
 end_function
 
 function StringFieldLenText global integer liType integer liLen integer liDec returns string
-  if liType eq DF_BCD function_return (NumToStr(liLen+(liDec/10.0),1))
+  if (liType = DF_BCD) function_return (NumToStr(liLen+(liDec/10.0),1))
   else function_return (string(liLen))
 end_function
 function StringFieldText global integer liType integer liLen integer liDec returns string
   string lsRval
   move "# (#)" to lsRval
-  replace "#" in lsRval with (StringFieldType(liType))
-  replace "#" in lsRval with (StringFieldLenText(liType,liLen,liDec))
+  Move (Replace("#", lsRval, (StringFieldType(liType)))) to lsRval
+  Move (Replace("#", lsRval, (StringFieldLenText(liType,liLen,liDec)))) to lsRval
   function_return lsRval
 end_function
 
 
 function StringConsistsOf global string src# string tpl# returns integer
   integer count# len#
-  trim src# to src#
+  Move (Trim(src#)) to src#
   move (length(src#)) to len#
   for count# from 1 to len#
-    ifnot (mid(src#,1,count#)) in tpl# function_return 0
+    If (Not(tpl# contains (mid(src#,1,count#)))) function_return 0
   loop
   function_return 1
 end_function
@@ -561,8 +561,8 @@ end_function
    pointer psString
    integer iVoid bIsCString
    Move (ascii(Right(sString,1))=0) to bIsCString
-   If Not bISCString Append sString (character(0))
-   GetAddress Of sString To psString // ok
+   If (Not(bISCString)) Append sString (character(0))
+   Move (AddressOf(sString)) to psString // ok
    if bToAnsi Move (OEMToANSI(psString,psString)) To iVoid
    else       Move (ANSItoOEM(psString,psString)) To iVoid
    Function_Return (if(bIsCString, sString, cstring(sString)))
@@ -582,7 +582,7 @@ function RemoveDblBlanks global string lsValue returns string
   move 0 to fin#
   repeat
     move (replaces("  ",lsValue," ")) to lsValue
-    ifnot "  " in lsValue move 1 to fin#
+    If (Not(lsValue contains "  ")) move 1 to fin#
   until fin#
   function_return lsValue
 end_function
@@ -627,7 +627,7 @@ function Text_RemoveTrailingCr global string lsValue returns string
   move (character(13)) to char13#
   move (character(255)) to char255#
   repeat
-    ifnot (length(lsValue)) function_return ""
+    If (Not((length(lsValue)))) function_return ""
     move (right(lsValue,1)) to char#
     if (char#=char10# or char#=" " or char#=char13# or char#=char255#) move (left(lsValue,(length(lsValue)-1))) to lsValue
     else move 1 to fin#
@@ -647,7 +647,7 @@ end_function
 
 function Text_Compress global string lsValue returns string
   move (replaces(character(10),lsValue," ")) to lsValue
-  trim lsValue to lsValue
+  Move (Trim(lsValue)) to lsValue
   move (RemoveDblBlanks(lsValue)) to lsValue
   function_return lsValue
 end_function
@@ -694,13 +694,13 @@ class cText_Formatter is an array
 
     //pre-format:
     get pTrim_state to Trim_state#
-    if Trim_state# eq 1 move (Text_Trim(lsValue)) to lsValue
-    else if Trim_state# eq 2 move (Text_RTrim(lsValue)) to lsValue
+    if (Trim_state# = 1) move (Text_Trim(lsValue)) to lsValue
+    else if (Trim_state# = 2) move (Text_RTrim(lsValue)) to lsValue
     if (pCompress_state(self)) move (Text_Compress(lsValue)) to lsValue
 
     move (character(10)) to lf#
     get pRmargin to pRmargin#
-    if pRmargin# gt 1 begin // Otherwise nothing makes sense!
+    if (pRmargin# > 1) begin // Otherwise nothing makes sense!
       move 0 to done#
       move "" to line#
       move 1 to pos#
@@ -710,19 +710,19 @@ class cText_Formatter is an array
         move "" to word#
         move 0 to word_done#
         repeat
-          if pos# gt max# move 1 to word_done#
+          if (pos# > max#) move 1 to word_done#
           else begin
-            mid lsValue to char# 1 pos#
-            if char# eq lf# begin // Line feed
-              if word# eq "" begin
+            Move (Mid(lsValue, 1, pos#)) to char#
+            if (char# = lf#) begin // Line feed
+              if (word# = "") begin
                 move lf# to word#
                 increment pos#
               end
               move 1 to word_done#
             end
             else begin
-              if char# eq "" begin
-                if word# eq "" increment pos#
+              if (char# = "") begin
+                if (word# = "") increment pos#
                 else move 1 to word_done#
               end
               else begin
@@ -733,39 +733,39 @@ class cText_Formatter is an array
           end
         until word_done#
 
-        if word# eq "" move 1 to done# // We're done!
+        if (word# = "") move 1 to done# // We're done!
         else begin
-          if word# eq lf# begin // If hard return:
+          if (word# = lf#) begin // If hard return:
             send add_item.s line#
             move "" to line#
           end
           else begin //
-            if (length(line#)+length(word#)+1) gt pRmargin# begin // Soft new line
-              if line# ne "" begin
+            if ((length(line#)+length(word#)+1) > pRmargin#) begin // Soft new line
+              if (line# <> "") begin
                 send add_item.s line# // Could be that word is longer that pRmargin
                 move "" to line#
               end
-              if (length(word#)) gt pRmargin# begin // Word IS longer that line!
+              if ((length(word#)) > pRmargin#) begin // Word IS longer that line!
                 repeat
-                  if line# eq "" move (pRmargin#-1) to len#
+                  if (line# = "") move (pRmargin#-1) to len#
                   else move (pRmargin#-length(line#)-2) to len#
                   move (split_word(self,word#,len#)) to word#
                   move (ExtractItem(word#," ",1)) to left#
                   move (ExtractItem(word#," ",2)) to word#
-                  if word# eq "" move left# to line#
+                  if (word# = "") move left# to line#
                   else send add_item.s (left#+"-")
-                until word# eq ""
+                until (word# = "")
               end
               else move word# to line#
             end
             else begin
-              if line# ne "" move (line#+" "+word#) to line# // add word to line
+              if (line# <> "") move (line#+" "+word#) to line# // add word to line
               else move word# to line#
             end
           end
         end
       until done#
-      if line# ne "" send add_item.s line#
+      if (line# <> "") send add_item.s line#
     end
   end_procedure
 end_class // cText_Formatter
@@ -807,7 +807,7 @@ function Text_FormattedText global returns string
   decrement liMax
   for liItem from 0 to liMax
     move (lsRval+value(liObj,liItem)) to lsRval
-    if liItem ne liMax move (lsRval+character(10)) to lsRval
+    if (liItem <> liMax) move (lsRval+character(10)) to lsRval
   loop
   function_return lsRval
 end_function
@@ -869,7 +869,7 @@ end_function
              move (2^liBit) to liBitExp
              move ((liX/liBitExp)-(((liX/liBitExp)/2)*2)) to liXbit
              move ((liY/liBitExp)-(((liY/liBitExp)/2)*2)) to liYbit
-             if liXbit ne liYbit move (liRval+liBitExp) to liRval
+             if (liXbit <> liYbit) move (liRval+liBitExp) to liRval
            loop
            function_return liRval
          end_function
@@ -956,5 +956,3 @@ function StringSplitToArrayObj global string lsValue string lsSeparatorChar inte
   if (lsQuoteChar<>"") function_return (0-liPos) // Error: Quoted string not terminated
   function_return (liItem-liStartItem) // Return number of items added to the target array
 end_function // StringSplitToArrayObj
-
-

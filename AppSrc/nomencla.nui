@@ -1,7 +1,7 @@
 // Use Nomencla.nui // Define nomenclature
 
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes (No User Interface)
-Use Language     // Default language setup
+Use Language.pkg     // Default language setup
 
 #IF LNG_DEFAULT=LNG_DUTCH
   define t.nomencla.record           for "record"                                 // PvM

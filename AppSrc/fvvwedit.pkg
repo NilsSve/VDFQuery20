@@ -5,21 +5,22 @@ Use Classes.pkg  // UI Classes for class selection
 Use FvDynamo.pkg // Part that generates the view based on vw-definition
 Use Fdx2.utl     // FDX aware object for displaying a table definition
 Use Version.nui
+Use cCJGrid.pkg
 
 function sSnapText.i global integer liSnap returns string
-  if liSnap le 0 begin
-    if liSnap eq 0                                   function_return "NewLine"
-    if liSnap eq SL_DOWN                             function_return "Down"
-    if liSnap eq SL_LEFT                             function_return "Left"
-    if liSnap eq SL_LOWER_RIGHT_CORNER_EXTEND_ROW    function_return "lrcer"
-    if liSnap eq SL_CURRENT_POS_NO_LABEL_ADJUST      function_return "X"
-    if liSnap eq SL_RIGHT                            function_return "Right"
-    if liSnap eq SL_UP                               function_return "Up"
-    if liSnap eq SL_LOWER_RIGHT_CORNER               function_return "X"
-    if liSnap eq SL_XRIGHT                           function_return "X"
-    if liSnap eq SL_UPPER_RIGHT_CORNER_EXTEND_COLUMN function_return "urcec"
-    if liSnap eq SL_RIGHT_SPACE                      function_return "Space"
-    if liSnap eq SL_CURRENT_POS                      function_return "X"
+  if (liSnap <= 0) begin
+    if (liSnap = 0) function_return "NewLine"
+    if (liSnap = SL_DOWN) function_return "Down"
+    if (liSnap = SL_LEFT) function_return "Left"
+    if (liSnap = SL_LOWER_RIGHT_CORNER_EXTEND_ROW) function_return "lrcer"
+    if (liSnap = SL_CURRENT_POS_NO_LABEL_ADJUST) function_return "X"
+    if (liSnap = SL_RIGHT) function_return "Right"
+    if (liSnap = SL_UP) function_return "Up"
+    if (liSnap = SL_LOWER_RIGHT_CORNER) function_return "X"
+    if (liSnap = SL_XRIGHT) function_return "X"
+    if (liSnap = SL_UPPER_RIGHT_CORNER_EXTEND_COLUMN) function_return "urcec"
+    if (liSnap = SL_RIGHT_SPACE) function_return "Space"
+    if (liSnap = SL_CURRENT_POS) function_return "X"
   end
   else function_return ("Tab "+string(liSnap))
 end_function
@@ -29,16 +30,40 @@ object oSnap_SL is a aps.ModalPanel label "Select snap"
   on_key ksave_record send close_panel_ok
   on_key kcancel send close_panel
   property integer piResult DFFALSE
-  object oLst is a aps.List
+  object oLst is a cCJGrid
+      // TODO: oLst was a aps.List - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 200 200
+    // Converted from Mouse_Click: iRow = row index, iCol = column index.
+    Procedure OnRowDoubleClick Integer iRow Integer iCol
+      if ((iRow-1)<item_count(self)) send close_panel_ok
+    end_procedure
 
-    procedure mouse_click integer liItem integer liGrb
-      if ((liItem-1)<item_count(self)) send close_panel_ok
-    end_procedure
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
     procedure fill_list_help integer liSnap string lsText
-      send add_item MSG_NONE lsText
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+      Move lsText to TheData[iRow].sValue[iCol1]
+      Increment iRow
       set aux_value item (item_count(self)-1) to liSnap
-    end_procedure
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
     procedure fill_list.ii integer liCurSnap integer liMaxTab
       integer liSnap liMax liItm
       send delete_data
@@ -269,7 +294,7 @@ class cFastView_FieldsGridBig is a cFastView_BasicFieldsGrid
     get Grid_CurrentRow self to liRow
     get Grid_RowBaseItem self liRow to liBase
     move (liBase+4) to liItem
-    ifnot (shadow_state(self,liItem)) begin
+    If (Not((shadow_state(self,liItem)))) begin
       get aux_value item liItem to liSnap
       get phServer to lhServer             //   Max Tab
       get iPopup.ii of (oSnap_SL(self)) liSnap 8 to liSnap
@@ -286,7 +311,7 @@ class cFastView_FieldsGridBig is a cFastView_BasicFieldsGrid
     get Grid_CurrentRow self to liRow
     get Grid_RowBaseItem self liRow to liBase
     move (liBase+11) to liItem
-    ifnot (shadow_state(self,liItem)) begin
+    If (Not((shadow_state(self,liItem)))) begin
       get aux_value item liItem to liClass
       get phServer to lhServer
       get piFile.i  of lhServer liRow to liFile
@@ -478,7 +503,7 @@ class cFastView.TableSelectorForm is a aps.ComboFormAux
         get_attribute DF_FILE_DISPLAY_NAME of liFile to lsValue
         send combo_add_item (rtrim(lsValue)) liFile
       end
-    until liFile eq 0
+    until (liFile = 0)
 //    set value item 0 to lsValue
   end_procedure
   procedure HandleFile integer liType integer liFromFile integer liFromField integer liToFile integer liToField
@@ -498,7 +523,7 @@ class cFastView.TableSelectorForm is a aps.ComboFormAux
 
   procedure HandleFileX integer liType integer liFromFile integer liFromField integer liToFile integer liToField
     // We assume that ToFile.ToField is uniquely indexed
-    ifnot (priv.pbOK(self)) begin
+    If (Not((priv.pbOK(self)))) begin
       integer liIndex
       string lsValue
       get FDX_IndexFindMatching ghFDX liFromFile (FDX_FieldsTranslateOverlaps(ghFDX,liFromFile,liFromField)) 0 to liIndex
@@ -520,7 +545,7 @@ class cFastView.TableSelectorForm is a aps.ComboFormAux
           send combo_add_item (rtrim(lsValue)) liFile
         end
       end
-    until liFile eq 0
+    until (liFile = 0)
   end_procedure
 end_class // cFastView.TableSelector
 
@@ -615,9 +640,34 @@ object oFastView_PropertyEdit is a aps.ModalPanel label "Edit FastView propertie
   object oTabs is a aps.TabDialog
     object oTab1 is a aps.TabPage label "Main table fields"
       set p_auto_column to 0
-      object oGrid is a cFastView_FieldsGridBig //snap SL_RIGHT
+      object oGrid is a cCJGrid
+          // TODO: oGrid was a cFastView_FieldsGridBig - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set size to 150 0
         set phServer to (oMainFileFields(oWorkingDef(self)))
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
       object oBtn1 is a aps.Multi_Button
         on_item "Add fields" send prompt_add_fields to (oGrid(self))
@@ -650,9 +700,34 @@ object oFastView_PropertyEdit is a aps.ModalPanel label "Edit FastView propertie
     end_object
     object oTab2 is a aps.TabPage label "Child table fields"
       set p_auto_column to 0
-      object oGrid is a cFastView_FieldsGridBig //snap SL_RIGHT
+      object oGrid is a cCJGrid
+          // TODO: oGrid was a cFastView_FieldsGridBig - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set size to 150 0
         set phServer to (oChildFileFields(oWorkingDef(self)))
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
       object oBtn1 is a aps.Multi_Button
         on_item "Add fields" send prompt_add_fields to (oGrid(self))
@@ -675,9 +750,34 @@ object oFastView_PropertyEdit is a aps.ModalPanel label "Edit FastView propertie
     end_object
     object oTab3 is a aps.TabPage label "Grid sidecar fields"
       set p_auto_column to 0
-      object oGrid is a cFastView_FieldsGridBig // snap SL_RIGHT
+      object oGrid is a cCJGrid
+          // TODO: oGrid was a cFastView_FieldsGridBig - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set size to 150 0
         set phServer to (oGridSideCarFields(oWorkingDef(self)))
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
       object oBtn1 is a aps.Multi_Button
         on_item "Add fields" send prompt_add_fields to (oGrid(self))
@@ -786,4 +886,3 @@ end_object
 procedure Activate_FastViewPropertyEdit integer lhDef integer lhView
   send popup.ii to (oFastView_PropertyEdit(self)) lhDef lhView
 end_procedure
-

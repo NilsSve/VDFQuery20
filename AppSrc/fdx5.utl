@@ -76,12 +76,12 @@ class cDFM_Fdx is a cFDX
   procedure Read_Directory_Contents_From_File
     integer ch#
     string fn#
-    if (piDataOrigin(self)) eq FDX_READ_FROM_FILE begin
+    if ((piDataOrigin(self)) = FDX_READ_FROM_FILE) begin
       if (piDirsPresentInFile(self)) begin
         get psFileName to fn#
-        if fn# ne "" begin
+        if (fn# <> "") begin
           move (SEQ_DirectInput(fn#)) to ch#
-          if ch# ge 0 begin
+          if (ch# >= 0) begin
             set_channel_position ch# to (piDirsOffSet(self))
             send Seq_Read to (oListDir_SnapShot(self)) ch#
             set piDirsLoaded to true
@@ -130,7 +130,7 @@ class cDFM_Fdx is a cFDX
     forward send Seq_Read ch#
     get_channel_position ch# to ch_pos#
     readln channel ch# str#
-    if str# eq "DIRCONT1.0" begin
+    if (str# = "DIRCONT1.0") begin
       set piDirsPresentInFile to 1
       set piDirsLoaded        to 0
       set piDirsOffSet        to ch_pos#
@@ -160,7 +160,7 @@ desktop_section
     function iFdxObjectID.i integer itm# returns integer
       integer rval#
       get value item itm# to rval#
-      ifnot rval# begin
+      If (Not(rval#)) begin
         get iCreateFdxObject to rval#
         set value item itm# to rval#
       end
@@ -201,7 +201,7 @@ desktop_section
       integer fdx#
       string fn#
       move (SEQ_SelectOutFile("Save table definitions as","Extended file definition (*.fdx)|*.FDX")) to fn#
-      if fn# ne "" begin
+      if (fn# <> "") begin
         send fdx.wait.on
         get value item itm# to fdx#
         set psFileName of fdx# to fn#
@@ -268,7 +268,7 @@ desktop_section
       for row# from 0 to (max#-1)
         if (Row_Select_State(table_selector#,row#)) begin
           get Row_File of table_selector# row# to file#
-          if (iFindItem.ii(self,file#,0)) eq -1 set Row_Select_State of table_selector# row# to false
+          if ((iFindItem.ii(self,file#,0)) = -1) set Row_Select_State of table_selector# row# to false
         end
       loop
     end_procedure
@@ -296,7 +296,7 @@ function fdx.open_file_browse global integer itm# returns integer
   integer rval#
   string fn#
   move (SEQ_SelectFile("Select FDX-definition file (*.fdx)","Extended file definition|*.FDX")) to fn#
-  if fn# ne "" begin
+  if (fn# <> "") begin
     get entry_read_file of (oFdxObjectList(self)) itm# fn# to rval#
     function_return rval#
   end

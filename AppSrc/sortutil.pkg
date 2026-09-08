@@ -14,16 +14,16 @@ object oWaitWhileReindexing is a cProcessStatusPanel
   function callback string sText integer iType returns integer
     integer iRval
     get callback of gloReIndexer# sText iType to iRval
-    if (iType ge DF_MESSAGE_HEADING_1 and iType le DF_MESSAGE_HEADING_5) begin
+    if (iType >= DF_MESSAGE_HEADING_1 and iType <= DF_MESSAGE_HEADING_5) begin
       set Message_Text of ghoStatusPanel to sText
     end
-    else if iType eq DF_MESSAGE_PROGRESS_TITLE begin
+    else if (iType = DF_MESSAGE_PROGRESS_TITLE) begin
       set Action_Text of ghoStatusPanel to sText
     end
-    else if iType eq DF_MESSAGE_PROGRESS_VALUE begin
+    else if (iType = DF_MESSAGE_PROGRESS_VALUE) begin
       set Title_Text of ghoStatusPanel to sText
     end
-    else if iType eq DF_MESSAGE_WARNING begin
+    else if (iType = DF_MESSAGE_WARNING) begin
       set Title_Text of ghoStatusPanel to sText
     end
     function_return iRval
@@ -202,5 +202,4 @@ class cSortUtilList is a aps.Grid
     send fill_list
   end_procedure
 end_class // cSortUtilList
-
 

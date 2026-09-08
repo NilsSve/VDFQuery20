@@ -3,6 +3,7 @@ Use StrucPgm.nui // Class for storing a sequence of restructure instructions
 Use GridUtil.utl // Grid and List utilities
 
 Use Aps.pkg
+Use cCJGrid.pkg
 class StrucPgmDisplayList is a aps.Grid
   procedure construct_object integer img#
     forward send construct_object img#
@@ -66,8 +67,33 @@ object oDisplayStrucPgm is a aps.ModalPanel
   on_key kcancel send close_panel
   set locate_mode to CENTER_ON_SCREEN
   set pMinimumSize to 100 100
-  object oLst is a StrucPgmDisplayList
+  object oLst is a cCJGrid
+      // TODO: oLst was a StrucPgmDisplayList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 200 0
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oBtn is a aps.Multi_Button
     on_item "Close" send close_panel

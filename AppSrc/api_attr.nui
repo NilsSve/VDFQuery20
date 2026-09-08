@@ -232,7 +232,7 @@ desktop_section // Compile as if on desktop
       integer row# max#
       get row_count to max#
       for row# from 0 to (max#-1)
-        if (piValue.i(self,row#)) eq value# function_return row#
+        if ((piValue.i(self,row#)) = value#) function_return row#
       loop
       function_return -1
     end_function
@@ -271,7 +271,7 @@ desktop_section // Compile as if on desktop
     function iAttrValueArrayObj integer attr# returns integer
       integer rval#
       get piValueArray.i attr# to rval#
-      ifnot rval# begin
+      If (Not(rval#)) begin
         object oAPI_AttrValueArray is a cAPI_AttrValueArray
           move self to rval#
         end_object
@@ -470,7 +470,7 @@ desktop_section // Compile as if on desktop
       get piValueArray.i attr# to arr#
       if arr# begin
         get iValue2Row.i of arr# value# to row#
-        if row# eq -1 move "Unknown" to value#
+        if (row# = -1) move "Unknown" to value#
         else move (psCodeName.i(arr#,row#)) to value#
       end
       function_return value#
@@ -480,7 +480,7 @@ desktop_section // Compile as if on desktop
       get piValueArray.i attr# to arr#
       if arr# begin
         get iValue2Row.i of arr# value# to row#
-        if row# eq -1 move "Unknown" to value#
+        if (row# = -1) move "Unknown" to value#
         else move (psDisplayName.i(arr#,row#)) to value#
       end
       function_return value#
@@ -544,21 +544,21 @@ end_procedure
 function API_AttrWorksOnStructure global integer attr# returns integer
   integer type#
   get API_AttrType attr# to type#
-  if type# eq ATTRTYPE_FILE function_return 1
-  if type# eq ATTRTYPE_FIELD function_return 1
-  if type# eq ATTRTYPE_INDEX function_return 1
-  if type# eq ATTRTYPE_IDXSEG function_return 1
-  if type# eq ATTRTYPE_SPECIAL1 function_return 1
+  if (type# = ATTRTYPE_FILE) function_return 1
+  if (type# = ATTRTYPE_FIELD) function_return 1
+  if (type# = ATTRTYPE_INDEX) function_return 1
+  if (type# = ATTRTYPE_IDXSEG) function_return 1
+  if (type# = ATTRTYPE_SPECIAL1) function_return 1
   // function_return 0
 end_function
 
 function API_ShortFieldTypeName global integer type# returns string
-  if type# eq DF_ASCII   function_return "Asc"
-  if type# eq DF_BCD     function_return "Num"
-  if type# eq DF_DATE    function_return "Dat"
-  if type# eq DF_OVERLAP function_return "Ove"
-  if type# eq DF_TEXT    function_return "Tex"
-  if type# eq DF_BINARY  function_return "Bin"
+  if (type# = DF_ASCII) function_return "Asc"
+  if (type# = DF_BCD) function_return "Num"
+  if (type# = DF_DATE) function_return "Dat"
+  if (type# = DF_OVERLAP) function_return "Ove"
+  if (type# = DF_TEXT) function_return "Tex"
+  if (type# = DF_BINARY) function_return "Bin"
 end_function
 
 function API_AttrValue_GLOBAL global integer attr# returns string
@@ -603,7 +603,7 @@ function API_AttrValue_INDEX global integer attr# integer file# integer index# r
   string rval# lsDriver
   if (API_AttrType(attr#)=ATTRTYPE_INDEX) begin
     get_attribute DF_FILE_DRIVER of file# to lsDriver
-    if lsDriver eq "ODBC_DRV" function_return ""
+    if (lsDriver = "ODBC_DRV") function_return ""
     get_attribute attr# of file# index# to rval#
   end
   else begin
@@ -662,7 +662,7 @@ function API_FieldNameToNumber global integer file# string name# returns integer
   integer max# field#
   move (API_AttrValue_FILE(DF_FILE_NUMBER_FIELDS,file#)) to max#
   for field# from 1 to max#
-    if name# eq (API_AttrValue_FIELD(DF_FIELD_NAME,file#,field#)) function_return field#
+    if (name# = (API_AttrValue_FIELD(DF_FIELD_NAME,file#,field#))) function_return field#
   loop
   //function_return 0
 end_function
@@ -686,11 +686,11 @@ desktop_section // Compile as if on desktop
     end_procedure
     function iNextFileThatCanOpen integer file# returns integer
       integer itm# max#
-      ifnot (piValidContents(self)) send RegisterValidEntries
+      If (Not((piValidContents(self)))) send RegisterValidEntries
       get item_count to max#
       move (file#+1) to itm#
-      while itm# lt max#
-        if (value(self,itm#)) ne 0 function_return itm#
+      while (itm# < max#)
+        if ((value(self,itm#)) <> 0) function_return itm#
         increment itm#
       end
       //function_return 0
@@ -707,126 +707,126 @@ end_procedure
 
 function API_OtherAttr_Value global integer liScAttr returns string
   string lsRval lsValue
-  if liScAttr eq OA_DIR_SEPARATOR    function_return (SysConf(SYSCONF_DIR_SEPARATOR))
-  if liScAttr eq OA_TIMER_RESOLUTION function_return (SysConf(SYSCONF_TIMER_RESOLUTION))
-  if liScAttr eq OA_OS_SHORT_NAME    function_return (SysConf(SYSCONF_OS_SHORT_NAME))
-  if liScAttr eq OA_OS_MAJOR_REV     function_return (SysConf(SYSCONF_OS_MAJOR_REV))
-  if liScAttr eq OA_OS_MINOR_REV     function_return (SysConf(SYSCONF_OS_MINOR_REV))
-  if liScAttr eq OA_OS_NAME          function_return (SysConf(SYSCONF_OS_NAME))
-  if liScAttr eq OA_MACHINE_NAME     function_return (SysConf(SYSCONF_MACHINE_NAME))
-  if liScAttr eq OA_FILE_MASK        function_return (SysConf(SYSCONF_FILE_MASK))
-  if liScAttr eq OA_DATAFLEX_REV     function_return (SysConf(SYSCONF_DATAFLEX_REV))
-  if liScAttr eq OA_SYSTEM_NAME      function_return (SysConf(SYSCONF_SYSTEM_NAME))
-  if liScAttr eq OA_PATH_SEPARATOR   function_return (SysConf(SYSCONF_PATH_SEPARATOR))
-  if liScAttr eq OA_SERIAL_NUMBER    registration lsValue lsRval
-  if liScAttr eq OA_REG_NAME         registration lsRval lsValue
-  if liScAttr eq OA_WORKDIR          begin
+  if (liScAttr = OA_DIR_SEPARATOR) function_return (SysConf(SYSCONF_DIR_SEPARATOR))
+  if (liScAttr = OA_TIMER_RESOLUTION) function_return (SysConf(SYSCONF_TIMER_RESOLUTION))
+  if (liScAttr = OA_OS_SHORT_NAME) function_return (SysConf(SYSCONF_OS_SHORT_NAME))
+  if (liScAttr = OA_OS_MAJOR_REV) function_return (SysConf(SYSCONF_OS_MAJOR_REV))
+  if (liScAttr = OA_OS_MINOR_REV) function_return (SysConf(SYSCONF_OS_MINOR_REV))
+  if (liScAttr = OA_OS_NAME) function_return (SysConf(SYSCONF_OS_NAME))
+  if (liScAttr = OA_MACHINE_NAME) function_return (SysConf(SYSCONF_MACHINE_NAME))
+  if (liScAttr = OA_FILE_MASK) function_return (SysConf(SYSCONF_FILE_MASK))
+  if (liScAttr = OA_DATAFLEX_REV) function_return (SysConf(SYSCONF_DATAFLEX_REV))
+  if (liScAttr = OA_SYSTEM_NAME) function_return (SysConf(SYSCONF_SYSTEM_NAME))
+  if (liScAttr = OA_PATH_SEPARATOR) function_return (SysConf(SYSCONF_PATH_SEPARATOR))
+  if (liScAttr = OA_SERIAL_NUMBER) registration lsValue lsRval
+  if (liScAttr = OA_REG_NAME) registration lsRval lsValue
+  if (liScAttr = OA_WORKDIR) begin
     get_current_directory to lsRval
-    move (ToOem(lsRval)) to lsRval
+    move (Utf8ToOem(lsRval)) to lsRval
   end
-  if liScAttr eq OA_PATH             begin
+  if (liScAttr = OA_PATH) begin
     get_environment "PATH" to lsRval
-    move (ToOem(lsRval)) to lsRval
+    move (Utf8ToOem(lsRval)) to lsRval
   end
-  if liScAttr eq OA_MAX_USERS        get_licensed_max_users to lsRval
-  if liScAttr eq OA_DATE4_STATE      get_date_attribute DATE4_STATE to lsRval
-  if liScAttr eq OA_SYSDATE4_STATE   get_date_attribute SYSDATE4_STATE to lsRval
-  if liScAttr eq OA_EPOCH_VALUE      get_date_attribute EPOCH_VALUE to lsRval
+  if (liScAttr = OA_MAX_USERS) get_licensed_max_users to lsRval
+  if (liScAttr = OA_DATE4_STATE) get_date_attribute DATE4_STATE to lsRval
+  if (liScAttr = OA_SYSDATE4_STATE) get_date_attribute SYSDATE4_STATE to lsRval
+  if (liScAttr = OA_EPOCH_VALUE) get_date_attribute EPOCH_VALUE to lsRval
   //if liScAttr eq OA_COLLATE_PATH move (SEQ_FindFileAlongDFPath("collate.cfg")) to lsRval
-  if liScAttr eq OA_COLLATE_PATH begin
+  if (liScAttr = OA_COLLATE_PATH) begin
     get_profile_string "defaults" "VDFRootDir" to lsRval
     get SEQ_ComposeAbsoluteFileName lsRval "\bin\" to lsRval
     if (SEQ_FileExists(lsRval+"\collate.cfg")=SEQIT_FILE) function_return lsRval
     move (SEQ_FindFileAlongPath(API_OtherAttr_Value(OA_PATH),"collate.cfg")) to lsRval
   end
-  if liScAttr eq OA_COLLATE_SIZE move (SEQ_FileSize(SEQ_ComposeAbsoluteFileName(API_OtherAttr_Value(OA_COLLATE_PATH),"collate.cfg"))) to lsRval
-  if liScAttr eq OA_COLLATE_TIME move (SEQ_FileModTime(SEQ_ComposeAbsoluteFileName(API_OtherAttr_Value(OA_COLLATE_PATH),"collate.cfg"))) to lsRval
+  if (liScAttr = OA_COLLATE_SIZE) move (SEQ_FileSize(SEQ_ComposeAbsoluteFileName(API_OtherAttr_Value(OA_COLLATE_PATH),"collate.cfg"))) to lsRval
+  if (liScAttr = OA_COLLATE_TIME) move (SEQ_FileModTime(SEQ_ComposeAbsoluteFileName(API_OtherAttr_Value(OA_COLLATE_PATH),"collate.cfg"))) to lsRval
   #IFDEF SYSCONF_RUNTIME_NAME // From DF3.2 and VDF?
-    if liScAttr eq OA_RUNTIME_NAME    function_return (ToOem(SysConf(SYSCONF_RUNTIME_NAME)))
-    if liScAttr eq OA_UTC_TIME_OFFSET function_return (SysConf(SYSCONF_UTC_TIME_OFFSET))
+    if (liScAttr = OA_RUNTIME_NAME) function_return (Utf8ToOem(SysConf(SYSCONF_RUNTIME_NAME)))
+    if (liScAttr = OA_UTC_TIME_OFFSET) function_return (SysConf(SYSCONF_UTC_TIME_OFFSET))
   #ELSE
-    if liScAttr eq OA_RUNTIME_NAME    function_return "Not supported"
-    if liScAttr eq OA_UTC_TIME_OFFSET function_return 0
+    if (liScAttr = OA_RUNTIME_NAME) function_return "Not supported"
+    if (liScAttr = OA_UTC_TIME_OFFSET) function_return 0
   #ENDIF
-  if liScAttr eq OA_MAX_ARGUMENT_SIZE get_argument_size to lsRval
-  if liScAttr eq OA_CURRENT_USER_COUNT move -1 to lsRval //get_current_user_count to lsRval
-  if liScAttr eq OA_DFPRINTER get_environment "DFPRINTER" to lsRval
-  if liScAttr eq OA_LOCK_COUNT get_current_lockcount to lsRval
+  // if (liScAttr = OA_MAX_ARGUMENT_SIZE) get_argument_size to lsRval
+  if (liScAttr = OA_CURRENT_USER_COUNT) move -1 to lsRval //get_current_user_count to lsRval
+  if (liScAttr = OA_DFPRINTER) get_environment "DFPRINTER" to lsRval
+  if (liScAttr = OA_LOCK_COUNT) get_current_lockcount to lsRval
 
 
-  if liScAttr eq OA_FOLDER_FILELIST  get AppFolder APPFOLDER_FILELIST to lsRval
-  if liScAttr eq OA_FOLDER_PROGRAM   get AppFolder APPFOLDER_PROGRAM  to lsRval
-  if liScAttr eq OA_FOLDER_HTML      get AppFolder APPFOLDER_HTML     to lsRval
-  if liScAttr eq OA_FOLDER_VDF_ROOT  get AppFolder APPFOLDER_VDF_ROOT to lsRval
+  if (liScAttr = OA_FOLDER_FILELIST) get AppFolder APPFOLDER_FILELIST to lsRval
+  if (liScAttr = OA_FOLDER_PROGRAM) get AppFolder APPFOLDER_PROGRAM to lsRval
+  if (liScAttr = OA_FOLDER_HTML) get AppFolder APPFOLDER_HTML to lsRval
+  if (liScAttr = OA_FOLDER_VDF_ROOT) get AppFolder APPFOLDER_VDF_ROOT to lsRval
   function_return lsRval
 end_function // API_OtherAttr_Value
 function OtherAttr_ValueDisplayName global integer liScAttr string lsValue returns string
-  if liScAttr eq OA_DIR_SEPARATOR     function_return lsValue
-  if liScAttr eq OA_TIMER_RESOLUTION  function_return lsValue
-  if liScAttr eq OA_OS_SHORT_NAME     function_return lsValue
-  if liScAttr eq OA_OS_MAJOR_REV      function_return lsValue
-  if liScAttr eq OA_OS_MINOR_REV      function_return lsValue
-  if liScAttr eq OA_OS_NAME           function_return lsValue
-  if liScAttr eq OA_MACHINE_NAME      function_return lsValue
-  if liScAttr eq OA_FILE_MASK         function_return lsValue
-  if liScAttr eq OA_DATAFLEX_REV      function_return lsValue
-  if liScAttr eq OA_SYSTEM_NAME       function_return lsValue
-  if liScAttr eq OA_PATH_SEPARATOR    function_return lsValue
-  if liScAttr eq OA_SERIAL_NUMBER     function_return lsValue
-  if liScAttr eq OA_REG_NAME          function_return lsValue
-  if liScAttr eq OA_WORKDIR           function_return lsValue
-  if liScAttr eq OA_PATH              function_return lsValue
-  if liScAttr eq OA_MAX_USERS         function_return lsValue
-  if liScAttr eq OA_DATE4_STATE       function_return (if(integer(lsValue),"True","False"))
-  if liScAttr eq OA_SYSDATE4_STATE    function_return (if(integer(lsValue),"True","False"))
-  if liScAttr eq OA_EPOCH_VALUE       function_return lsValue
-  if liScAttr eq OA_COLLATE_PATH      function_return lsValue
-  if liScAttr eq OA_COLLATE_SIZE      function_return (lsValue+" bytes")
-  if liScAttr eq OA_COLLATE_TIME      function_return (TS_ConvertToString(lsValue))
-  if liScAttr eq OA_RUNTIME_NAME      function_return lsValue
-  if liScAttr eq OA_UTC_TIME_OFFSET   function_return (TS_ExtractTime(lsValue))
-  if liScAttr eq OA_MAX_ARGUMENT_SIZE  function_return lsValue
-  if liScAttr eq OA_CURRENT_USER_COUNT function_return lsValue
-  if liScAttr eq OA_DFPRINTER         function_return lsValue
-  if liScAttr eq OA_LOCK_COUNT        function_return lsValue
-  if liScAttr eq OA_FOLDER_HTML       function_return lsValue
-  if liScAttr eq OA_FOLDER_FILELIST   function_return lsValue
-  if liScAttr eq OA_FOLDER_PROGRAM    function_return lsValue
-  if liScAttr eq OA_FOLDER_VDF_ROOT   function_return lsValue
+  if (liScAttr = OA_DIR_SEPARATOR) function_return lsValue
+  if (liScAttr = OA_TIMER_RESOLUTION) function_return lsValue
+  if (liScAttr = OA_OS_SHORT_NAME) function_return lsValue
+  if (liScAttr = OA_OS_MAJOR_REV) function_return lsValue
+  if (liScAttr = OA_OS_MINOR_REV) function_return lsValue
+  if (liScAttr = OA_OS_NAME) function_return lsValue
+  if (liScAttr = OA_MACHINE_NAME) function_return lsValue
+  if (liScAttr = OA_FILE_MASK) function_return lsValue
+  if (liScAttr = OA_DATAFLEX_REV) function_return lsValue
+  if (liScAttr = OA_SYSTEM_NAME) function_return lsValue
+  if (liScAttr = OA_PATH_SEPARATOR) function_return lsValue
+  if (liScAttr = OA_SERIAL_NUMBER) function_return lsValue
+  if (liScAttr = OA_REG_NAME) function_return lsValue
+  if (liScAttr = OA_WORKDIR) function_return lsValue
+  if (liScAttr = OA_PATH) function_return lsValue
+  if (liScAttr = OA_MAX_USERS) function_return lsValue
+  if (liScAttr = OA_DATE4_STATE) function_return (if(integer(lsValue),"True","False"))
+  if (liScAttr = OA_SYSDATE4_STATE) function_return (if(integer(lsValue),"True","False"))
+  if (liScAttr = OA_EPOCH_VALUE) function_return lsValue
+  if (liScAttr = OA_COLLATE_PATH) function_return lsValue
+  if (liScAttr = OA_COLLATE_SIZE) function_return (lsValue+" bytes")
+  if (liScAttr = OA_COLLATE_TIME) function_return (TS_ConvertToString(lsValue))
+  if (liScAttr = OA_RUNTIME_NAME) function_return lsValue
+  if (liScAttr = OA_UTC_TIME_OFFSET) function_return (TS_ExtractTime(lsValue))
+  if (liScAttr = OA_MAX_ARGUMENT_SIZE) function_return lsValue
+  if (liScAttr = OA_CURRENT_USER_COUNT) function_return lsValue
+  if (liScAttr = OA_DFPRINTER) function_return lsValue
+  if (liScAttr = OA_LOCK_COUNT) function_return lsValue
+  if (liScAttr = OA_FOLDER_HTML) function_return lsValue
+  if (liScAttr = OA_FOLDER_FILELIST) function_return lsValue
+  if (liScAttr = OA_FOLDER_PROGRAM) function_return lsValue
+  if (liScAttr = OA_FOLDER_VDF_ROOT) function_return lsValue
 end_function
 function OtherAttr_DisplayName global integer liScAttr returns string
-  if liScAttr eq OA_DIR_SEPARATOR     function_return "Dir separator"
-  if liScAttr eq OA_TIMER_RESOLUTION  function_return "Timer resolution"
-  if liScAttr eq OA_OS_SHORT_NAME     function_return "OS short name"
-  if liScAttr eq OA_OS_MAJOR_REV      function_return "OS major rev."
-  if liScAttr eq OA_OS_MINOR_REV      function_return "OS minor rev."
-  if liScAttr eq OA_OS_NAME           function_return "OS name"
-  if liScAttr eq OA_MACHINE_NAME      function_return "Machine name"
-  if liScAttr eq OA_FILE_MASK         function_return "File mask"
-  if liScAttr eq OA_DATAFLEX_REV      function_return "DF revision"
-  if liScAttr eq OA_SYSTEM_NAME       function_return "System name"
-  if liScAttr eq OA_PATH_SEPARATOR    function_return "Path separator"
-  if liScAttr eq OA_SERIAL_NUMBER     function_return "Serial number"
-  if liScAttr eq OA_REG_NAME          function_return "Registration name"
-  if liScAttr eq OA_WORKDIR           function_return "Working dir."
-  if liScAttr eq OA_PATH              function_return "Search path"
-  if liScAttr eq OA_MAX_USERS         function_return "Max. users"
-  if liScAttr eq OA_DATE4_STATE       function_return "Date4 state"
-  if liScAttr eq OA_SYSDATE4_STATE    function_return "Sysdate4 state"
-  if liScAttr eq OA_EPOCH_VALUE       function_return "Epoch value"
-  if liScAttr eq OA_COLLATE_PATH      function_return "Collate file"
-  if liScAttr eq OA_COLLATE_SIZE      function_return "Collate size"
-  if liScAttr eq OA_COLLATE_TIME      function_return "Collate timestamp"
-  if liScAttr eq OA_RUNTIME_NAME      function_return "Module path & name"
-  if liScAttr eq OA_UTC_TIME_OFFSET   function_return "Seconds from Meridian"
-  if liScAttr eq OA_MAX_ARGUMENT_SIZE function_return "Max string size"
-  if liScAttr eq OA_CURRENT_USER_COUNT function_return "Current user count"
-  if liScAttr eq OA_DFPRINTER         function_return "Default printer (DF3.2)"
-  if liScAttr eq OA_LOCK_COUNT        function_return "Current lock count"
-  if liScAttr eq OA_FOLDER_HTML       function_return "HTML folder"
-  if liScAttr eq OA_FOLDER_FILELIST   function_return "Filelist folder"
-  if liScAttr eq OA_FOLDER_PROGRAM    function_return "Programs folder"
-  if liScAttr eq OA_FOLDER_VDF_ROOT   function_return "VDF root folder"
+  if (liScAttr = OA_DIR_SEPARATOR) function_return "Dir separator"
+  if (liScAttr = OA_TIMER_RESOLUTION) function_return "Timer resolution"
+  if (liScAttr = OA_OS_SHORT_NAME) function_return "OS short name"
+  if (liScAttr = OA_OS_MAJOR_REV) function_return "OS major rev."
+  if (liScAttr = OA_OS_MINOR_REV) function_return "OS minor rev."
+  if (liScAttr = OA_OS_NAME) function_return "OS name"
+  if (liScAttr = OA_MACHINE_NAME) function_return "Machine name"
+  if (liScAttr = OA_FILE_MASK) function_return "File mask"
+  if (liScAttr = OA_DATAFLEX_REV) function_return "DF revision"
+  if (liScAttr = OA_SYSTEM_NAME) function_return "System name"
+  if (liScAttr = OA_PATH_SEPARATOR) function_return "Path separator"
+  if (liScAttr = OA_SERIAL_NUMBER) function_return "Serial number"
+  if (liScAttr = OA_REG_NAME) function_return "Registration name"
+  if (liScAttr = OA_WORKDIR) function_return "Working dir."
+  if (liScAttr = OA_PATH) function_return "Search path"
+  if (liScAttr = OA_MAX_USERS) function_return "Max. users"
+  if (liScAttr = OA_DATE4_STATE) function_return "Date4 state"
+  if (liScAttr = OA_SYSDATE4_STATE) function_return "Sysdate4 state"
+  if (liScAttr = OA_EPOCH_VALUE) function_return "Epoch value"
+  if (liScAttr = OA_COLLATE_PATH) function_return "Collate file"
+  if (liScAttr = OA_COLLATE_SIZE) function_return "Collate size"
+  if (liScAttr = OA_COLLATE_TIME) function_return "Collate timestamp"
+  if (liScAttr = OA_RUNTIME_NAME) function_return "Module path & name"
+  if (liScAttr = OA_UTC_TIME_OFFSET) function_return "Seconds from Meridian"
+  if (liScAttr = OA_MAX_ARGUMENT_SIZE) function_return "Max string size"
+  if (liScAttr = OA_CURRENT_USER_COUNT) function_return "Current user count"
+  if (liScAttr = OA_DFPRINTER) function_return "Default printer (DF3.2)"
+  if (liScAttr = OA_LOCK_COUNT) function_return "Current lock count"
+  if (liScAttr = OA_FOLDER_HTML) function_return "HTML folder"
+  if (liScAttr = OA_FOLDER_FILELIST) function_return "Filelist folder"
+  if (liScAttr = OA_FOLDER_PROGRAM) function_return "Programs folder"
+  if (liScAttr = OA_FOLDER_VDF_ROOT) function_return "VDF root folder"
 end_function
 
 procedure API_OtherAttributes_CallBack global integer lhMsg integer lhObj

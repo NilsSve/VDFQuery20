@@ -23,7 +23,7 @@ class cDriverComboForm is a aps.ComboFormAux
     integer id#
     send Combo_Delete_Data
     for id# from (DBMS_DRIVER_DATAFLEX+1) to (DBMS_DRIVER_MAX-1)
-      if (DBMS_TypeToDriverName(id#)) ne "Unknown" begin
+      if ((DBMS_TypeToDriverName(id#)) <> "Unknown") begin
         send combo_add_item (DBMS_Driver_UserName(id#)) id#
       end
     loop
@@ -108,7 +108,7 @@ object oDriverLogin is a aps.TopMostModalPanel label "Login"
       set value of (oFrm2(self)) item 0 to str#
       readln str#
       set value of (oFrm3(self)) item 0 to str#
-      if str# ne "" set select_state of (oSavePW(self)) item 0 to 1
+      if (str# <> "") set select_state of (oSavePW(self)) item 0 to 1
       close_input channel ch#
       send Seq_Release_Channel ch#
       //nd close_panel

@@ -63,7 +63,7 @@
 //
 //**********************************************************************
 
-Use ui
+Use ui.pkg
 Use seq_chnl.pkg // Defines global sequential device management operations (DAW)
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes
 Use Strings.nui  // String manipulation for VDF
@@ -73,7 +73,7 @@ class cFieldInfoStuff is a cArray
   function array_id.i integer file# returns integer
     integer rval#
     get value item file# to rval#
-    ifnot rval# begin
+    If (Not(rval#)) begin
       object fldinf.array is an array
         move self to rval#
       end_object
@@ -154,7 +154,7 @@ end_object
 function gl_field_label for desktop integer file# integer field# returns string
   string rval#
   move (string_value.ii(field_labels_array#,file#,field#)) to rval#
-  if rval# eq "" begin
+  if (rval# = "") begin
     get_attribute df_field_name of file# field# to rval#
     move (replaces("_",rval#," ")) to rval#
     move (lowercase(rval#)) to rval#
@@ -166,7 +166,7 @@ end_function
 function gl_grid_label for desktop integer file# integer field# returns string
   string rval#
   move (string_value.ii(grid_labels_array#,file#,field#)) to rval#
-  if rval# eq "" begin
+  if (rval# = "") begin
     get_attribute df_field_name of file# field# to rval#
     move (replaces("_",rval#," ")) to rval#
     move (lowercase(rval#)) to rval#
@@ -292,20 +292,20 @@ end_function
 
 #IFDEF ascii_window
 #ELSE
- #REPLACE ascii_window 255
+ #REPLACE ascii_window 255   // TODO (DFRefactor): NOT converted - this file tests the name with #IFDEF / #IFNDEF, and the two do not see the same thing: #IFDEF is blind to a #REPLACE but it does see a Define, so converting would switch on an arm that is dead today. Rewrite the test with the directive, or leave both.
 #ENDIF
 #IFDEF date_window
 #ELSE
- #REPLACE date_window 128
+ #REPLACE date_window 128   // TODO (DFRefactor): NOT converted - this file tests the name with #IFDEF / #IFNDEF, and the two do not see the same thing: #IFDEF is blind to a #REPLACE but it does see a Define, so converting would switch on an arm that is dead today. Rewrite the test with the directive, or leave both.
 #ENDIF
 
 #IFDEF DF_DS_SUBSYSTEM_REV // 3.2
   function gl_generic_form_datatype global integer file# integer field# returns integer
     integer type# rval#
     get_attribute DF_FIELD_TYPE of file# field# to type#
-    if type# eq DF_ASCII function_return ascii_window
-    if type# eq DF_DATE  function_return date_window
-    if type# eq DF_BCD begin
+    if (type# = DF_ASCII) function_return ascii_window
+    if (type# = DF_DATE) function_return date_window
+    if (type# = DF_BCD) begin
       get_attribute DF_FIELD_PRECISION of file# field# to rval#
       function_return rval#
     end
@@ -315,9 +315,9 @@ end_function
   function gl_generic_form_margin global integer file# integer field# returns integer
     integer datatype# len#
     move (gl_generic_form_datatype(file#,field#)) to datatype#
-    if datatype# eq date_window function_return 10
+    if (datatype# = date_window) function_return 10
     get_attribute DF_FIELD_LENGTH of file# field# to len#
-    if datatype# eq ascii_window function_return len#
+    if (datatype# = ascii_window) function_return len#
     function_return (len#+1) // Room for comma
   end_function
 
@@ -393,7 +393,7 @@ end_procedure
 function File_Display_Name global integer file# returns string
   string rval#
   move (value(File_Display_Name_Array(self),file#)) to rval#
-  if rval# eq "" begin
+  if (rval# = "") begin
     get_attribute DF_FILE_DISPLAY_NAME of file# to rval#
     move (rtrim(rval#)) to rval#
     set File_Display_Name file# to rval#
@@ -453,7 +453,7 @@ end_procedure
 function iDD_Object global integer file# returns integer
   integer rval# class# self#
   get DataDictionary_Object file# to rval#
-  ifnot rval# begin
+  If (Not(rval#)) begin
     get DataDictionary_Class file# to class#
     if class# begin
       name class# U_fieldinf_class             // 컴컴컴컴컴컴컴컴컴컴컴컴커
@@ -517,7 +517,7 @@ class cVirtualFields is a cArray
   procedure set pCurrentRecord integer liRecnum
     integer liField liPreviousRecnum
     get private.pCurrentRecord to liPreviousRecnum
-    if liRecnum ne liPreviousRecnum begin
+    if (liRecnum <> liPreviousRecnum) begin
       send SetAllFieldsDirty DFTRUE
       send OnNewRecord
     end
@@ -549,7 +549,7 @@ class cVirtualFields is a cArray
     get pMainFile to liFile
     if liFile begin
       get_field_value liFile 0 to liRecnum
-      if liRecnum ne (private.pCurrentRecord(self)) set pCurrentRecord to liRecnum
+      if (liRecnum <> (private.pCurrentRecord(self))) set pCurrentRecord to liRecnum
     end
   end_procedure
   function sFieldValue.i integer liField returns string
@@ -559,11 +559,11 @@ class cVirtualFields is a cArray
   end_function
   procedure define_field integer field# string Label# string Label_Short# integer Type# integer Length# integer DecPoint# integer LoadMessage# integer LoadObjectTmp#
     integer LoadObject#
-    if num_arguments gt 7 move LoadObjectTmp# to LoadObject#
+    if (num_arguments > 7) move LoadObjectTmp# to LoadObject#
     else move 0 to LoadObject#
     set psFieldLabel.i field# to Label#
 
-    if Label_Short# ne "" ;
+    if (Label_Short# <> "") ;
          set psFieldLabel_Short.i field# to Label_Short#
     else set psFieldLabel_Short.i field# to Label#
 
@@ -608,7 +608,7 @@ End_Procedure
 
 function FieldInf_FieldType global integer liFile integer liField returns integer
   integer liFieldType
-  if liField lt 256 get_attribute DF_FIELD_TYPE of liFile liField to liFieldType
+  if (liField < 256) get_attribute DF_FIELD_TYPE of liFile liField to liFieldType
   else move (piFieldType.i(FieldInf_VirtualFields_Object(liFile),liField-256)) to liFieldType
   function_return liFieldType
 end_function
@@ -617,7 +617,7 @@ function FieldInf_FieldValue global integer liFile integer liField returns strin
   string lsValue
   move fieldindex to liPushFieldindex
   move fieldnumber to liPushFieldnumber
-  if liField lt 256 get_field_value liFile liField to lsValue
+  if (liField < 256) get_field_value liFile liField to lsValue
   else move (sFieldValue.i(FieldInf_VirtualFields_Object(liFile),liField-256)) to lsValue
   move liPushFieldindex  to fieldindex
   move liPushFieldnumber to fieldnumber
@@ -626,7 +626,7 @@ end_function
 function FieldInf_DecPoints global integer file# integer field# returns integer
   integer rval#
 //  if field# lt 256 get_attribute DF_FIELD_PRECISION of file# field# to rval#
-  if field# lt 256 get gl_effective_form_datatype file# field# to rval#
+  if (field# < 256) get gl_effective_form_datatype file# field# to rval#
   else move (piFieldDecPoint.i(FieldInf_VirtualFields_Object(file#),field#-256)) to rval#
   function_return rval#
 end_function
@@ -634,11 +634,11 @@ function FieldInf_FieldLabel_Long global integer file# integer field# returns st
   integer dd#
   string rval#
   move (string_value.ii(field_labels_array#,file#,field#)) to rval#
-  if field# lt 256 begin
-    if rval# eq "" begin // No global label was assigned
+  if (field# < 256) begin
+    if (rval# = "") begin // No global label was assigned
       get iDD_Object file# to dd#
       if dd# get Field_Label_Long of dd# field# to rval#
-      if rval# eq "" get gl_field_label file# field# to rval#
+      if (rval# = "") get gl_field_label file# field# to rval#
     end
   end
   else move (psFieldLabel.i(FieldInf_VirtualFields_Object(file#),field#-256)) to rval#
@@ -647,12 +647,12 @@ end_function
 function FieldInf_FieldLabel_Short global integer file# integer field# returns string
   integer dd#
   string rval#
-  if field# lt 256 begin
+  if (field# < 256) begin
     move (string_value.ii(grid_labels_array#,file#,field#)) to rval#
-    if rval# eq "" begin // No global label was assigned
+    if (rval# = "") begin // No global label was assigned
       get iDD_Object file# to dd#
       if dd# get Field_Label_Short of dd# field# to rval#
-      if rval# eq "" get gl_grid_label file# field# to rval#
+      if (rval# = "") get gl_grid_label file# field# to rval#
     end
   end
   else move (psFieldLabel_Short.i(FieldInf_VirtualFields_Object(file#),field#-256)) to rval#
@@ -674,17 +674,17 @@ end_function
 function FieldInf_Field_Length_String global integer file# integer field# returns string
   integer fieldtype# len# dec# obj#
   string rval#
-  if field# lt 256 begin
+  if (field# < 256) begin
     get_attribute DF_FIELD_TYPE of file# field# to fieldtype#
     get_attribute DF_FIELD_LENGTH of file# field# to len#
-    if fieldtype# eq DF_DATE move 10 to len#
+    if (fieldtype# = DF_DATE) move 10 to len#
     move len# to rval#
-    if fieldtype# eq DF_BCD begin
+    if (fieldtype# = DF_BCD) begin
       get gl_effective_form_datatype file# field# to dec#
       move "#.#" to rval#
       //if dec# decrement len#
-      replace "#" in rval# with (string(len#-dec#))
-      replace "#" in rval# with (string(dec#))
+      Move (Replace("#", rval#, (string(len#-dec#)))) to rval#
+      Move (Replace("#", rval#, (string(dec#)))) to rval#
     end
   end
   else begin
@@ -692,13 +692,13 @@ function FieldInf_Field_Length_String global integer file# integer field# return
     move (field#-256) to field#
     get piFieldType.i of obj# field# to fieldtype#
     get piFieldLength.i of obj# field# to len#
-    if fieldtype# eq DF_DATE move 10 to len#
+    if (fieldtype# = DF_DATE) move 10 to len#
     move len# to rval#
-    if fieldtype# eq DF_BCD begin
+    if (fieldtype# = DF_BCD) begin
       get piFieldDecPoint.i of obj# field# to dec#
       move "#.#" to rval#
-      replace "#" in rval# with (string(len#-dec#))
-      replace "#" in rval# with (string(dec#))
+      Move (Replace("#", rval#, (string(len#-dec#)))) to rval#
+      Move (Replace("#", rval#, (string(dec#)))) to rval#
     end
   end
   function_return rval#
@@ -729,11 +729,11 @@ class cVirtualIndex is a cArray
       get piField.i row# to field#
       get FieldInf_FieldValue file# field# to value#
       get FieldInf_FieldType file# field# to type#
-      if type# eq DF_DATE begin
+      if (type# = DF_DATE) begin
         move (integer(date(value#))) to value#
         move (NumToStrR(value#,0,6)) to value#
       end
-      if type# eq DF_BCD begin
+      if (type# = DF_BCD) begin
         get FieldInf_DecPoints file# field# to dec#
         move (NumToStrR(value#,dec#,14)) to value#
       end
@@ -748,7 +748,7 @@ class cVirtualIndex is a cArray
     decrement max#
     for row# from 0 to max#
       move (rval#+psValue.i(self,row#)) to rval#
-      if row# ne max# move (rval#+" ") to rval#
+      if (row# <> max#) move (rval#+" ") to rval#
     loop
     function_return rval#
   end_function
@@ -763,7 +763,7 @@ class cVirtualIndex is a cArray
     decrement max#
     for row# from 0 to max#
       move (rval#*FieldInf_FieldLabel_Long(piFile.i(self,row#),piField.i(self,row#))) to rval#
-      if row# ne max# move (rval#+",") to rval#
+      if (row# <> max#) move (rval#+",") to rval#
     loop
     function_return rval#
   end_function
@@ -790,7 +790,7 @@ class cVirtualIndices is a cArray
   function iObject.i integer index# returns integer
     integer rval#
     get piObj.i index# to rval#
-    ifnot rval# begin
+    If (Not(rval#)) begin
       object oVirtualIndex is a cVirtualIndex
         move self to rval#
       end_object

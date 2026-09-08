@@ -7,6 +7,7 @@ Use SetOfFld.utl // cSetOfFields class
 Use DBMS.utl     // Basic DBMS functions
 
 Use aps.pkg         // Auto Positioning and Sizing classes for VDF
+Use cCJGrid.pkg
 class cFdxSelectOneFileList is a aps.Grid
   procedure construct_object integer img#
     forward send construct_object img#
@@ -39,10 +40,10 @@ class cFdxSelectOneFileList is a aps.Grid
   end_procedure
 
   function sSortValue.ii integer column# integer itm# returns string
-    if column# eq 0 function_return (IntToStrR(value(self,itm#),4))
+    if (column# = 0) function_return (IntToStrR(value(self,itm#),4))
   end_function
   function iSpecialSortValueOnColumn.i integer column# returns integer
-    if column# eq 0 function_return 1
+    if (column# = 0) function_return 1
     function_return 0 // Otherwise no special anything
   end_function
 
@@ -71,10 +72,10 @@ class cFdxSelectOneFileList is a aps.Grid
       if file# begin
 //      if (iCanOpen.i(oFDX#,file#)) begin
         if (FDX_CanOpenFile(oFDX#,file#)) begin
-          if obj# ne 0 get fnc# of obj# file# to ok#
+          if (obj# <> 0) get fnc# of obj# file# to ok#
           else move 1 to ok#
           if ok# begin
-            if file# eq suggest_file# move (item_count(self)) to suggest_itm#
+            if (file# = suggest_file#) move (item_count(self)) to suggest_itm#
             send add_item msg_none (string(file#))
             send add_item msg_none (rtrim(FDX_AttrValue_FILELIST(oFDX#,DF_FILE_DISPLAY_NAME,file#)))
             send add_item msg_none (FDX_AttrValue_FILELIST(oFDX#,DF_FILE_LOGICAL_NAME,file#))
@@ -82,15 +83,15 @@ class cFdxSelectOneFileList is a aps.Grid
           end
         end
       end
-    until file# eq 0
+    until (file# = 0)
     send cursor_ready to (cursor_control(self))
     set dynamic_update_state to dfTrue
-    if suggest_itm# ne -1 set current_item to suggest_itm#
+    if (suggest_itm# <> -1) set current_item to suggest_itm#
      send Grid_SetEntryState self 0
   end_procedure
   function iCurrentFile returns integer
     integer itm#
-    ifnot (item_count(self)) function_return 0
+    If (Not((item_count(self)))) function_return 0
     get current_item to itm#
     move ((itm#/4)*4) to itm#
     function_return (value(self,itm#))
@@ -132,19 +133,19 @@ class cFdxSelectOneFieldList is a aps.Grid
   procedure fill_list.iiii integer oFDX# integer file# integer suggest_file# integer suggest_field#
     integer field# max_field# suggest_itm# type# len# dec# idx#
     send delete_data
-    ifnot file# get FDX_NextFileThatCanOpen oFDX# 0 to file#
-    if file# ne suggest_file# move 0 to suggest_field#
+    If (Not(file#)) get FDX_NextFileThatCanOpen oFDX# 0 to file#
+    if (file# <> suggest_file#) move 0 to suggest_field#
     move -1 to suggest_itm#
     if (FDX_CanOpenFile(oFDX#,file#)) begin
       move (FDX_AttrValue_FILE(oFDX#,DF_FILE_NUMBER_FIELDS,file#)) to max_field#
       for field# from 1 to max_field#
-        if field# eq suggest_field# move (item_count(self)) to suggest_itm#
+        if (field# = suggest_field#) move (item_count(self)) to suggest_itm#
         send add_item msg_none (string(field#))
         send add_item msg_none (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_NAME,file#,field#))
         move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,file#,field#)) to type#
         send add_item msg_none (API_ShortFieldTypeName(type#))
         move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_LENGTH,file#,field#)) to len#
-        if type# eq DF_BCD begin
+        if (type# = DF_BCD) begin
           move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_PRECISION,file#,field#)) to dec#
           send add_item msg_none (string(len#-dec#)+"."+string(dec#))
         end
@@ -157,12 +158,12 @@ class cFdxSelectOneFieldList is a aps.Grid
       loop
     end
     set dynamic_update_state to true
-    if suggest_itm# ne -1 set current_item to suggest_itm#
+    if (suggest_itm# <> -1) set current_item to suggest_itm#
     send Grid_SetEntryState self 0
   end_procedure
   function iCurrentField returns integer
     integer itm#
-    ifnot (item_count(self)) function_return 0
+    If (Not((item_count(self)))) function_return 0
     get current_item to itm#
     move ((itm#/7)*7) to itm#
     function_return (value(self,itm#))
@@ -176,9 +177,34 @@ object oFdxSelectOneFile is a aps.ModalPanel label "Select table"
   property integer piResult 0
   on_key ksave_record send close_panel_ok
   on_key kcancel send close_panel
-  object oLst is a cFdxSelectOneFileList
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxSelectOneFileList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 200 0
     on_key kenter send close_panel_ok
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oBtn1 is a aps.Multi_Button
       on_item t.btn.ok send close_panel_ok
@@ -283,8 +309,33 @@ object oFdxSelectOneField is a aps.ModalPanel label "Select field"
     set value of (oFrm3(self)) item 0 to (FDX_AttrValue_FILELIST(oFDX#,DF_FILE_LOGICAL_NAME,file#))
     set value of (oFrm4(self)) item 0 to (FDX_AttrValue_FILELIST(oFDX#,DF_FILE_ROOT_NAME,file#))
   end_procedure
-  object oLst is a cFdxSelectOneFieldList snap SL_DOWN relative_to (oFrm1(self))
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxSelectOneFieldList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     on_key kenter send close_panel_ok
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   procedure close_panel_ok
     set piResult to 1
@@ -304,7 +355,7 @@ object oFdxSelectOneField is a aps.ModalPanel label "Select field"
   procedure Table_Select
     integer file# oFDX#
     get piFDX_Server to oFDX#
-    ifnot (piLockFile(self)) begin
+    If (Not((piLockFile(self)))) begin
       move (iFdxSelectOneFile(oFDX#,piCurrentFile(self))) to file#
       if file# begin
         send fill_list.iiii to (oLst(self)) oFDX# file# 0 0
@@ -320,8 +371,8 @@ object oFdxSelectOneField is a aps.ModalPanel label "Select field"
     move (low(suggest#)) to suggest_field#
     set piResult to 0
 
-    if (lock_file# and suggest_file#) if lock_file# ne suggest_file# move 0 to suggest_file#
-    ifnot suggest_file# move 0 to suggest_field#
+    if ((lock_file# and suggest_file#) and lock_file# <> suggest_file#) move 0 to suggest_file#
+    If (Not(suggest_file#)) move 0 to suggest_field#
 
     set piFDX_Server to oFDX#
     set piLockFile   to lock_file#
@@ -446,9 +497,34 @@ object oFdxSelectFields is a aps.ModalPanel
   on_key kcancel send close_panel
   property integer piResult 0
   set pMinimumSize to 150 0
-  object oLst is a cFdxSelectFieldsList
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxSelectFieldsList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     on_key kenter send next
     set size to 200 0
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oBtn1 is a aps.Multi_Button
     on_item "Select all" send select_all to (oLst(self))
@@ -495,7 +571,7 @@ end_object // oFdxSelectFields
 //> set#.
 function iFdxSelectFields global integer oFDX# integer file# integer set# returns integer
   integer close# open# rval#
-  ifnot oFDX# begin
+  If (Not(oFDX#)) begin
     if (DBMS_IsOpenFile(file#)) begin
       move 0 to close#
       move 1 to open#
@@ -554,9 +630,42 @@ object oFdxSelectIndex is a aps.ModalPanel
   on_key kcancel send close_panel
   property integer piResult 0
   set pMinimumSize to 150 0
-  object oLst is a cFdxSelectIndexList
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxSelectIndexList - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     on_key kenter send close_panel_ok
     set size to 100 300
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Move someValue to TheData[iRow].sValue[iCol1]
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oBtn1 is a aps.Multi_Button
     on_item t.btn.ok send close_panel_ok
@@ -589,7 +698,7 @@ end_desktop_section
 
 function iFdxSelectIndex global integer oFDX# integer file# returns integer
   integer close# open# rval#
-  ifnot oFDX# begin
+  If (Not(oFDX#)) begin
     if (DBMS_IsOpenFile(file#)) begin
       move 0 to close#
       move 1 to open#

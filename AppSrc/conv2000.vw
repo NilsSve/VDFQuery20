@@ -4,6 +4,7 @@ Use Conv2000.pkg // UI bricks for reindexing a set of tables
 Use Spec0011.utl // Floating menues on the fly
 Use API_Attr.utl // Functions for querying API attributes
 Use Files.utl    // Utilities for handling file related stuff
+Use cCJGrid.pkg
 
 /Conv2000.Vw.Intro
  $Title$ Reindexing of tables
@@ -14,12 +15,38 @@ Use Files.utl    // Utilities for handling file related stuff
 activate_view Activate_Conv2000_Vw for oConv2000_Vw
 object oConv2000_Vw is a aps.View label "Year 2000 Convertions"
   on_key KCANCEL send close_panel
-  object oLst is a cConv2000List
+  object oLst is a cCJGrid
+      // TODO: oLst was a cConv2000List - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 225 0
     register_object oTotal
+
     procedure update_total integer iItemsInList
       set value of (oTotal(self)) to (string(iItemsInList)+" tables")
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oTotal is a aps.TextBox label "" snap SL_DOWN
     set fixed_size to 12 60
@@ -43,7 +70,7 @@ object oConv2000_Vw is a aps.View label "Year 2000 Convertions"
   procedure DoGetTablesDirectories
     string sDir
     get SEQ_SelectDirectory "Select directory structure" to sDir
-    if sDir ne "" begin
+    if (sDir <> "") begin
       send cursor_wait to (cursor_control(self))
       send Y2K_Add_RootNamesInDirectories sDir
       send fill_list to (oLst(self))
@@ -53,7 +80,7 @@ object oConv2000_Vw is a aps.View label "Year 2000 Convertions"
   procedure DoGetTablesDirectory
     string sDir
     get SEQ_SelectDirectory "Select directory" to sDir
-    if sDir ne "" begin
+    if (sDir <> "") begin
       send cursor_wait to (cursor_control(self))
       send Y2K_Add_RootNamesInDirectory sDir
       send fill_list to (oLst(self))
@@ -72,7 +99,7 @@ object oConv2000_Vw is a aps.View label "Year 2000 Convertions"
   procedure DoGetTableBrowse
     string sRoot
     get SEQ_SelectInFile "Select data file to convert" "DAT files|*.dat" to sRoot
-    if sRoot ne "" begin
+    if (sRoot <> "") begin
       send Y2K_Add_Rootname sRoot
       send fill_list to (oLst(self))
     end

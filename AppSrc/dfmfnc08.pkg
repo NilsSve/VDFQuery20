@@ -14,6 +14,7 @@ Use Version.nui  // Define _OS_ and _VERSION_ symbols.
  use tblcre~1.pkg
 #ELSE
  use tblcreate.pkg
+Use cCJGrid.pkg
 #ENDIF
 
 // The FastView Table Pounder is used to see if a table placed on a given
@@ -146,7 +147,7 @@ object oTestSetupPanel is a app.ModalClient TestSetup.hdr
     set value of (oForm(self)) item 0 to (value(lhTestSetup,0))
     set value of (oForm(self)) item 1 to (value(lhTestSetup,1))
     ui_accept self to rval#
-    if rval# eq MSG_OK begin
+    if (rval# = MSG_OK) begin
       set value of lhTestSetup item 0 to (value(oForm(self),0))
       set value of lhTestSetup item 1 to (value(oForm(self),1))
     end
@@ -176,12 +177,14 @@ object oTestPanelPanel is a app.ModalClient TestPanel.hdr
   set location to 6 10 absolute
   on_key ksave_record send ok
   on_key kcancel send cancel
-  object oList is a List TestPanel.lst
+  object oList is a cCJGrid
+      Set pbShowHeader to False   // single-column list (no column header)
     set location to 1 0 relative
-    item_list
-      on_item "" send next
-      on_item "" send next
-    end_item_list
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
 
     procedure WriteLn integer liIter string lsLine
       integer liItemCount liCount
@@ -191,6 +194,32 @@ object oTestPanelPanel is a app.ModalClient TestPanel.hdr
       loop
       set value item (liIter-1) to lsLine
     end_procedure
+
+      // Loads the items the legacy List held in its Item_List (cCJGrid is data-driven).
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      // TODO: Some On_Item entries used a non-literal prompt or sent a message on
+      //   selection. cCJGrid has no per-item message - handle selection in
+      //   'Procedure OnRowChange Integer iOldRow Integer iNewRow'.
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
 
   procedure WriteLn integer liIter string lsLine
@@ -339,12 +368,12 @@ object oTestPanelPanel is a app.ModalClient TestPanel.hdr
     send OpenStat_RegisterFiles
     send OpenStat_CloseAllFiles
     get SysPound_OpenTables to lbOK
-    ifnot lbOK begin
+    If (Not(lbOK)) begin
       send SysPound_CreateTables
       get SysPound_OpenTables to lbOK
       if lbOK send obs "Test table has been succesfully created"
     end
-    ifnot lbOK error 772 "fvsyspnd could not be opened (or created)"
+    If (Not(lbOK)) error 772 "fvsyspnd could not be opened (or created)"
     else begin
       ui_accept self to rval#
       get SysPound_DropTables to lbOK
@@ -357,4 +386,3 @@ end_object // oTestPanelPanel
 procedure Activate_PerformanceTest
   send popup to (oTestPanelPanel(self))
 end_procedure
-

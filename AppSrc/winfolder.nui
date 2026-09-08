@@ -76,7 +76,7 @@ object oWinFolderEntries is a cArray
         Get Files_AppendPath sFolderPath "*" to sFolderPath
     End
 
-    Move (ToAnsi(sFolderPath)) to sFolderPath
+    Move (Utf8ToAnsi(sFolderPath)) to sFolderPath
     
     Move 0 to stFindData.dwReserved0 // initialize the variable so we can get an address from it
     
@@ -86,7 +86,7 @@ object oWinFolderEntries is a cArray
         Move (UCharArrayToString(stFindData.cFileName)) to sFileName
         If (sFileName="." or sFileName="..") Begin
             Get row_count to iRow
-            Set psFileName.i iRow to (ToOEM(sFileName))
+            Set psFileName.i iRow to (Utf8ToOem(sFileName))
             
             Set piAttributes.i iRow to stFindData.dwFileAttributes
 

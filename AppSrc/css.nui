@@ -160,7 +160,7 @@ object oCssProperties is a cArray // This object contains all the (META) informa
             function hValueSet.i integer liRow returns integer
               integer hValueSet
               get phValueSet.i liRow to hValueSet
-              ifnot hValueSet begin
+              If (Not(hValueSet)) begin
                 object oValueSet is a cArray
                   move self to hValueSet
                 end_object
@@ -542,8 +542,8 @@ object oCssProperties is a cArray // This object contains all the (META) informa
              move 0 to liRval
              move (length(lsValue)) to liLen
              for liPos from 1 to liLen
-               if (mid(lsValue,1,liPos)) in "0123456789." begin
-                 ifnot lbInNum begin
+               if ("0123456789." contains (mid(lsValue,1,liPos))) begin
+                 If (Not(lbInNum)) begin
                    increment liRval
                    move 1 to lbInNum
                  end
@@ -912,7 +912,7 @@ class cCssInlineStyles is a cArray
            function hCssPropertyValuesObject integer liIndex returns integer
              integer lhObj
              get phCssPropertyValues.i liIndex to lhObj
-             ifnot lhObj begin
+             If (Not(lhObj)) begin
                object oCssPropertyValues is a cCssPropertyValues
                  move self to lhObj
                  set phCssPropertyValues.i liIndex to lhObj
@@ -1014,4 +1014,3 @@ class cCssInlineStyles is a cArray
     end
   end_procedure
 end_class // cCssInlineStyles
-

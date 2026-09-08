@@ -46,7 +46,7 @@
 //**********************************************************************
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use Base.nui
@@ -164,36 +164,36 @@ End_Enumeration_List
 
 function iCompStringToInt.s global string lsComp returns integer
   move (uppercase(lsComp)) to lsComp
-  if lsComp eq "LT" function_return COMP_LT
-  if lsComp eq "LE" function_return COMP_LE
-  if lsComp eq "EQ" function_return COMP_EQ
-  if lsComp eq "GE" function_return COMP_GE
-  if lsComp eq "GT" function_return COMP_GT
-  if lsComp eq "NE" function_return COMP_NE
+  if (lsComp = "LT") function_return COMP_LT
+  if (lsComp = "LE") function_return COMP_LE
+  if (lsComp = "EQ") function_return COMP_EQ
+  if (lsComp = "GE") function_return COMP_GE
+  if (lsComp = "GT") function_return COMP_GT
+  if (lsComp = "NE") function_return COMP_NE
   function_return -1
 end_function
 
 function iArgType_Const.i global integer liType returns integer
-  if liType eq AT_CINT function_return 1
-  if liType eq AT_CSTR function_return 1
-  if liType eq AT_CNUM function_return 1
-  if liType eq AT_CDAT function_return 1
+  if (liType = AT_CINT) function_return 1
+  if (liType = AT_CSTR) function_return 1
+  if (liType = AT_CNUM) function_return 1
+  if (liType = AT_CDAT) function_return 1
   function_return 0
 end_function
 
 function sArgtype_Name.i global integer liType returns string
-  if liType eq AT_CINT  function_return "CnstInt"
-  if liType eq AT_CSTR  function_return "CnstStr"
-  if liType eq AT_CNUM  function_return "CnstNum"
-  if liType eq AT_CDAT  function_return "CnstDat"
-  if liType eq AT_VAR   function_return "VarName"
-  if liType eq AT_VARNO function_return "VarNo"
-  if liType eq AT_EXPR  function_return "Expr"
-  if liType eq AT_LBL   function_return "Lbl"
-  if liType eq AT_FIELD function_return "Field"
-  if liType eq AT_FIELDNO function_return "FieldNo"
-  if liType eq AT_ARRAY_ID function_return "Array ID"
-  if liType eq AT_ARRAY_ELEM function_return "Array Index"
+  if (liType = AT_CINT) function_return "CnstInt"
+  if (liType = AT_CSTR) function_return "CnstStr"
+  if (liType = AT_CNUM) function_return "CnstNum"
+  if (liType = AT_CDAT) function_return "CnstDat"
+  if (liType = AT_VAR) function_return "VarName"
+  if (liType = AT_VARNO) function_return "VarNo"
+  if (liType = AT_EXPR) function_return "Expr"
+  if (liType = AT_LBL) function_return "Lbl"
+  if (liType = AT_FIELD) function_return "Field"
+  if (liType = AT_FIELDNO) function_return "FieldNo"
+  if (liType = AT_ARRAY_ID) function_return "Array ID"
+  if (liType = AT_ARRAY_ELEM) function_return "Array Index"
   function_return "Unknown argtype"
 end_function
 
@@ -255,7 +255,7 @@ class cDeclaredArrays is a cArray
   function iRowToObjectID.i integer liRow returns integer
     integer obj#
     get piObject.i liRow to obj#
-    ifnot obj# begin
+    If (Not(obj#)) begin
       object oArray is an cArray
         move self to obj#
       end_object
@@ -270,7 +270,7 @@ class cDeclaredArrays is a cArray
     move (uppercase(lsName)) to lsName
     get row_count to liMax
     for liRow from 0 to (liMax-1)
-      if lsName eq (psName.i(self,liRow)) function_return liRow
+      if (lsName = (psName.i(self,liRow))) function_return liRow
     loop
     function_return -1
   end_function
@@ -285,10 +285,10 @@ class cDeclaredArrays is a cArray
     integer liType lhObj
     get piObject.i liRow to lhObj
     get piType.i   liRow to liType
-    if liType eq VARTYP_INTEGER set value of lhObj item liItem to (integer(lsValue))
-    if liType eq VARTYP_NUMBER  set value of lhObj item liItem to (number(lsValue))
-    if liType eq VARTYP_DATE    set value of lhObj item liItem to (date(lsValue))
-    if liType eq VARTYP_STRING  set value of lhObj item liItem to (string(lsValue))
+    if (liType = VARTYP_INTEGER) set value of lhObj item liItem to (integer(lsValue))
+    if (liType = VARTYP_NUMBER) set value of lhObj item liItem to (number(lsValue))
+    if (liType = VARTYP_DATE) set value of lhObj item liItem to (date(lsValue))
+    if (liType = VARTYP_STRING) set value of lhObj item liItem to (string(lsValue))
   end_procedure
   function sAssigned_Value.ii integer liRow integer liItem returns string
     function_return (value(piObject.i(self,liRow),liItem))
@@ -489,13 +489,13 @@ class cDeclaredFunctions is a cArray
     move (length(psParameterList.i(self,liRow))) to params#
     //send reverse_stack params#
     if msg# begin //
-      if params# eq 0 get msg# to rval#
-      if params# eq 1 get msg# (sPop(obj#)) to rval#
-      if params# eq 2 get msg# (sPop(obj#)) (sPop(obj#)) to rval#
-      if params# eq 3 get msg# (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) to rval#
-      if params# eq 4 get msg# (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) to rval#
-      if params# eq 5 get msg# (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) to rval#
-      if params# eq 6 get msg# (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) to rval#
+      if (params# = 0) get msg# to rval#
+      if (params# = 1) get msg# (sPop(obj#)) to rval#
+      if (params# = 2) get msg# (sPop(obj#)) (sPop(obj#)) to rval#
+      if (params# = 3) get msg# (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) to rval#
+      if (params# = 4) get msg# (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) to rval#
+      if (params# = 5) get msg# (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) to rval#
+      if (params# = 6) get msg# (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) (sPop(obj#)) to rval#
       if (piReturnType.i(self,liRow)=VARTYP_DATE) begin
 //      showln "XXX: " rval#
         function_return (date(rval#))
@@ -510,7 +510,7 @@ class cDeclaredFunctions is a cArray
     move (uppercase(name#)) to name#
     get row_count to max#
     for liRow from 0 to (max#-1)
-      if name# eq (psName.i(self,liRow)) function_return liRow
+      if (name# = (psName.i(self,liRow))) function_return liRow
     loop
     function_return -1
   end_function
@@ -528,8 +528,8 @@ class cResolvedLabels is a cArray // Help class for cLabels class below
     integer max# liRow
     get row_count to max#
     move 0 to liRow
-    while liRow lt max#
-      if labelid# eq (psLabelName.i(self,liRow)) function_return liRow
+    while (liRow < max#)
+      if (labelid# = (psLabelName.i(self,liRow))) function_return liRow
       increment liRow
     end
     function_return -1 // Not found
@@ -538,7 +538,7 @@ class cResolvedLabels is a cArray // Help class for cLabels class below
     integer liRow line#
     get iFindLabel.s labelid# to liRow
     move -1 to line#
-    if liRow ne -1 get piLabelLine.i liRow to line#
+    if (liRow <> -1) get piLabelLine.i liRow to line#
     function_return line#
   end_function
   procedure add_resolved_label string labelid# integer line#
@@ -598,15 +598,15 @@ class cLabels is a cArray
       get value of reflabels# item labelno# to labelid#
       get iLabelidToLine.s of reslabels# labelid# to labelline#
       set value of obj# item line# to labelline#
-      if labelline# eq -1 move labelid# to rval#
+      if (labelline# = -1) move labelid# to rval#
     loop
     function_return rval#
   end_function
   function iIsLabelNameUsed.s string label# returns integer
     integer rval#
     get element_find of (oReferredLabels(self)) label# to rval#
-    if rval# eq -1 get iFindLabel.s of (oResolvedLabels(self)) label# to rval#
-    if rval# eq -1 function_return 0
+    if (rval# = -1) get iFindLabel.s of (oResolvedLabels(self)) label# to rval#
+    if (rval# = -1) function_return 0
     function_return 1
   end_function
 end_class // cLabels
@@ -624,7 +624,7 @@ class cVariables is a cArray
     move -1 to rval#
     move 0 to liRow
     while (liRow<max# and rval#=-1)
-      if name# eq (psName.i(self,liRow)) move liRow to rval#
+      if (name# = (psName.i(self,liRow))) move liRow to rval#
       increment liRow
     end
     function_return rval#
@@ -634,7 +634,7 @@ class cVariables is a cArray
     integer liRow
     move (uppercase(name#)) to name#
     get iVarNameToVarNo name# to liRow
-    if liRow eq -1 begin
+    if (liRow = -1) begin
       get row_count to liRow
       set psName.i  liRow to name#
       set psValue.i liRow to ""
@@ -651,10 +651,10 @@ class cVariables is a cArray
   procedure VarAssign integer varno# string value#
     integer type#
     get piType.i varno# to type#
-    if type# eq VARTYP_INTEGER set psValue.i varno# to (integer(value#))
-    if type# eq VARTYP_NUMBER  set psValue.i varno# to (number(value#))
-    if type# eq VARTYP_DATE    set psValue.i varno# to (date(value#))
-    if type# eq VARTYP_STRING  set psValue.i varno# to (string(value#))
+    if (type# = VARTYP_INTEGER) set psValue.i varno# to (integer(value#))
+    if (type# = VARTYP_NUMBER) set psValue.i varno# to (number(value#))
+    if (type# = VARTYP_DATE) set psValue.i varno# to (date(value#))
+    if (type# = VARTYP_STRING) set psValue.i varno# to (string(value#))
   end_procedure
   procedure VarDisplay
     integer liRow max#
@@ -663,7 +663,7 @@ class cVariables is a cArray
     get row_count to max#
     for liRow from 0 to (max#-1)
       move (str#+psName.i(self,liRow)+": "+psValue.i(self,liRow)) to str#
-      if liRow ne (max#-1) move (str#+character(10)) to str#
+      if (liRow <> (max#-1)) move (str#+character(10)) to str#
     loop
     send obs str#
   end_procedure
@@ -794,29 +794,29 @@ class cEvalSequence is a cArray
     repeat
       get piOpCode.i liRow to op#
       //showln (sExprOp_Text.i(op#)) " " (psVar.i(self,liRow)) " Expr: " expression#
-      if op# ne EXPROP.END begin
-        if op# eq EXPROP.GET_IVAR move (expression#+string(iVarValue(self,psVar.i(self,liRow)))) to expression#
-        if op# eq EXPROP.GET_DVAR move (expression#+string(dVarValue(self,psVar.i(self,liRow)))) to expression#
-        if op# eq EXPROP.GET_NVAR move (expression#+string(nVarValue(self,psVar.i(self,liRow)))) to expression#
-        if op# eq EXPROP.GET_SVAR move (expression#+MakeStringConstantMax255(sVarValue(self,psVar.i(self,liRow)))) to expression#
-        if op# eq EXPROP.GET_IFIELD move (expression#+string(iFieldValue(self,psVar.i(self,liRow)))) to expression#
-        if op# eq EXPROP.GET_DFIELD move (expression#+string(dFieldValue(self,psVar.i(self,liRow)))) to expression#
-        if op# eq EXPROP.GET_NFIELD move (expression#+string(nFieldValue(self,psVar.i(self,liRow)))) to expression#
-        if op# eq EXPROP.GET_SFIELD move (expression#+MakeStringConstantMax255(sFieldValue(self,psVar.i(self,liRow)))) to expression#
-        if op# eq EXPROP.APPEND move (expression#+psVar.i(self,liRow)) to expression#
-        if op# eq EXPROP.PUSH_EXPRESSION begin
+      if (op# <> EXPROP.END) begin
+        if (op# = EXPROP.GET_IVAR) move (expression#+string(iVarValue(self,psVar.i(self,liRow)))) to expression#
+        if (op# = EXPROP.GET_DVAR) move (expression#+string(dVarValue(self,psVar.i(self,liRow)))) to expression#
+        if (op# = EXPROP.GET_NVAR) move (expression#+string(nVarValue(self,psVar.i(self,liRow)))) to expression#
+        if (op# = EXPROP.GET_SVAR) move (expression#+MakeStringConstantMax255(sVarValue(self,psVar.i(self,liRow)))) to expression#
+        if (op# = EXPROP.GET_IFIELD) move (expression#+string(iFieldValue(self,psVar.i(self,liRow)))) to expression#
+        if (op# = EXPROP.GET_DFIELD) move (expression#+string(dFieldValue(self,psVar.i(self,liRow)))) to expression#
+        if (op# = EXPROP.GET_NFIELD) move (expression#+string(nFieldValue(self,psVar.i(self,liRow)))) to expression#
+        if (op# = EXPROP.GET_SFIELD) move (expression#+MakeStringConstantMax255(sFieldValue(self,psVar.i(self,liRow)))) to expression#
+        if (op# = EXPROP.APPEND) move (expression#+psVar.i(self,liRow)) to expression#
+        if (op# = EXPROP.PUSH_EXPRESSION) begin
           send push.s to stack# expression#
           move "" to expression#
         end
-        if op# eq EXPROP.PUSH_PARAM begin
+        if (op# = EXPROP.PUSH_PARAM) begin
           send push_param to funcobj# (eval(expression#))
           move "" to expression#
         end
-        if op# eq EXPROP.EXEC_FUNCTION begin // Exec, Pop Expr and Append
+        if (op# = EXPROP.EXEC_FUNCTION) begin // Exec, Pop Expr and Append
           get sExec_Function.i of funcobj# (integer(psVar.i(self,liRow))) to expression#
           move (sPop(stack#)+expression#) to expression#
         end
-        if op# eq EXPROP.EXEC_SFUNCTION begin // Exec, Pop Expr and Append
+        if (op# = EXPROP.EXEC_SFUNCTION) begin // Exec, Pop Expr and Append
           // In this case we have to insert and append quotes
           get sExec_Function.i of funcobj# (integer(psVar.i(self,liRow))) to expression#
           get insert_and_append_quotes expression# to expression#
@@ -825,7 +825,7 @@ class cEvalSequence is a cArray
       end
       increment liRow
 //      showln ": " expression#
-    until op# eq EXPROP.END
+    until (op# = EXPROP.END)
     if (expression#="()") move "" to lsRval
     else move (eval(expression#)) to lsRval
 //  showln expression#
@@ -1016,35 +1016,35 @@ class cBasicVirtualMachine is an cArray
   end_function
 
   function sArgValue.is integer type# string arg# returns string
-    if type# eq AT_VARNO get sVarValue arg# to arg#
-    if type# eq AT_EXPR  get sEvalExpression arg# to arg#
-    if type# eq AT_FIELDNO get_field_value (hi(integer(arg#))) (low(integer(arg#))) to arg#
-    if type# eq AT_ARRAY_ELEM get sAssigned_Value.ii of (oDeclaredArrays(self)) (hi(integer(arg#))) (low(integer(arg#))) to arg#
+    if (type# = AT_VARNO) get sVarValue arg# to arg#
+    if (type# = AT_EXPR) get sEvalExpression arg# to arg#
+    if (type# = AT_FIELDNO) get_field_value (hi(integer(arg#))) (low(integer(arg#))) to arg#
+    if (type# = AT_ARRAY_ELEM) get sAssigned_Value.ii of (oDeclaredArrays(self)) (hi(integer(arg#))) (low(integer(arg#))) to arg#
     function_return arg#
   end_function
 
   function sArgType.is integer type# string arg# returns string
     integer rval#
     move -1 to rval# // Unknown type
-    if type# eq AT_CINT move VARTYP_INTEGER to rval#
-    if type# eq AT_CSTR move VARTYP_STRING to rval#
-    if type# eq AT_CNUM move VARTYP_NUMBER to rval#
-    if type# eq AT_CDAT move VARTYP_DATE to rval#
-    if type# eq AT_FIELDNO begin
+    if (type# = AT_CINT) move VARTYP_INTEGER to rval#
+    if (type# = AT_CSTR) move VARTYP_STRING to rval#
+    if (type# = AT_CNUM) move VARTYP_NUMBER to rval#
+    if (type# = AT_CDAT) move VARTYP_DATE to rval#
+    if (type# = AT_FIELDNO) begin
       get_attribute DF_FIELD_TYPE of (hi(integer(arg#))) (low(integer(arg#))) to type#
-      if type# eq DF_ASCII   move VARTYP_STRING to type#
-      if type# eq DF_BCD     move VARTYP_NUMBER to type#
-      if type# eq DF_DATE    move VARTYP_DATE   to type#
-      if type# eq DF_OVERLAP move VARTYP_STRING to type#
-      if type# eq DF_TEXT    move VARTYP_STRING to type#
-      if type# eq DF_BINARY  move VARTYP_STRING to type#
+      if (type# = DF_ASCII) move VARTYP_STRING to type#
+      if (type# = DF_BCD) move VARTYP_NUMBER to type#
+      if (type# = DF_DATE) move VARTYP_DATE to type#
+      if (type# = DF_OVERLAP) move VARTYP_STRING to type#
+      if (type# = DF_TEXT) move VARTYP_STRING to type#
+      if (type# = DF_BINARY) move VARTYP_STRING to type#
     end
-    if type# eq AT_VARNO begin
+    if (type# = AT_VARNO) begin
       get piType.i of (oVariables(self)) arg# to rval#
       function_return rval#
     end
-    if type# eq AT_EXPR function_return (psVar.i(oExprEvalSequences(self),integer(arg#)-1))
-    if type# eq AT_ARRAY_ELEM function_return (piType.i(oDeclaredArrays(self),hi(integer(arg#))))
+    if (type# = AT_EXPR) function_return (psVar.i(oExprEvalSequences(self),integer(arg#)-1))
+    if (type# = AT_ARRAY_ELEM) function_return (piType.i(oDeclaredArrays(self),hi(integer(arg#))))
     function_return rval#
   end_function
 
@@ -1054,7 +1054,7 @@ class cBasicVirtualMachine is an cArray
   function iVarType.s string name# returns integer
     integer varno#
     get iVarNameToVarNo name# to varno#
-    if varno# eq -1 function_return -1
+    if (varno# = -1) function_return -1
     function_return (piType.i(oVariables(self),varno#))
   end_function
 
@@ -1118,8 +1118,8 @@ class cBasicVirtualMachine is an cArray
   procedure mthd_Assign integer type# string varno# integer type2# string value#
 //    send obs "mthd_Assign" type# varno# type2# value#
     get sArgValue.is type2# value# to value# // Source value
-    if type# eq AT_FIELDNO set_field_value (hi(integer(varno#))) (low(integer(varno#))) to value#
-    else if type# eq AT_ARRAY_ELEM send Assign_Value to (oDeclaredArrays(self)) (hi(integer(varno#))) (low(integer(varno#))) value#
+    if (type# = AT_FIELDNO) set_field_value (hi(integer(varno#))) (low(integer(varno#))) to value#
+    else if (type# = AT_ARRAY_ELEM) send Assign_Value to (oDeclaredArrays(self)) (hi(integer(varno#))) (low(integer(varno#))) value#
     else send VarAssign to (oVariables(self)) varno# value#
   end_procedure
   procedure mthd_gVar_Incr integer type# integer varno# integer type2# integer amount#
@@ -1155,49 +1155,49 @@ class cBasicVirtualMachine is an cArray
     get sArgType.is t1# arg1# to type#
     get sArgValue.is t1# arg1# to arg1#
     get sArgValue.is t3# arg2# to arg2#
-    if type# eq VARTYP_INTEGER begin
+    if (type# = VARTYP_INTEGER) begin
       move 0 to bool#
       move arg1# to i1#
       move arg2# to i2#
-      if comp# eq COMP_LT move (i1#<i2#)  to bool#
-      if comp# eq COMP_LE move (i1#<=i2#) to bool#
-      if comp# eq COMP_EQ move (i1#=i2#)  to bool#
-      if comp# eq COMP_GE move (i1#>=i2#) to bool#
-      if comp# eq COMP_GT move (i1#>i2#)  to bool#
-      if comp# eq COMP_NE move (i1#<>i2#) to bool#
+      if (comp# = COMP_LT) move (i1#<i2#) to bool#
+      if (comp# = COMP_LE) move (i1#<=i2#) to bool#
+      if (comp# = COMP_EQ) move (i1#=i2#) to bool#
+      if (comp# = COMP_GE) move (i1#>=i2#) to bool#
+      if (comp# = COMP_GT) move (i1#>i2#) to bool#
+      if (comp# = COMP_NE) move (i1#<>i2#) to bool#
     end
-    if type# eq VARTYP_NUMBER begin
+    if (type# = VARTYP_NUMBER) begin
       move 0 to bool#
       move arg1# to n1#
       move arg2# to n2#
-      if comp# eq COMP_LT move (n1#<n2#)  to bool#
-      if comp# eq COMP_LE move (n1#<=n2#) to bool#
-      if comp# eq COMP_EQ move (n1#=n2#)  to bool#
-      if comp# eq COMP_GE move (n1#>=n2#) to bool#
-      if comp# eq COMP_GT move (n1#>n2#)  to bool#
-      if comp# eq COMP_NE move (n1#<>n2#) to bool#
+      if (comp# = COMP_LT) move (n1#<n2#) to bool#
+      if (comp# = COMP_LE) move (n1#<=n2#) to bool#
+      if (comp# = COMP_EQ) move (n1#=n2#) to bool#
+      if (comp# = COMP_GE) move (n1#>=n2#) to bool#
+      if (comp# = COMP_GT) move (n1#>n2#) to bool#
+      if (comp# = COMP_NE) move (n1#<>n2#) to bool#
     end
-    if type# eq VARTYP_DATE begin
+    if (type# = VARTYP_DATE) begin
       move 0 to bool#
       move arg1# to d1#
       move arg2# to d2#
-      if comp# eq COMP_LT move (d1#<d2#)  to bool#
-      if comp# eq COMP_LE move (d1#<=d2#) to bool#
-      if comp# eq COMP_EQ move (d1#=d2#)  to bool#
-      if comp# eq COMP_GE move (d1#>=d2#) to bool#
-      if comp# eq COMP_GT move (d1#>d2#)  to bool#
-      if comp# eq COMP_NE move (d1#<>d2#) to bool#
+      if (comp# = COMP_LT) move (d1#<d2#) to bool#
+      if (comp# = COMP_LE) move (d1#<=d2#) to bool#
+      if (comp# = COMP_EQ) move (d1#=d2#) to bool#
+      if (comp# = COMP_GE) move (d1#>=d2#) to bool#
+      if (comp# = COMP_GT) move (d1#>d2#) to bool#
+      if (comp# = COMP_NE) move (d1#<>d2#) to bool#
     end
-    if type# eq VARTYP_STRING begin
+    if (type# = VARTYP_STRING) begin
       move 0 to bool#
-      if comp# eq COMP_LT if arg1# LT arg2# move 1 to bool#
-      if comp# eq COMP_LE if arg1# LE arg2# move 1 to bool#
-      if comp# eq COMP_EQ if arg1# EQ arg2# move 1 to bool#
-      if comp# eq COMP_GE if arg1# GE arg2# move 1 to bool#
-      if comp# eq COMP_GT if arg1# GT arg2# move 1 to bool#
-      if comp# eq COMP_NE if arg1# NE arg2# move 1 to bool#
+      if ((comp# = COMP_LT) and (arg1# < arg2#)) move 1 to bool#
+      if ((comp# = COMP_LE) and (arg1# <= arg2#)) move 1 to bool#
+      if ((comp# = COMP_EQ) and (arg1# = arg2#)) move 1 to bool#
+      if ((comp# = COMP_GE) and (arg1# >= arg2#)) move 1 to bool#
+      if ((comp# = COMP_GT) and (arg1# > arg2#)) move 1 to bool#
+      if ((comp# = COMP_NE) and (arg1# <> arg2#)) move 1 to bool#
     end
-    if bool# eq -1 send obs "Bad comparison, if-test failed"
+    if (bool# = -1) send obs "Bad comparison, if-test failed"
     function_return bool#
   end_function
   procedure mthd_iftest_goto integer t1# string varno1# integer t2# integer comp# integer t3# string varno2# integer t4# integer line#
@@ -1224,26 +1224,26 @@ class cBasicVirtualMachine is an cArray
   end_enumeration_list
   procedure mthd_debug integer t1# string value#
     get sArgValue.is t1# value# to value#
-    if (integer(value#)) eq DBG.OFF begin
+    if ((integer(value#)) = DBG.OFF) begin
       set piDebugState to 0
       set piDebugSingleStep to 0
     end
-    if (integer(value#)) eq DBG.ON begin
+    if ((integer(value#)) = DBG.ON) begin
       set piDebugState to 1
       set piDebugSingleStep to 0
     end
-    if (integer(value#)) eq DBG.SINGLESTEP begin
+    if ((integer(value#)) = DBG.SINGLESTEP) begin
       set piDebugState to 1
       set piDebugSingleStep to 1
     end
-    if (integer(value#)) eq DBG.VARDISPLAY send VarDisplay to (oVariables(self))
+    if ((integer(value#)) = DBG.VARDISPLAY) send VarDisplay to (oVariables(self))
   end_procedure
   procedure mthd_log_open integer t1# string fn# integer t2# string append#
     integer ch#
     get sArgValue.is t1# fn# to fn#
     get sArgValue.is t2# append# to append#
     get private.piLogChannel to ch#
-    if ch# eq -1 begin
+    if (ch# = -1) begin
       if (integer(append#)) move (SEQ_AppendOutput(fn#)) to ch#
       else move (SEQ_DirectOutput(fn#)) to ch#
       set private.piLogChannel  to ch#
@@ -1385,14 +1385,14 @@ class cBasicVirtualMachine is an cArray
     string grb# str#
     get piParameters.i of (oOpcodes(self)) item opcode# to num_arguments#
     move "Line #: #" to str#
-    replace "#" in str# with (IntToStrRzf(pCurrentOpCodeLine(self),length(string(item_count(self)-1))))
-    replace "#" in str# with (psName.i(oOpcodes(self),opcode#))
-    if num_arguments# ge 1 move (str#+" "+sArgtype_Name.i(typ1#)+"["+arg1#+"]") to str#
-    if num_arguments# ge 2 move (str#+" "+sArgtype_Name.i(typ2#)+"["+arg2#+"]") to str#
-    if num_arguments# ge 3 move (str#+" "+sArgtype_Name.i(typ3#)+"["+arg3#+"]") to str#
-    if num_arguments# ge 4 move (str#+" "+sArgtype_Name.i(typ4#)+"["+arg4#+"]") to str#
-    if num_arguments# ge 5 move (str#+" "+sArgtype_Name.i(typ5#)+"["+arg5#+"]") to str#
-    if num_arguments# ge 6 move (str#+" "+sArgtype_Name.i(typ6#)+"["+arg6#+"]") to str#
+    Move (Replace("#", str#, (IntToStrRzf(pCurrentOpCodeLine(self),length(string(item_count(self)-1)))))) to str#
+    Move (Replace("#", str#, (psName.i(oOpcodes(self),opcode#)))) to str#
+    if (num_arguments# >= 1) move (str#+" "+sArgtype_Name.i(typ1#)+"["+arg1#+"]") to str#
+    if (num_arguments# >= 2) move (str#+" "+sArgtype_Name.i(typ2#)+"["+arg2#+"]") to str#
+    if (num_arguments# >= 3) move (str#+" "+sArgtype_Name.i(typ3#)+"["+arg3#+"]") to str#
+    if (num_arguments# >= 4) move (str#+" "+sArgtype_Name.i(typ4#)+"["+arg4#+"]") to str#
+    if (num_arguments# >= 5) move (str#+" "+sArgtype_Name.i(typ5#)+"["+arg5#+"]") to str#
+    if (num_arguments# >= 6) move (str#+" "+sArgtype_Name.i(typ6#)+"["+arg6#+"]") to str#
     set psDebugLine to str#
     if display# begin
       showln str#
@@ -1410,28 +1410,28 @@ class cBasicVirtualMachine is an cArray
     move (oOpCodes(self)) to oOpCodes#
     get piMessage.i    of oOpCodes# opcode# to msg#
     get piParameters.i of oOpCodes# opcode# to num_arguments#
-    if num_arguments# ge 1 get sGetData to typ1#
-    if num_arguments# ge 1 get sGetData to arg1#
-    if num_arguments# ge 2 get sGetData to typ2#
-    if num_arguments# ge 2 get sGetData to arg2#
-    if num_arguments# ge 3 get sGetData to typ3#
-    if num_arguments# ge 3 get sGetData to arg3#
-    if num_arguments# ge 4 get sGetData to typ4#
-    if num_arguments# ge 4 get sGetData to arg4#
-    if num_arguments# ge 5 get sGetData to typ5#
-    if num_arguments# ge 5 get sGetData to arg5#
-    if num_arguments# ge 6 get sGetData to typ6#
-    if num_arguments# ge 6 get sGetData to arg6#
+    if (num_arguments# >= 1) get sGetData to typ1#
+    if (num_arguments# >= 1) get sGetData to arg1#
+    if (num_arguments# >= 2) get sGetData to typ2#
+    if (num_arguments# >= 2) get sGetData to arg2#
+    if (num_arguments# >= 3) get sGetData to typ3#
+    if (num_arguments# >= 3) get sGetData to arg3#
+    if (num_arguments# >= 4) get sGetData to typ4#
+    if (num_arguments# >= 4) get sGetData to arg4#
+    if (num_arguments# >= 5) get sGetData to typ5#
+    if (num_arguments# >= 5) get sGetData to arg5#
+    if (num_arguments# >= 6) get sGetData to typ6#
+    if (num_arguments# >= 6) get sGetData to arg6#
     if (piDebugState(self)) ;
       send add_debug_line exec# opcode# typ1# arg1# typ2# arg2# typ3# arg3# typ4# arg4# typ5# arg5# typ6# arg6#
     if exec# begin
-      if num_arguments# eq 0 send msg#
-      if num_arguments# eq 1 send msg# typ1# arg1#
-      if num_arguments# eq 2 send msg# typ1# arg1# typ2# arg2#
-      if num_arguments# eq 3 send msg# typ1# arg1# typ2# arg2# typ3# arg3#
-      if num_arguments# eq 4 send msg# typ1# arg1# typ2# arg2# typ3# arg3# typ4# arg4#
-      if num_arguments# eq 5 send msg# typ1# arg1# typ2# arg2# typ3# arg3# typ4# arg4# typ5# arg5#
-      if num_arguments# eq 6 send msg# typ1# arg1# typ2# arg2# typ3# arg3# typ4# arg4# typ5# arg5# typ6# arg6#
+      if (num_arguments# = 0) send msg#
+      if (num_arguments# = 1) send msg# typ1# arg1#
+      if (num_arguments# = 2) send msg# typ1# arg1# typ2# arg2#
+      if (num_arguments# = 3) send msg# typ1# arg1# typ2# arg2# typ3# arg3#
+      if (num_arguments# = 4) send msg# typ1# arg1# typ2# arg2# typ3# arg3# typ4# arg4#
+      if (num_arguments# = 5) send msg# typ1# arg1# typ2# arg2# typ3# arg3# typ4# arg4# typ5# arg5#
+      if (num_arguments# = 6) send msg# typ1# arg1# typ2# arg2# typ3# arg3# typ4# arg4# typ5# arg5# typ6# arg6#
     end
   end_procedure
   function sExecutingLine returns string
@@ -1447,7 +1447,7 @@ class cBasicVirtualMachine is an cArray
   end_function
   procedure run_script
     integer pc# max# opcode# max_line#
-    ifnot (piInvalidProgram(self)) begin
+    If (Not((piInvalidProgram(self)))) begin
       set piProgramCounter to 0
       set pProgramEnded to 0
       move self to oVM_CurrentlyExecuting#
@@ -1464,7 +1464,7 @@ class cBasicVirtualMachine is an cArray
         send exec_instruction opcode# 1
         get piProgramCounter to pc#
         increment max_line#
-        if max_line# gt 10000 begin
+        if (max_line# > 10000) begin
           if (MB_Verify4("","Max lines encountered!","Execute another "+string(10000)+" instructions?","",1)) move 0 to max_line#
           else set pProgramEnded to true
         end
@@ -1497,7 +1497,7 @@ class cBasicVirtualMachine is an cArray
     string unresolved_label#
     move self to self#
     get sResolve_Labels.i of (oLabels(self)) self# to unresolved_label#
-    if unresolved_label# ne "" send add_ct_error (piProgramCounter(self)-1) ("Unresolved label ("+unresolved_label#+")")
+    if (unresolved_label# <> "") send add_ct_error (piProgramCounter(self)-1) ("Unresolved label ("+unresolved_label#+")")
   end_procedure
   procedure script_end
     send private.resolve_labels
@@ -1537,7 +1537,7 @@ class cBasicVirtualMachine is an cArray
     function_return (rval#<>-1)
   end_function
   procedure declare_var_cond string varid# integer type# // Declare if not already declared
-    ifnot (iIsVarDeclared.s(self,varid#)) send declare_var varid# type#
+    If (Not((iIsVarDeclared.s(self,varid#)))) send declare_var varid# type#
   end_procedure
   function iVarNameToVarNo string varid# returns integer
     integer rval#
@@ -1563,12 +1563,12 @@ class cBasicVirtualMachine is an cArray
     integer lhFdx liType
     get phFDX_Server to lhFdx
     get FDX_AttrValue_FIELD lhFdx DF_FIELD_TYPE (liFileField/65536) (mod(liFileField,65536)) to liType
-    if liType eq DF_ASCII   function_return FLDTYP_STRING
-    if liType eq DF_BCD     function_return FLDTYP_NUMBER
-    if liType eq DF_DATE    function_return FLDTYP_DATE
-    if liType eq DF_TEXT    function_return FLDTYP_STRING
-    if liType eq DF_BINARY  function_return FLDTYP_STRING
-    if liType eq DF_OVERLAP function_return FLDTYP_STRING
+    if (liType = DF_ASCII) function_return FLDTYP_STRING
+    if (liType = DF_BCD) function_return FLDTYP_NUMBER
+    if (liType = DF_DATE) function_return FLDTYP_DATE
+    if (liType = DF_TEXT) function_return FLDTYP_STRING
+    if (liType = DF_BINARY) function_return FLDTYP_STRING
+    if (liType = DF_OVERLAP) function_return FLDTYP_STRING
   end_function
 
   // ====== Function stuff ============================================
@@ -1598,24 +1598,24 @@ class cBasicVirtualMachine is an cArray
   procedure add_argument_gvar string varid#
     integer varno#
     get iVarNameToVarNo of (oVariables(self)) varid# to varno#
-    if varno# eq -1 send add_ct_error (piProgramCounter(self)) ("Undefined variable name: "+varid#)
+    if (varno# = -1) send add_ct_error (piProgramCounter(self)) ("Undefined variable name: "+varid#)
     set value item (piProgramCounter(self)) to varno#
     send increment_pc
   end_procedure
   procedure add_argument_field string lsFieldName
     integer liFileField
     get iFileField.s lsFieldName to liFileField
-    if liFileField eq 0 send add_ct_error (piProgramCounter(self)) ("Undefined field name: "+lsFieldName)
+    if (liFileField = 0) send add_ct_error (piProgramCounter(self)) ("Undefined field name: "+lsFieldName)
     set value item (piProgramCounter(self)) to liFileField
     send increment_pc
   end_procedure
   procedure AddData.s integer arg_type# string data#
-    if arg_type# eq AT_VAR begin
+    if (arg_type# = AT_VAR) begin
       set value item (piProgramCounter(self)) to AT_VARNO
       send increment_pc
       send add_argument_gvar data#
     end
-    if arg_type# eq AT_LBL begin
+    if (arg_type# = AT_LBL) begin
       set value item (piProgramCounter(self)) to AT_LBL
       send increment_pc
       send add_argument_label data#
@@ -1626,18 +1626,18 @@ class cBasicVirtualMachine is an cArray
       set value item (piProgramCounter(self)) to data#
       send increment_pc
     end
-    if arg_type# eq AT_EXPR begin
+    if (arg_type# = AT_EXPR) begin
       set value item (piProgramCounter(self)) to arg_type#
       send increment_pc
       set value item (piProgramCounter(self)) to data#
       send increment_pc
     end
-    if arg_type# eq AT_FIELD begin
+    if (arg_type# = AT_FIELD) begin
       set value item (piProgramCounter(self)) to AT_FIELDNO
       send increment_pc
       send add_argument_field data#
     end
-    if arg_type# eq AT_ARRAY_ELEM begin
+    if (arg_type# = AT_ARRAY_ELEM) begin
       set value item (piProgramCounter(self)) to AT_ARRAY_ELEM
     end
   end_procedure
@@ -1647,7 +1647,7 @@ class cBasicVirtualMachine is an cArray
     string arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8# arg9# arg10# arg11# arg12#
     move (oOpcodes(self)) to oOpCodes#
     get piParameters.i of oOpCodes# item opcode# to num_arguments#
-    if num_arguments# ne (num_arguments-1/2) begin
+    if (num_arguments# <> (num_arguments-1/2)) begin
       send add_ct_error (piProgramCounter(self)) "Wrong number of arguments"
       send add_ct_error (piProgramCounter(self)) ("Command: "+psName.i(oOpcodes#,opcode#)+"(Gets "+string(num_arguments-1/2)+", expects "+string(num_arguments#)+")")
     end
@@ -1655,40 +1655,40 @@ class cBasicVirtualMachine is an cArray
       get piSpecialAddMsg.i of oOpCodes# item opcode# to special_add_msg#
       if special_add_msg# begin
         for iArg from 2 to num_arguments
-          if iArg eq  2 MoveStr iArg& to arg1#
-          if iArg eq  3 MoveStr iArg& to arg2#
-          if iArg eq  4 MoveStr iArg& to arg3#
-          if iArg eq  5 MoveStr iArg& to arg4#
-          if iArg eq  6 MoveStr iArg& to arg5#
-          if iArg eq  7 MoveStr iArg& to arg6#
-          if iArg eq  8 MoveStr iArg& to arg7#
-          if iArg eq  9 MoveStr iArg& to arg8#
-          if iArg eq 10 MoveStr iArg& to arg9#
-          if iArg eq 11 MoveStr iArg& to arg10#
-          if iArg eq 12 MoveStr iArg& to arg11#
-          if iArg eq 13 MoveStr iArg& to arg12#
+          if (iArg = 2) Move iArg& to arg1#
+          if (iArg = 3) Move iArg& to arg2#
+          if (iArg = 4) Move iArg& to arg3#
+          if (iArg = 5) Move iArg& to arg4#
+          if (iArg = 6) Move iArg& to arg5#
+          if (iArg = 7) Move iArg& to arg6#
+          if (iArg = 8) Move iArg& to arg7#
+          if (iArg = 9) Move iArg& to arg8#
+          if (iArg = 10) Move iArg& to arg9#
+          if (iArg = 11) Move iArg& to arg10#
+          if (iArg = 12) Move iArg& to arg11#
+          if (iArg = 13) Move iArg& to arg12#
         loop
-        if num_arguments eq  1 send special_add_msg# opcode#
-        if num_arguments eq  2 send special_add_msg# opcode# arg1#
-        if num_arguments eq  3 send special_add_msg# opcode# arg1# arg2#
-        if num_arguments eq  4 send special_add_msg# opcode# arg1# arg2# arg3#
-        if num_arguments eq  5 send special_add_msg# opcode# arg1# arg2# arg3# arg4#
-        if num_arguments eq  6 send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5#
-        if num_arguments eq  7 send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6#
-        if num_arguments eq  8 send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7#
-        if num_arguments eq  9 send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8#
-        if num_arguments eq 10 send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8# arg9#
-        if num_arguments eq 11 send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8# arg9# arg10#
-        if num_arguments eq 12 send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8# arg9# arg10# arg11#
-        if num_arguments eq 13 send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8# arg9# arg10# arg11# arg12#
+        if (num_arguments = 1) send special_add_msg# opcode#
+        if (num_arguments = 2) send special_add_msg# opcode# arg1#
+        if (num_arguments = 3) send special_add_msg# opcode# arg1# arg2#
+        if (num_arguments = 4) send special_add_msg# opcode# arg1# arg2# arg3#
+        if (num_arguments = 5) send special_add_msg# opcode# arg1# arg2# arg3# arg4#
+        if (num_arguments = 6) send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5#
+        if (num_arguments = 7) send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6#
+        if (num_arguments = 8) send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7#
+        if (num_arguments = 9) send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8#
+        if (num_arguments = 10) send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8# arg9#
+        if (num_arguments = 11) send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8# arg9# arg10#
+        if (num_arguments = 12) send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8# arg9# arg10# arg11#
+        if (num_arguments = 13) send special_add_msg# opcode# arg1# arg2# arg3# arg4# arg5# arg6# arg7# arg8# arg9# arg10# arg11# arg12#
       end
       else begin
         send AddOpcode.i opcode#
         for count# from 1 to num_arguments#
           move (count#-1*2+2) to iArg
-          MoveStr iArg& to argtype# // tricky way to parse passed arguments
+          Move iArg& to argtype# // tricky way to parse passed arguments
           increment iArg
-          MoveStr iArg& to data# // tricky way to parse passed arguments
+          Move iArg& to data# // tricky way to parse passed arguments
           send AddData.s argtype# data#
         loop
       end
@@ -1938,8 +1938,8 @@ object oScriptError is a aps.ModalPanel label "DFScript runtime error"
     string Full_Error_Text
     move (trim(ErrMsg)) to ErrMsg // trim ErrMsg to ErrMsg
     move (trim(error_text(DESKTOP,Error#))) to Full_Error_Text
-    if ErrMsg ne "" begin
-      if ((Full_Error_Text ne "") AND error_text_available(DESKTOP,Error#)) append Full_Error_Text " " ErrMsg
+    if (ErrMsg <> "") begin
+      if ((Full_Error_Text <> "") AND error_text_available(DESKTOP,Error#)) append Full_Error_Text " " ErrMsg
       else move ErrMsg to Full_Error_Text
     end
     function_return Full_Error_Text
@@ -1958,7 +1958,7 @@ end_object
 procedure DFScriptError_On global // Set error trapping mode to DFScript
   integer obj#
   move (oScriptError(self)) to obj#
-  if Error_Object_Id ne obj# begin
+  if (Error_Object_Id <> obj#) begin
     set piOriginalErrorObject of obj# to Error_Object_Id
     move obj# to Error_Object_Id
   end
@@ -1966,7 +1966,7 @@ end_procedure
 procedure DFScriptError_Off global // Set error trapping mode back to normal
   integer obj#
   move (oScriptError(self)) to obj#
-  if Error_Object_Id eq obj# ;
+  if (Error_Object_Id = obj#) ;
     get piOriginalErrorObject of obj# to Error_Object_Id
 end_procedure
 

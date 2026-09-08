@@ -77,7 +77,7 @@ class cItemBasedCompare is an cArray
     get pItemStop2 to stop2#      //
     get piSyncLimit to SyncLimit# // Is there a limit
     repeat
-      ifnot (current1#>stop1# or current2#>stop2#) begin // There are still items to compare
+      If (Not((current1#>stop1# or current2#>stop2#))) begin
         if (iCompareItems.ii(self,current1#,current2#)) begin // And the next ones in line do match
           send items_matched current1# current2#
           increment current1#
@@ -107,7 +107,7 @@ class cItemBasedCompare is an cArray
                 move 1 to fin#
               end
             end
-            ifnot fin# begin
+            If (Not(fin#)) begin
               increment tmp_offset#
               if ((SyncLimit# and (tmp_offset#>SyncLimit#)) or (((current1#+tmp_offset#)>stop1#) and ((current2#+tmp_offset#)>stop2#))) begin
                 // Either sync-limit has been broken, or incrementing the
@@ -165,17 +165,17 @@ class cItemBasedCompare is an cArray
         end
         else increment current2#
       until (matched# or current2#>stop2#)
-      ifnot matched# send item_not_matched1 current1#
+      If (Not(matched#)) send item_not_matched1 current1#
     loop
     for current2# from start2# to stop2#
-      ifnot (private.is_matched(self,current2#)) send item_not_matched2 current2#
+      If (Not((private.is_matched(self,current2#)))) send item_not_matched2 current2#
     loop
   end_procedure
   procedure run
     integer liStrategy
     get piStrategy to liStrategy
-    if liStrategy eq COMPARE_ORDERED      send run_synchronized
-    if liStrategy eq COMPARE_UNORDERED send run_single_sequential
+    if (liStrategy = COMPARE_ORDERED) send run_synchronized
+    if (liStrategy = COMPARE_UNORDERED) send run_single_sequential
   end_procedure
 end_class // cItemBasedCompare
 
@@ -290,16 +290,16 @@ class cDoubleOrderedCompare is an cArray
       if lbOk2 get sValue2 to lsVal2
       if (lbOk1 and lbOk2) begin //
         get iCompare.ss lsVal1 lsVal2 to liCompRes
-        if liCompRes eq 0 begin
+        if (liCompRes = 0) begin
           send match lsVal1 lsVal2
           get iAdvance1 to lbOk1
           get iAdvance2 to lbOk2
         end
-        if liCompRes eq -1 begin // Value 1 is lesser
+        if (liCompRes = -1) begin // Value 1 is lesser
           send NotMatched1 lsVal1
           get iAdvance1 to lbOk1
         end
-        if liCompRes eq 1 begin // Value 2 is lesser
+        if (liCompRes = 1) begin // Value 2 is lesser
           send NotMatched2 lsVal2
           get iAdvance2 to lbOk2
         end

@@ -20,10 +20,10 @@ object oDBD_TablePrefix is a aps.ModalPanel label "Create DBD tables" // "Root n
     get value of oFrm item 0 to lsValue
     move (trim(lowercase(lsValue))) to lsValue
     set value of oFrm item 0 to lsValue
-    ifnot (length(lsValue)=2) move 0 to liRval
-    ifnot ("abcdefghijklmnopqrstuvwxyz" contains left(lsValue,1)) move 0 to liRval
-    ifnot ("abcdefghijklmnopqrstuvwxyz0123456789" contains right(lsValue,1)) move 0 to liRval
-    ifnot liRval error 534 "Value must be two letters!"
+    If (Not((length(lsValue)=2))) move 0 to liRval
+    If (Not(("abcdefghijklmnopqrstuvwxyz" contains left(lsValue,1)))) move 0 to liRval
+    If (Not(("abcdefghijklmnopqrstuvwxyz0123456789" contains right(lsValue,1)))) move 0 to liRval
+    If (Not(liRval)) error 534 "Value must be two letters!"
     function_return liRval
   end_function
   object oBtn1 is a aps.Multi_Button
@@ -240,19 +240,19 @@ object oDBDControlPanel is a aps.ModalPanel label "DBD - Control Panel"
       set psRootNamePrefix of lhTableAccess to lsPrefix
       send DoCloseTables of lhTableAccess
       get DoOpenTables of lhTableAccess to lbSuccess
-      ifnot lbSuccess begin
+      If (Not(lbSuccess)) begin
         if (MB_Verify4("Tables not found!","Do you want to create","a new set of tables?","(with prefix: "+lsPrefix+")",0)) begin
           send DBD_CreateTables lhTableAccess
           send DoCloseTables of lhTableAccess
           get DoOpenTables of lhTableAccess to lbSuccess
-          ifnot lbSuccess send obs "The program was not able to create a new set of tables."
+          If (Not(lbSuccess)) send obs "The program was not able to create a new set of tables."
         end
-        ifnot lbSuccess begin // OK! We try to open the previous ones
+        If (Not(lbSuccess)) begin
           set psRootNamePrefix of lhTableAccess to lsPrefix
           get DoOpenTables of lhTableAccess to lbSuccess
-          ifnot lbSuccess begin
+          If (Not(lbSuccess)) begin
             send obs "The program failed re-open the previous set of tables." "The program will now terminate!"
-            system
+            Abort
           end
         end
       end

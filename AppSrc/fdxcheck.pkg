@@ -32,17 +32,17 @@ class cFdxCheckErrorList is a aps.Grid
   procedure Toggle_DetailLevel
     integer iDtlLvl
     get piDetailLevel to iDtlLvl
-    if iDtlLvl eq TDINFO_INFO move TDINFO_WARNING to iDtlLvl
-    else if iDtlLvl eq TDINFO_WARNING move TDINFO_ERROR to iDtlLvl
-    else if iDtlLvl eq TDINFO_ERROR move TDINFO_INFO to iDtlLvl
+    if (iDtlLvl = TDINFO_INFO) move TDINFO_WARNING to iDtlLvl
+    else if (iDtlLvl = TDINFO_WARNING) move TDINFO_ERROR to iDtlLvl
+    else if (iDtlLvl = TDINFO_ERROR) move TDINFO_INFO to iDtlLvl
     set piDetailLevel to iDtlLvl
     send fill_list.i (piServer(self))
   end_procedure
 
   function sErrorClassText.i integer cls# returns string
-    if cls# eq TDINFO_INFO    function_return "Info"
-    if cls# eq TDINFO_WARNING function_return "Warning"
-    if cls# eq TDINFO_ERROR   function_return "Error"
+    if (cls# = TDINFO_INFO) function_return "Info"
+    if (cls# = TDINFO_WARNING) function_return "Warning"
+    if (cls# = TDINFO_ERROR) function_return "Error"
   end_function
 
   function Row_File integer row# returns integer
@@ -70,18 +70,18 @@ class cFdxCheckErrorList is a aps.Grid
     integer rval# row_from# row_to# columns#
     get Grid_Columns self to columns#
     forward get msg_item_change i1# i2# to rval#
-    if (i1#/columns#) ne (i2#/columns#) send row_change (i1#/columns#) (i2#/columns#)
+    if ((i1#/columns#) <> (i2#/columns#)) send row_change (i1#/columns#) (i2#/columns#)
     procedure_return rval#
   end_procedure
 
   function iSpecialSortValueOnColumn.i integer column# returns integer
-    if column# eq 0 function_Return 1
-    if column# eq 2 function_Return 2
+    if (column# = 0) function_Return 1
+    if (column# = 2) function_Return 2
   end_function
 
   function sSortValue.ii integer column# integer itm# returns string
-    if column# eq 0 function_return (IntToStrR(value(self,itm#),4))
-    if column# eq 2 function_return (IntToStrR(value(self,itm#),4))
+    if (column# = 0) function_return (IntToStrR(value(self,itm#),4))
+    if (column# = 2) function_return (IntToStrR(value(self,itm#),4))
   end_function
 
   procedure sort_data.i integer column#
@@ -99,14 +99,14 @@ class cFdxCheckErrorList is a aps.Grid
   end_procedure
   function iClassColor.i integer iCls returns integer
     integer iClr
-    if iCls eq TDINFO_INFO    function_return (RGB_Brighten(clGreen,75))
-    if iCls eq TDINFO_WARNING function_return (RGB_Brighten(clYellow,75))
-    if iCls eq TDINFO_ERROR   function_return (RGB_Brighten(clRed,75))
+    if (iCls = TDINFO_INFO) function_return (RGB_Brighten(clGreen,75))
+    if (iCls = TDINFO_WARNING) function_return (RGB_Brighten(clYellow,75))
+    if (iCls = TDINFO_ERROR) function_return (RGB_Brighten(clRed,75))
   end_function
   function sDetail_Level_Text.i integer lvl# returns string
-    if lvl# eq TDINFO_INFO    function_return "All"
-    if lvl# eq TDINFO_WARNING function_return "Warnings and Errors"
-    if lvl# eq TDINFO_ERROR   function_return "Errors only"
+    if (lvl# = TDINFO_INFO) function_return "All"
+    if (lvl# = TDINFO_WARNING) function_return "Warnings and Errors"
+    if (lvl# = TDINFO_ERROR) function_return "Errors only"
   end_function
   procedure fill_list.i integer oFdxCheck#
     integer error_count# warning_count# err# err_class# iBase srv#
@@ -114,7 +114,7 @@ class cFdxCheckErrorList is a aps.Grid
     move 0 to error_count#
     move 0 to warning_count#
     send delete_data
-    if oFdxCheck# eq 0 procedure_return
+    if (oFdxCheck# = 0) procedure_return
     set dynamic_update_state to DFFALSE
     get piDetailLevel to iDtlLvl
     get row_count of oFdxCheck# to max#
@@ -123,7 +123,7 @@ class cFdxCheckErrorList is a aps.Grid
     decrement max#
     for row# from 0 to max#
       get iErrorClass.i of oFdxCheck# row# to err_class#
-      if err_class# ge iDtlLvl begin
+      if (err_class# >= iDtlLvl) begin
         get piFile.i      of oFdxCheck# row# to file#
         get piError.i     of oFdxCheck# row# to err#
         get item_count to iBase
@@ -135,8 +135,8 @@ class cFdxCheckErrorList is a aps.Grid
         get iClassColor.i err_class# to color#
         set ItemColor item (iBase+3) to color#
       end
-      if err_class# eq TDINFO_ERROR   increment error_count#
-      if err_class# eq TDINFO_WARNING increment warning_count#
+      if (err_class# = TDINFO_ERROR) increment error_count#
+      if (err_class# = TDINFO_WARNING) increment warning_count#
     loop
     send Grid_SetEntryState self DFFALSE
     send update_display_counter error_count# warning_count# (sDetail_Level_Text.i(self,iDtlLvl))
@@ -150,4 +150,3 @@ class cFdxCheckErrorList is a aps.Grid
   procedure update_display_counter integer errors# integer warnings# string detail_level_text#
   end_procedure
 end_class // cFdxCheckErrorList
-

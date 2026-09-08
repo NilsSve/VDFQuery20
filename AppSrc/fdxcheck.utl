@@ -123,7 +123,7 @@ class cFdxCheck is a cArray
 
   function iFileExists string sFile returns integer
     string sPath
-    if (SEQ_ExtractPathFromFileName(sFile)) eq "" begin
+    if ((SEQ_ExtractPathFromFileName(sFile)) = "") begin
       move (SEQ_FindFileAlongDFPath(sFile)) to sPath
       move (SEQ_ComposeAbsoluteFileName(sPath,sFile)) to sFile
     end
@@ -166,7 +166,7 @@ class cFdxCheck is a cArray
 
   function Check_FD_File_Help string str# returns string // Extract the field type
     integer pos#
-    pos "|" in str# to pos#
+    Move (Pos("|",str#)) to pos#
     if pos# function_return (mid(str#,1,(pos#+2)))
     function_return ""
   end_function
@@ -181,29 +181,29 @@ class cFdxCheck is a cArray
     if RealData# begin
       get psLogicalName to fn#
       move (SEQ_DirectInput(fn#+".FD")) to ch#
-      if ch# ge 0 begin
+      if (ch# >= 0) begin
         move (SEQ_ReadLn(ch#)) to str#
         move (ExtractInteger(str#,1)) to fd_file#
-        if fd_file# eq file# begin
+        if (fd_file# = file#) begin
           move (ExtractWord(str#," ",3)) to fd_name#
-          if fd_name# eq (psLogicalName(self)) begin
+          if (fd_name# = (psLogicalName(self))) begin
             move (SEQ_ReadLn(ch#)) to str# // Throw away RECNUM replace
             move 0 to err#
             move (FDX_AttrValue_FILE(oFDX#,DF_FILE_NUMBER_FIELDS,file#)) to max_field#
             for field# from 1 to max_field#
-              ifnot err# begin
+              If (Not(err#)) begin
                 move (SEQ_ReadLn(ch#)) to str#
-                if (ExtractItem(str#,". ",3)) ne (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_NAME,file#,field#)) move 1 to err#
-                ifnot err# begin
+                if ((ExtractItem(str#,". ",3)) <> (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_NAME,file#,field#))) move 1 to err#
+                If (Not(err#)) begin
                   move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,file#,field#)) to type#
                   move "Z" to tmp#
-                  if type# eq DF_ASCII   move "S" to tmp#  // ascii   0
-                  if type# eq DF_BCD     move "N" to tmp#  // numeric 1
-                  if type# eq DF_DATE    move "D" to tmp#  // date    2
-                  if type# eq DF_OVERLAP move "S" to tmp#  // overlap 3
-                  if type# eq DF_TEXT    move "S" to tmp#  // text    5
-                  if type# eq DF_BINARY  move "S" to tmp#  // binary  6
-                  if tmp# ne (Check_FD_File_Help(self,str#)) move 1 to err#
+                  if (type# = DF_ASCII) move "S" to tmp# // ascii   0
+                  if (type# = DF_BCD) move "N" to tmp# // numeric 1
+                  if (type# = DF_DATE) move "D" to tmp# // date    2
+                  if (type# = DF_OVERLAP) move "S" to tmp# // overlap 3
+                  if (type# = DF_TEXT) move "S" to tmp# // text    5
+                  if (type# = DF_BINARY) move "S" to tmp# // binary  6
+                  if (tmp# <> (Check_FD_File_Help(self,str#))) move 1 to err#
                 end
               end
             loop
@@ -229,19 +229,19 @@ class cFdxCheck is a cArray
     if RealData# begin
       get psPhysicalName to fn#
       move (SEQ_DirectInput(fn#+".TAG")) to ch#
-      if ch# ge 0 begin
+      if (ch# >= 0) begin
         move 0 to field_count#
         repeat
           move (SEQ_ReadLn(ch#)) to field_name#
           move (seqeof) to eof#
-          ifnot eof# begin
+          If (Not(eof#)) begin
             // Here we could check for legal field names!
             increment field_count#
           end
         until eof#
         send SEQ_CloseInput ch#
         move (FDX_AttrValue_FILE(oFDX#,DF_FILE_NUMBER_FIELDS,file#)) to fields#
-        if field_count# ne fields# send add_error TDERROR_FILE_INCOMPATIBLE_TAG field_count# fields# "" ""
+        if (field_count# <> fields#) send add_error TDERROR_FILE_INCOMPATIBLE_TAG field_count# fields# "" ""
       end
       else send add_error TDERROR_COULD_NOT_CHECK "Could not check TAG file (not found)" "" "" ""
     end
@@ -259,11 +259,11 @@ class cFdxCheck is a cArray
     if (FDX_AttrValue_FILE(oFDX#,DF_FILE_DRIVER,file#)="DATAFLEX") begin
       if RealData# begin
         get psPhysicalName to fn#
-        if (integer(FDX_AttrValue_FILE(oFDX#,DF_FILE_COMPRESSION,file#))) ne DF_FILE_COMPRESS_NONE begin
-          if (iFileExists(self,fn#+".VLD")) ne SEQIT_FILE send add_error TDERROR_FILE_MISSING_VLD (fn#+".VLD") "" "" ""
+        if ((integer(FDX_AttrValue_FILE(oFDX#,DF_FILE_COMPRESSION,file#))) <> DF_FILE_COMPRESS_NONE) begin
+          if ((iFileExists(self,fn#+".VLD")) <> SEQIT_FILE) send add_error TDERROR_FILE_MISSING_VLD (fn#+".VLD") "" "" ""
         end
-        if (integer(FDX_AttrValue_FILE(oFDX#,DF_FILE_INTEGRITY_CHECK,file#))) eq DFTRUE begin
-          if (iFileExists(self,fn#+".HDR")) ne SEQIT_FILE send add_error TDERROR_FILE_MISSING_HDR (fn#+".HDR") "" "" ""
+        if ((integer(FDX_AttrValue_FILE(oFDX#,DF_FILE_INTEGRITY_CHECK,file#))) = DFTRUE) begin
+          if ((iFileExists(self,fn#+".HDR")) <> SEQIT_FILE) send add_error TDERROR_FILE_MISSING_HDR (fn#+".HDR") "" "" ""
         end
       end
       else send add_error TDERROR_COULD_NOT_CHECK "Could not check missing files (not live data)" "" "" ""
@@ -300,37 +300,37 @@ class cFdxCheck is a cArray
         move (mid(files#,1,rel_file#)) to rel_count#
         increment rel_count#
         move (overstrike(string(rel_count#),files#,rel_file#)) to files#
-        if rel_count# eq 2 send add_error TDERROR_REL_MORE_THAN_ONE rel_file# "" "" ""
+        if (rel_count# = 2) send add_error TDERROR_REL_MORE_THAN_ONE rel_file# "" "" ""
 
         // Check that related file is avaiable:
         if (rel_count#=1 and CanCheckAvailable#) begin
           get FDX_AttrValue_FILELIST oFDX# DF_FILE_ROOT_NAME file# to rel_root#
-          if rel_root# eq "" send add_error TDERROR_REL_FILE_NOT_AVAILABLE1 field# rel_file# "" ""
+          if (rel_root# = "") send add_error TDERROR_REL_FILE_NOT_AVAILABLE1 field# rel_file# "" ""
           else begin
             get iCanOpen.i of oFDX# file# to can_open#
-            ifnot can_open# send add_error TDERROR_REL_FILE_NOT_AVAILABLE2 field# rel_file# "" ""
+            If (Not(can_open#)) send add_error TDERROR_REL_FILE_NOT_AVAILABLE2 field# rel_file# "" ""
           end
         end
 
         if (CanCheckAvailable# and iCanOpen.i(oFDX#,rel_file#)) begin
 
           // Check for field type match:
-          ifnot (FDX_FieldIdenticalFieldDefinition(oFDX#,file#,field#,rel_file#,rel_field#)) begin
+          If (Not((FDX_FieldIdenticalFieldDefinition(oFDX#,file#,field#,rel_file#,rel_field#)))) begin
             // We must filter out the case where recnum is used:
-            if rel_field# ne 0 send add_error TDERROR_REL_MISMATCH1 field# rel_file# rel_field# ""
+            if (rel_field# <> 0) send add_error TDERROR_REL_MISMATCH1 field# rel_file# rel_field# ""
           end
           else begin
             move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,file#,field#)) to type#
             // If overlap field we must also check the underlying fields
-            if type# eq DF_OVERLAP begin
-              ifnot (FDX_FieldIdenticalOverlapStructures(oFDX#,file#,field#,rel_file#,rel_field#)) send add_error TDERROR_REL_MISMATCH2 field# rel_file# rel_field# ""
+            if (type# = DF_OVERLAP) begin
+              If (Not((FDX_FieldIdenticalOverlapStructures(oFDX#,file#,field#,rel_file#,rel_field#)))) send add_error TDERROR_REL_MISMATCH2 field# rel_file# rel_field# ""
             end
           end
 
           // Check if index is RECNUM
-          ifnot rel_field# send add_error TDERROR_REL_RECNUM_BASED field# rel_file# "" ""
+          If (Not(rel_field#)) send add_error TDERROR_REL_RECNUM_BASED field# rel_file# "" ""
           else begin
-            if (integer(FDX_AttrValue_FILE(oFDX#,DF_FILE_IS_SYSTEM_FILE,rel_file#))) eq DFTRUE send add_error TDERROR_REL_TO_SYSTEM_FILE field# rel_file# "" ""
+            if ((integer(FDX_AttrValue_FILE(oFDX#,DF_FILE_IS_SYSTEM_FILE,rel_file#))) = DFTRUE) send add_error TDERROR_REL_TO_SYSTEM_FILE field# rel_file# "" ""
             else begin
               // Check to see if related file is uniquely indexed on that related field:
               get FDX_IndexFindUnique oFDX# rel_file# rel_field# 0 to rel_index#
@@ -351,7 +351,7 @@ class cFdxCheck is a cArray
                     move (mid(rel_fields#,4,pos#-1*4+1)) to index_field#
                     move (replace(index_field#,rel_index_fields#,"")) to rel_index_fields#
                   loop
-                  if rel_index_fields# ne "" send add_error TDERROR_REL_FIELD_WRONG_MAIN_INDEX field# rel_file# rel_field# ""
+                  if (rel_index_fields# <> "") send add_error TDERROR_REL_FIELD_WRONG_MAIN_INDEX field# rel_file# rel_field# ""
                 end
                 else send add_error TDERROR_REL_FIELD_NO_MAIN_INDEX field# rel_file# rel_field# ""
               end
@@ -401,7 +401,7 @@ class cFdxCheck is a cArray
       if max_seg# begin // If there's an index at all
         if (DataFlex# and RealData#) begin
           // Check if we can find index file
-          if (iFileExists(self,fn#+".K"+string(index1#))) ne SEQIT_FILE send add_error TDERROR_IDX_MISSING_FILE (fn#+".K"+string(index1#)) index1# "" ""
+          if ((iFileExists(self,fn#+".K"+string(index1#))) <> SEQIT_FILE) send add_error TDERROR_IDX_MISSING_FILE (fn#+".K"+string(index1#)) index1# "" ""
         end
 
         send delete_data to oCheckIndexSet#
@@ -413,7 +413,7 @@ class cFdxCheck is a cArray
           move (mid(fields1#,4,segment#-1*4+1)) to field#
 
           // Check for dublettes:
-          ifnot field# in check_doubles# move (check_doubles#+field#) to check_doubles#
+          If (Not(check_doubles# contains field#)) move (check_doubles#+field#) to check_doubles#
           else send add_error TDERROR_IDX_SAME_FIELD (trim(field#)) index1# "" ""
 
           // Recnum not at end?
@@ -421,9 +421,9 @@ class cFdxCheck is a cArray
 
           // Uppercase on non ASCII field?
 
-          if (integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,file#,integer(trim(field#))))) ne DF_ASCII begin
+          if ((integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,file#,integer(trim(field#))))) <> DF_ASCII) begin
             get FDX_AttrValue_IDXSEG oFDX# DF_INDEX_SEGMENT_CASE file# index1# segment# to case#
-            if case# eq DF_CASE_IGNORED send add_error TDERROR_IDX_UPPERCASE_ERROR field# index1# "" ""
+            if (case# = DF_CASE_IGNORED) send add_error TDERROR_IDX_UPPERCASE_ERROR field# index1# "" ""
           end
         loop
 
@@ -436,17 +436,17 @@ class cFdxCheck is a cArray
             move 0 to fin#
             repeat
               move (segment#>15) to fin#
-              ifnot fin# begin
+              If (Not(fin#)) begin
                 move (mid(fields1#,4,segment#*4+1)) to field1#
                 move (mid(fields2#,4,segment#*4+1)) to field2#
-                if field1# eq field2# increment segment#
+                if (field1# = field2#) increment segment#
                 else begin
                   if (field1#=0 or field2#=0) send add_error TDERROR_IDX_SUPERFLUOUS (if(field1#<>0,index2#,index1#)) (if(field1#<>0,index1#,index2#)) "" ""
                   move 1 to fin#
                 end
               end
             until fin#
-            if segment# eq 16 send add_error TDERROR_IDX_IDENTICAL index1# index2# "" ""
+            if (segment# = 16) send add_error TDERROR_IDX_IDENTICAL index1# index2# "" ""
           end
         loop
       end

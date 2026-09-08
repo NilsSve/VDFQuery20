@@ -11,8 +11,8 @@ function DRV_LoadDriverByName global string lsDriverName returns integer
     // What? Driver not found? We'll have to look for it then:
     move (SEQ_FindFileAlongDFPath(lsDriverFile)) to lsDir
     // What? Not found again? We'll look along the EXE search path then:
-    if lsDir eq "" move (SEQ_FindFileAlongPath(API_OtherAttr_Value(OA_PATH),lsDriverFile)) to lsDir
-    if lsDir eq "" function_return 0 // If we didn't find it it doesn't exist! Goodbye!
+    if (lsDir = "") move (SEQ_FindFileAlongPath(API_OtherAttr_Value(OA_PATH),lsDriverFile)) to lsDir
+    if (lsDir = "") function_return 0 // If we didn't find it it doesn't exist! Goodbye!
     move (SEQ_ComposeAbsoluteFileName(lsDir,lsDriverName)) to lsDriverName
   end
   load_driver lsDriverName

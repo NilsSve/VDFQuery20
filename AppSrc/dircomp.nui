@@ -49,7 +49,7 @@ object oDirectoryCompareArray is a cArray
     if (abs(lnLeftTime-lnRightTime)<=lnTolerance) begin
       get piFileSize1.i liRow to liLeftSize
       get piFileSize2.i liRow to liRightSize
-      if liLeftSize eq liRightSize function_return 0 // No Change
+      if (liLeftSize = liRightSize) function_return 0 // No Change
     end
     if (lnLeftTime>lnRightTime) function_return -1
     function_return 1
@@ -64,8 +64,8 @@ object oDirectoryCompareArray is a cArray
     set piExists2.i   liRow to liExists2
     set piFileSize2.i liRow to liSize2
     set pnFileTime2.i liRow to lnTime2
-    if lnTime1 gt (pnNewestFile1(self)) set pnNewestFile1 to lnTime1
-    if lnTime1 gt (pnNewestFile2(self)) set pnNewestFile2 to lnTime2
+    if (lnTime1 > (pnNewestFile1(self))) set pnNewestFile1 to lnTime1
+    if (lnTime1 > (pnNewestFile2(self))) set pnNewestFile2 to lnTime2
   end_procedure
   object oDir1 is a cSetOfFilesNew
     object oSetOfDirectories is a cSetOfDirectories
@@ -168,7 +168,7 @@ object oDirectoryCompareArray is a cArray
     get psPath1 to sLeftPath
     get psPath2 to sRightPath
     move -1 to iOK
-    if iAction eq CA_COPY_ONE_LEFT_TO_RIGHT begin
+    if (iAction = CA_COPY_ONE_LEFT_TO_RIGHT) begin
       move (SEQ_ComposeAbsoluteFileName(sRightPath,sFileName)) to sTargetFile
       move (SEQ_ComposeAbsoluteFileName(sLeftPath,sFileName)) to sFileName
       get SEQ_CopyFile sFileName sTargetFile to iOK
@@ -178,7 +178,7 @@ object oDirectoryCompareArray is a cArray
         set pnFileTime2.i iRow to (pnFileTime1.i(self,iRow))
       end
     end
-    if iAction eq CA_COPY_ONE_RIGHT_TO_LEFT begin
+    if (iAction = CA_COPY_ONE_RIGHT_TO_LEFT) begin
       move (SEQ_ComposeAbsoluteFileName(sLeftPath,sFileName)) to sTargetFile
       move (SEQ_ComposeAbsoluteFileName(sRightPath,sFileName)) to sFileName
       get SEQ_CopyFile sFileName sTargetFile to iOK
@@ -191,13 +191,13 @@ object oDirectoryCompareArray is a cArray
   end_procedure
   procedure DoCopyFile integer iAction integer iRow
     integer liChanged
-    if iRow ge 0 begin
-      if iAction eq CA_COPY_ONE_LEFT_TO_RIGHT send private.CopyFile CA_COPY_ONE_LEFT_TO_RIGHT iRow
-      if iAction eq CA_COPY_ONE_RIGHT_TO_LEFT send private.CopyFile CA_COPY_ONE_RIGHT_TO_LEFT iRow
-      if iAction eq CA_COPY_ONE_NEWER begin
+    if (iRow >= 0) begin
+      if (iAction = CA_COPY_ONE_LEFT_TO_RIGHT) send private.CopyFile CA_COPY_ONE_LEFT_TO_RIGHT iRow
+      if (iAction = CA_COPY_ONE_RIGHT_TO_LEFT) send private.CopyFile CA_COPY_ONE_RIGHT_TO_LEFT iRow
+      if (iAction = CA_COPY_ONE_NEWER) begin
         get iIsChanged.i iRow to liChanged
-        if liChanged eq -1 send private.CopyFile CA_COPY_ONE_LEFT_TO_RIGHT iRow
-        if liChanged eq  1 send private.CopyFile CA_COPY_ONE_RIGHT_TO_LEFT iRow
+        if (liChanged = -1) send private.CopyFile CA_COPY_ONE_LEFT_TO_RIGHT iRow
+        if (liChanged = 1) send private.CopyFile CA_COPY_ONE_RIGHT_TO_LEFT iRow
       end
     end
   end_procedure
@@ -206,9 +206,9 @@ object oDirectoryCompareArray is a cArray
     if (iAction=CA_UPDATE_LEFT_DIR or iAction=CA_UPDATE_RIGHT_DIR or iAction=CA_UPDATE_BOTH_DIRS) move 0 to iExistingOnly
     else move 1 to iExistingOnly
 
-    if iAction eq CA_UPDATE_LEFT_DIR_EXISTING_ONLY  move CA_UPDATE_LEFT_DIR  to iAction
-    if iAction eq CA_UPDATE_RIGHT_DIR_EXISTING_ONLY move CA_UPDATE_RIGHT_DIR to iAction
-    if iAction eq CA_UPDATE_BOTH_DIRS_EXISTING_ONLY move CA_UPDATE_BOTH_DIRS to iAction
+    if (iAction = CA_UPDATE_LEFT_DIR_EXISTING_ONLY) move CA_UPDATE_LEFT_DIR to iAction
+    if (iAction = CA_UPDATE_RIGHT_DIR_EXISTING_ONLY) move CA_UPDATE_RIGHT_DIR to iAction
+    if (iAction = CA_UPDATE_BOTH_DIRS_EXISTING_ONLY) move CA_UPDATE_BOTH_DIRS to iAction
 
     get row_count to iMax
     decrement iMax
@@ -218,11 +218,11 @@ object oDirectoryCompareArray is a cArray
       if (liChanged<>0) begin
         get piExists1.i iRow to iExists1
         get piExists2.i iRow to iExists2
-        if iAction eq CA_UPDATE_LEFT_DIR  if (liChanged=1 and (not(iExistingOnly) or iExists1)) ;
+        if ((iAction = CA_UPDATE_LEFT_DIR) and (liChanged=1 and (not(iExistingOnly) or iExists1))) ;
                  send DoCopyFile CA_COPY_ONE_RIGHT_TO_LEFT iRow
-        if iAction eq CA_UPDATE_RIGHT_DIR if (liChanged=-1 and (not(iExistingOnly) or iExists2)) ;
+        if ((iAction = CA_UPDATE_RIGHT_DIR) and (liChanged=-1 and (not(iExistingOnly) or iExists2))) ;
                  send DoCopyFile CA_COPY_ONE_LEFT_TO_RIGHT iRow
-        if iAction eq CA_UPDATE_BOTH_DIRS if ((iExists1 and iExists2) or not(iExistingOnly)) ;
+        if ((iAction = CA_UPDATE_BOTH_DIRS) and ((iExists1 and iExists2) or not(iExistingOnly))) ;
                  send DoCopyFile CA_COPY_ONE_NEWER iRow
       end
     loop

@@ -18,12 +18,12 @@ enumeration_list // Program types
 end_enumeration_list
 
 function StructPgm_ProgramType_Text global integer type# returns string
-  if type# eq PGM_TYPE_NONE     function_return "Unknown"
-  if type# eq PGM_TYPE_EMPTY    function_return "Unchanged"
-  if type# eq PGM_TYPE_EDIT     function_return "Changed"
-  if type# eq PGM_TYPE_CREATE   function_return "Create"
-  if type# eq PGM_TYPE_DROP     function_return "Drop"
-  if type# eq PGM_TYPE_FILELIST function_return "Filelist"
+  if (type# = PGM_TYPE_NONE) function_return "Unknown"
+  if (type# = PGM_TYPE_EMPTY) function_return "Unchanged"
+  if (type# = PGM_TYPE_EDIT) function_return "Changed"
+  if (type# = PGM_TYPE_CREATE) function_return "Create"
+  if (type# = PGM_TYPE_DROP) function_return "Drop"
+  if (type# = PGM_TYPE_FILELIST) function_return "Filelist"
 end_function
 
 enumeration_list // Instruction types
@@ -34,10 +34,10 @@ enumeration_list // Instruction types
 end_enumeration_list
 
 function StructPgm_FieldInstructionType_Text global integer type# returns string
-  if type# eq INSTR_TYPE_EDIT   function_return "Edit"
-  if type# eq INSTR_TYPE_CREATE function_return "Insert"
-  if type# eq INSTR_TYPE_DELETE function_return "Delete"
-  if type# eq INSTR_TYPE_APPEND function_return "Append"
+  if (type# = INSTR_TYPE_EDIT) function_return "Edit"
+  if (type# = INSTR_TYPE_CREATE) function_return "Insert"
+  if (type# = INSTR_TYPE_DELETE) function_return "Delete"
+  if (type# = INSTR_TYPE_APPEND) function_return "Append"
 end_function
 
 // This package defines a class called cFdxRestructureProgram meant to
@@ -81,7 +81,7 @@ class cStrucPgmHelp1 is a cStrucPgmHelpClass // FILELIST/FILE instructions
     get psValue.i     row# to val#
     get psPrevValue.i row# to prev_val#
     move ("Set "+API_Attr_Name(attr#)+" To "+API_Attr_ValueName(attr#,val#)) to rval#
-    if prev_val# ne "" move (rval#+" (Prev: "+API_Attr_ValueName(attr#,prev_val#)+")") to rval#
+    if (prev_val# <> "") move (rval#+" (Prev: "+API_Attr_ValueName(attr#,prev_val#)+")") to rval#
     function_return rval#
   end_function
   procedure seq_report_on_changes integer liChannel
@@ -125,11 +125,11 @@ class cStrucPgmHelp2 is a cStrucPgmHelpClass // FIELD instructions
     get psFieldName.i row# to name#
     get psValue.i     row# to val#
     get psPrevValue.i row# to prev_val#
-    if type# eq INSTR_TYPE_DELETE function_return ("Delete field "+string(field#)+" ("+name#+")")
-    if type# eq INSTR_TYPE_CREATE function_return ("Insert field "+val#+" before field "+string(field#)+", "+name#)
-    if type# eq INSTR_TYPE_APPEND function_return ("Append field "+val#)
+    if (type# = INSTR_TYPE_DELETE) function_return ("Delete field "+string(field#)+" ("+name#+")")
+    if (type# = INSTR_TYPE_CREATE) function_return ("Insert field "+val#+" before field "+string(field#)+", "+name#)
+    if (type# = INSTR_TYPE_APPEND) function_return ("Append field "+val#)
     move ("Set "+API_Attr_Name(attr#)+" field "+string(field#)+" ("+name#+")"+" To "+API_Attr_ValueName(attr#,val#)) to rval#
-    if prev_val# ne "" move (rval#+" (Prev: "+API_Attr_ValueName(attr#,prev_val#)+")") to rval#
+    if (prev_val# <> "") move (rval#+" (Prev: "+API_Attr_ValueName(attr#,prev_val#)+")") to rval#
     function_return rval#
   end_function
 
@@ -156,7 +156,7 @@ class cStrucPgmHelp2 is a cStrucPgmHelpClass // FIELD instructions
       //end
       end
       else begin
-        if (piField.i(self,liRow)) ne liIgnoreField begin
+        if ((piField.i(self,liRow)) <> liIgnoreField) begin
           get sInstructionText.i liRow to lsValue
           writeln channel liChannel "  " lsValue
         end
@@ -209,25 +209,25 @@ class cStrucPgmHelp2 is a cStrucPgmHelpClass // FIELD instructions
       get psValue.i     liRow to lsVal
       get psPrevValue.i liRow to lsPrevVal
 
-      if liType eq INSTR_TYPE_DELETE begin
+      if (liType = INSTR_TYPE_DELETE) begin
         move ("Delete field "+string(liField)+" ("+lsName+")") to lsStr
         set value of liReportText item (item_count(liReportText)) to lsStr
         move -1 to liDontListField
       end
-      else if liType eq INSTR_TYPE_CREATE begin
+      else if (liType = INSTR_TYPE_CREATE) begin
         move ("Insert field "+lsVal+" before field "+string(liField)+", "+lsName) to lsStr
         set value of liReportText item (item_count(liReportText)) to lsStr
         move liField to liDontListField
       end
-      else if liType eq INSTR_TYPE_APPEND begin
+      else if (liType = INSTR_TYPE_APPEND) begin
         move ("Append field "+lsVal) to lsStr
         set value of liReportText item (item_count(liReportText)) to lsStr
         move 0 to liDontListField
       end
       else begin
-        if liField ne liDontListField move -2 to liDontListField
+        if (liField <> liDontListField) move -2 to liDontListField
       end
-      if liDontListField ge 0 set value of liReportText item (item_count(liReportText)) to lsStr
+      if (liDontListField >= 0) set value of liReportText item (item_count(liReportText)) to lsStr
     loop
   end_procedure
 end_class // cStrucPgmHelp2
@@ -414,17 +414,17 @@ class cFdxRestructureProgram is a cArray
       get piField.i     of obj# row# to field#
       get psFieldName.i of obj# row# to name#
       get psValue.i     of obj# row# to str#
-      if type# eq INSTR_TYPE_EDIT begin
-        if field# eq 0 begin // Field has just been created
+      if (type# = INSTR_TYPE_EDIT) begin
+        if (field# = 0) begin // Field has just been created
           send RS_SetFieldAttr attr# IMPLICIT_FIELD str#
         end
         else begin
           send RS_SetFieldAttr_ByName attr# name# str#
         end
       end
-      if type# eq INSTR_TYPE_CREATE send RS_CreateField field# str# DF_ASCII // DF_ASCII is just temporary
-      if type# eq INSTR_TYPE_DELETE send RS_DeleteField_OldNumber field#
-      if type# eq INSTR_TYPE_APPEND send RS_AppendField str# DF_ASCII // DF_ASCII is just temporary
+      if (type# = INSTR_TYPE_CREATE) send RS_CreateField field# str# DF_ASCII // DF_ASCII is just temporary
+      if (type# = INSTR_TYPE_DELETE) send RS_DeleteField_OldNumber field#
+      if (type# = INSTR_TYPE_APPEND) send RS_AppendField str# DF_ASCII // DF_ASCII is just temporary
     loop
   end_procedure
   procedure initialize.i integer oFDX# integer file#
@@ -484,25 +484,25 @@ class cFdxRestructureProgram is a cArray
   procedure Execute
     integer type# file# ok# err#
     string rn#
-    ifnot (piExecuted(self)) begin
+    If (Not((piExecuted(self)))) begin
       get piFile     to file#
       get psRootName to rn#
       get iPreconditionsError to err#
-      if err# eq PCE_NO_ERROR begin
+      if (err# = PCE_NO_ERROR) begin
         get piProgramType to type#
         if (type#<>PGM_TYPE_NONE and type#<>PGM_TYPE_EMPTY) begin // If it's there and it's not empty
-          if type# eq PGM_TYPE_CREATE   get RS_TableCreateName rn# to ok#
+          if (type# = PGM_TYPE_CREATE) get RS_TableCreateName rn# to ok#
           else begin
             if (RS_TableExistsName(rn#)) begin
-              if type# eq PGM_TYPE_DROP begin
+              if (type# = PGM_TYPE_DROP) begin
                 if (pbDeleteDroppedTables(self)) get RS_TableDropName rn# to ok#
                 else move 1 to ok# // No delete
               end
-              if type# eq PGM_TYPE_EDIT begin
+              if (type# = PGM_TYPE_EDIT) begin
                 get RS_TableOpenName file# rn# to ok#
-                ifnot ok# error 321 ("Could not open: "+trim(rn#))
+                If (Not(ok#)) error 321 ("Could not open: "+trim(rn#))
               end
-              if type# eq PGM_TYPE_FILELIST begin
+              if (type# = PGM_TYPE_FILELIST) begin
                 move 1 to ok#
               end
             end
@@ -525,9 +525,9 @@ class cFdxRestructureProgram is a cArray
         end
       end
       else begin
-        if err# eq PCE_NOT_A_VALID_ENTRY send error 323 (string(file#)+" is not a valid entry")
-        if err# eq PCE_NOT_FLEXERRS      send error 324 ("I refuse to restructure FLEXERRS.DAT. Sorry! (File number: "+string(file#)+")")
-        if err# eq PCE_ROOTNAME_MISMATCH send error 325 "Incorrect root name"
+        if (err# = PCE_NOT_A_VALID_ENTRY) send error 323 (string(file#)+" is not a valid entry")
+        if (err# = PCE_NOT_FLEXERRS) send error 324 ("I refuse to restructure FLEXERRS.DAT. Sorry! (File number: "+string(file#)+")")
+        if (err# = PCE_ROOTNAME_MISMATCH) send error 325 "Incorrect root name"
       end
     end
   end_procedure
@@ -576,9 +576,9 @@ class cFdxRestructureProgram is a cArray
     get psRootName    to lsRootName
     if (liProgType=PGM_TYPE_CREATE or liProgType=PGM_TYPE_DROP or liProgType=PGM_TYPE_EDIT) begin
       writeln channel liChannel ""
-      if liProgType eq PGM_TYPE_CREATE writeln channel liChannel ("Create "+lsRootName)
-      if liProgType eq PGM_TYPE_DROP   writeln channel liChannel ("Drop "+lsRootName)
-      if liProgType eq PGM_TYPE_EDIT   begin
+      if (liProgType = PGM_TYPE_CREATE) writeln channel liChannel ("Create "+lsRootName)
+      if (liProgType = PGM_TYPE_DROP) writeln channel liChannel ("Drop "+lsRootName)
+      if (liProgType = PGM_TYPE_EDIT) begin
         writeln channel liChannel ("Edit "+lsRootName)
         send seq_report_on_changes to (oFileListPgm(self)) liChannel
         send seq_report_on_changes to (oFilePgm(self)) liChannel

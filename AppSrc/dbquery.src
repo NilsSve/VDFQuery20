@@ -3,7 +3,7 @@
 Use DfAllEnt.pkg
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use aps.pkg         // Auto Positioning and Sizing classes for VDF
@@ -22,6 +22,8 @@ define lng_default for LNG_ENGLISH // <-- Change default language here
 
 Use Splash.utl   // Graphic splish-splash
 Use About.utl    // About dialog
+Use cCJStandardMenuItemClasses.pkg   // ChangeDFCreateMenuToCodeJock: classes of the converted menu
+Use cCJMDIWindowsMenuItem.pkg   // ChangeDFCreateMenuToCodeJock: classes of the converted menu
 
 set AppInfo AI_TITLE       to "DBQuery"
 set AppInfo AI_SUBTITLE    to "for Windows"
@@ -122,21 +124,119 @@ End_Procedure
 
 Object Main is a Panel
   set label to "DBQuery" // "Rapportgenerator"
-  DFCreate_Menu Main_Menu
-    DFCreate_Menu "&File" FilePullDown is a ViewPopupMenu
-      on_item "Sort"             send Activate_Sort_Vw
-      on_item "New Query"        send Activate_Query_Vw
-      on_item ""                 send none
-//      on_item "Select workspace" send Do_Select_WorkSpace
-      On_Item "Select filelist"  Send Do_Select_FileList
-      On_Item ""                 Send none
-      on_item "Login"            send DoLogin
-      on_item "Display open"     send OpenStat.DisplayFileLocations
-      on_item ""                 send none
-      on_item "Exit \aAlt+F4"    send exit_application
-    End_Menu
-    #include Win_PM.inc     // Window of available views
-  End_Menu
+//  TODO (DFRefactor): converted to the CodeJock menu above by ChangeDFCreateMenuToCodeJock.
+//    DFCreate_Menu Main_Menu
+//      DFCreate_Menu "&File" FilePullDown is a ViewPopupMenu
+//        on_item "Sort"             send Activate_Sort_Vw
+//        on_item "New Query"        send Activate_Query_Vw
+//        on_item ""                 send none
+//  //      on_item "Select workspace" send Do_Select_WorkSpace
+//        On_Item "Select filelist"  Send Do_Select_FileList
+//        On_Item ""                 Send none
+//        on_item "Login"            send DoLogin
+//        on_item "Display open"     send OpenStat.DisplayFileLocations
+//        on_item ""                 send none
+//        on_item "Exit \aAlt+F4"    send exit_application
+//      End_Menu
+//      #include Win_PM.inc     // Window of available views
+//    End_Menu
+
+  Object oCommandBarSystem is a cCJCommandBarSystem
+      Set pbTimerUpdate to True
+      Object oMenuBar is a cCJMenuBar
+          Object oFile_Menu is a cCJMenuItem
+              Set peControlType to xtpControlPopup
+              Set psCaption to "&File"
+              Object oSort_MenuItem is a cCJMenuItem
+                  Set psCaption to "Sort"
+                  Procedure OnExecute Variant vCommandBarControl
+                      Send Activate_Sort_Vw
+                  End_Procedure
+              End_Object
+              Object oNewQuery_MenuItem is a cCJMenuItem
+                  Set psCaption to "New Query"
+                  Procedure OnExecute Variant vCommandBarControl
+                      Send Activate_Query_Vw
+                  End_Procedure
+              End_Object
+              Object oSelectfilelist_MenuItem is a cCJMenuItem
+                  Set psCaption to "Select filelist"
+                  Set pbControlBeginGroup to True
+                  Procedure OnExecute Variant vCommandBarControl
+                      Send Do_Select_FileList
+                  End_Procedure
+              End_Object
+              Object oLogin_MenuItem is a cCJMenuItem
+                  Set psCaption to "Login"
+                  Set pbControlBeginGroup to True
+                  Procedure OnExecute Variant vCommandBarControl
+                      Send DoLogin
+                  End_Procedure
+              End_Object
+              Object oDisplayopen_MenuItem is a cCJMenuItem
+                  Set psCaption to "Display open"
+                  Procedure OnExecute Variant vCommandBarControl
+                      Send OpenStat.DisplayFileLocations
+                  End_Procedure
+              End_Object
+              Object oExit_MenuItem is a cCJExitMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set pbControlBeginGroup to True
+              //  \aAlt+F4   // TODO (DFRefactor): legacy accelerator - bind a CodeJock shortcut by hand.
+              End_Object
+          End_Object
+          Object oWindow_Menu is a cCJMDIWindowsMenuItem
+              Set peControlType to xtpControlPopup
+              Set psCaption to "&Window"
+              Set psToolTip to "Display Current Views and set other display options."
+              Object oDisplayOptions_Menu is a cCJMenuItem
+                  Set peControlType to xtpControlPopup
+                  Set psCaption to "&Display_Options"
+                  Set psToolTip to "Set tool-bar, status-bar, and icon display options"
+                  Object oToolbar_MenuItem is a cCJMenuItem
+                      Set psCaption to "&Tool-bar"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send Toggle_ToolBar
+                      End_Procedure
+                  End_Object
+                  Object oStatusbar_MenuItem is a cCJStatusbarMenuItem
+                      Set pbAddToDesignerMenu to True
+                  End_Object
+                  Object oAutoArrangeIcons_MenuItem is a cCJAutoArrangeIconsMenuItem
+                      Set pbAddToDesignerMenu to True
+                      Set psToolTip to "Remove the Tool-bar"
+                  End_Object
+              End_Object
+              Object oCascade_MenuItem is a cCJCascadeMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set pbControlBeginGroup to True
+                  Set psToolTip to "Cascade all open Windows/Views"
+              End_Object
+              Object oTileHorizontally_MenuItem is a cCJTileHorizontally
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Tile all open Windows/Views horizontally"
+              End_Object
+              Object oTileVertically_MenuItem is a cCJTileVertically
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Tile all open Windows/Views vertically"
+              End_Object
+              Object oMinimizeallWindows_MenuItem is a cCJMinimizeWindowsMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set pbControlBeginGroup to True
+                  Set psToolTip to "Minimize all open Windows/Views"
+              End_Object
+              Object oRestoreallWindows_MenuItem is a cCJRestoreWindowsMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Restore all open Windows/Views to normal screen display mode"
+              End_Object
+              Object oArrangeIcons_MenuItem is a cCJArrangeIconsMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set pbControlBeginGroup to True
+                  Set psToolTip to "Arrange the icons at the bottom"
+              End_Object
+          End_Object
+      End_Object
+  End_Object
 
   Object Client_Area IS A AppClientArea
     procedure Open_A_View_Please
@@ -161,4 +261,3 @@ send deactivate to (oSplash(self))
 send Open_A_View_Please to (Client_Area(Main(self)))
 
 Start_UI
-

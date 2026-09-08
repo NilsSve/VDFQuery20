@@ -8,7 +8,7 @@
 Use VdfBase.pkg // Define FMAC_VERSION and FMAC_REVISION
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 class cArray is an Array
@@ -22,7 +22,7 @@ class cArray2d is a cArray
             function iObjectID.i integer liX returns integer
               integer lhObj
               get value item liX to lhObj
-              ifnot lhObj begin
+              If (Not(lhObj)) begin
                 object oArray2d is a cArray
                   move self to lhObj
                 end_object
@@ -59,7 +59,7 @@ class cArray3d is a cArray2d
   function iObjectID.ii integer liX integer liY returns integer
     integer lhObj
     get Value.ii liX liY to lhObj
-    ifnot lhObj begin
+    If (Not(lhObj)) begin
       object oArray3d is a cArray
         move self to lhObj
       end_object
@@ -118,14 +118,14 @@ class cArray2dFixedWidth is a cArray
     integer liItem liMaxColumn
     get private.piMaxColumn to liMaxColumn
     move (liRow*liMaxColumn+liColumn) to liItem
-    if liColumn ge liMaxColumn error 666 "Column index is out of range"
+    if (liColumn >= liMaxColumn) error 666 "Column index is out of range"
     else set value item liItem to lsValue
   end_procedure
   function value.ii integer liRow integer liColumn returns string
     integer liItem liMaxColumn
     get private.piMaxColumn to liMaxColumn
     move (liRow*liMaxColumn+liColumn) to liItem
-    if liColumn ge liMaxColumn error 666 "Column index is out of range"
+    if (liColumn >= liMaxColumn) error 666 "Column index is out of range"
     else function_return (value(self,liItem))
   end_function
   function row_count returns integer
@@ -146,8 +146,8 @@ class cSet is an cArray
     integer liMax liItm
     get item_count to liMax
     move 0 to liItm
-    while liItm lt liMax
-      if lsValue eq (value(self,liItm)) function_return liItm // Dirty exit
+    while (liItm < liMax)
+      if (lsValue = (value(self,liItm))) function_return liItm // Dirty exit
       increment liItm
     end
     function_return -1
@@ -160,13 +160,13 @@ class cSet is an cArray
   procedure element_remove string lsValue
     integer liItm
     get element_find lsValue to liItm
-    if liItm ge 0 send delete_item liItm
+    if (liItm >= 0) send delete_item liItm
   end_procedure
 
   function iAddOrFind_Element string lsValue returns integer
     integer liRval
     get element_find lsValue to liRval
-    if liRval eq -1 begin
+    if (liRval = -1) begin
       get item_count to liRval
       set value item liRval to lsValue
     end
@@ -259,4 +259,3 @@ class cStack is an cArray
     function_return 0
   end_function
 end_class
-

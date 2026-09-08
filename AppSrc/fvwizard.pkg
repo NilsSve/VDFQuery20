@@ -1,6 +1,7 @@
 // Use FvWizard.pkg // FastView, Wizard for creating a FastView
 Use ApsWiz.pkg   // APS wizard classes
 Use FvVwEdit.pkg // Classes and objects for editing FastView-views
+Use cCJGrid.pkg
 
 object oFastViewWizard is a aps.WizardPanel label "Create new view"
   send make_nice_size WIZSIZE_NORMAL
@@ -170,10 +171,35 @@ object oFastViewWizard is a aps.WizardPanel label "Create new view"
         send add_field to (oGrid(self)) liFile liField
       end_procedure
     end_object
-    object oGrid is a cFastView_FieldsGridSmall
+    object oGrid is a cCJGrid
+        // TODO: oGrid was a cFastView_FieldsGridSmall - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
       set size to 115 0
       on_key KNEXT_ITEM send switch
       on_key KPREVIOUS_ITEM send switch_back
+
+        Procedure LoadData
+            tDataSourceRow[] TheData TheDataEmpty
+            Integer iRow
+
+            Move 0 to iRow
+
+            // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+            //   Increment iRow
+
+            If (iRow <> 0) Begin
+                Send ReInitializeData TheData False
+                Send MoveToFirstRow
+            End
+            Else Begin
+                Send InitializeData TheDataEmpty
+            End
+        End_Procedure
+
+        Procedure Activating
+            Forward Send Activating
+            Send LoadData
+        End_Procedure
+
     end_object
     object oBtn1 is a aps.Button snap SL_DOWN
       set size to 14 50
@@ -220,10 +246,35 @@ object oFastViewWizard is a aps.WizardPanel label "Create new view"
         send add_field to (oGrid(self)) liFile liField
       end_procedure
     end_object
-    object oGrid is a cFastView_FieldsGridSmall
+    object oGrid is a cCJGrid
+        // TODO: oGrid was a cFastView_FieldsGridSmall - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
       set size to 115 0
       on_key KNEXT_ITEM send switch
       on_key KPREVIOUS_ITEM send switch_back
+
+        Procedure LoadData
+            tDataSourceRow[] TheData TheDataEmpty
+            Integer iRow
+
+            Move 0 to iRow
+
+            // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+            //   Increment iRow
+
+            If (iRow <> 0) Begin
+                Send ReInitializeData TheData False
+                Send MoveToFirstRow
+            End
+            Else Begin
+                Send InitializeData TheDataEmpty
+            End
+        End_Procedure
+
+        Procedure Activating
+            Forward Send Activating
+            Send LoadData
+        End_Procedure
+
     end_object
     object oBtn1 is a aps.Button snap SL_DOWN
       set size to 14 50
@@ -340,4 +391,3 @@ object oFastViewWizard is a aps.WizardPanel label "Create new view"
     if (checked_state(oCb(oPage99(self)))) send SaveDefinitionAs to lhVw
   end_procedure
 end_object // oFastViewWizard
-

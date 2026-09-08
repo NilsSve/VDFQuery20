@@ -47,7 +47,7 @@ function DoSwitchIndicesOffLine global integer liFile returns string
     structure_end liFile DF_STRUCTEND_OPT_NONE
     close liReopenFile
     move (DBMS_OpenFileAs(lsReopenRootName,liReopenFile,liOpenMode,0)) to liOpen
-    ifnot liOpen error 721 "Table could not be opened after switching indices offline"
+    If (Not(liOpen)) error 721 "Table could not be opened after switching indices offline"
   end
   function_return lsRval
 end_function
@@ -72,7 +72,7 @@ procedure DoSwitchIndicesOnline global integer liFile string lsIndices
     structure_end liFile DF_STRUCTEND_OPT_NONE
     close liReopenFile
     move (DBMS_OpenFileAs(lsReopenRootName,liReopenFile,liOpenMode,0)) to liOpen
-    ifnot liOpen error 722 "Table could not be opened after switching indices online"
+    If (Not(liOpen)) error 722 "Table could not be opened after switching indices online"
   end
 end_procedure
 
@@ -92,15 +92,15 @@ function API_FieldValues global integer liFile string lsFields returns string
     get_attribute DF_FIELD_TYPE of liFile liField to liType
 
     get_field_value liFile liField to lsFieldValue
-    if liType eq DF_ASCII move (lsRval+rtrim(lsFieldValue)) to lsRval
-    if liType eq DF_BCD begin
+    if (liType = DF_ASCII) move (lsRval+rtrim(lsFieldValue)) to lsRval
+    if (liType = DF_BCD) begin
       get_attribute DF_FIELD_LENGTH of liFile liField to liLen
       get_attribute DF_FIELD_PRECISION of liFile liField to liDec
       if liDec increment liLen // Make room for comma
       move (lsRval+NumToStrR(lsFieldValue,liDec,liLen)) to lsRval
     end
-    if liType eq DF_DATE move (lsRval+IntToStrR(DateToInteger(lsFieldValue),8)) to lsRval
-    if liPos ne liMaxPos move (lsRval+" ") to lsRval
+    if (liType = DF_DATE) move (lsRval+IntToStrR(DateToInteger(lsFieldValue),8)) to lsRval
+    if (liPos <> liMaxPos) move (lsRval+" ") to lsRval
   loop
   function_return lsRval
 end_function

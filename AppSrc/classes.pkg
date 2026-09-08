@@ -4,22 +4,47 @@ Use Classes.nui  // Class characteristics
 
 Use aps.pkg         // Auto Positioning and Sizing classes for VDF
 Use Buttons.utl  // Button texts
+Use cCJGrid.pkg
 
 object oSelectUiClass is a aps.ModalPanel label "Select class"
   set locate_mode to CENTER_ON_SCREEN
   on_key ksave_record send close_panel_ok
   on_key kcancel send close_panel
   property integer piResult DFFALSE
-  object oLst is a aps.List
+  object oLst is a cCJGrid
+      // TODO: oLst was a aps.List - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 200 200
-    procedure mouse_click integer liItem integer liGrb
-      if ((liItem-1)<item_count(self)) send close_panel_ok
+    // Converted from Mouse_Click: iRow = row index, iCol = column index.
+    Procedure OnRowDoubleClick Integer iRow Integer iCol
+      if ((iRow-1)<item_count(self)) send close_panel_ok
     end_procedure
 
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
     procedure fill_list_help.i integer liClass
-      send add_item MSG_NONE (Cls_ClassName(liClass))
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+      Move (Cls_ClassName(liClass)) to TheData[iRow].sValue[iCol1]
+      Increment iRow
       set aux_value item (item_count(self)-1) to liClass
-    end_procedure
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
     procedure fill_list.iiii integer liClass integer liFieldType integer liLen integer liDec
       integer liMax liItm
       send delete_data

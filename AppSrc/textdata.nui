@@ -129,7 +129,7 @@ class cTextDataColumnAnalyser is a cArray
 
       // Is it a text field?
       if (pos(character(10),lsValue)) begin
-        ifnot (piDataType.i(self,liRow)) begin // If not already determined
+        If (Not((piDataType.i(self,liRow)))) begin
           set piDataType.i liRow to TDAT_CT_TEXT
           send DoAddLogEntry to lhAnalyseLog liLine liRow lsValue "contains text data"
         end
@@ -137,21 +137,21 @@ class cTextDataColumnAnalyser is a cArray
       else begin
         move (pos(lsDecChar,lsValue)) to liDecPos
         if (liDecPos and (liLen-liDecPos)>piMaxDecimals.i(self,liRow)) set piMaxDecimals.i liRow to (liLen-liDecPos)
-        ifnot (piDataType.i(self,liRow)) begin // If not already determined
-          ifnot (piCantBeNumber.i(self,liRow)) begin // It could still be a number
-            ifnot (StringIsNumber(lsValue,liDecChar)) begin
+        If (Not((piDataType.i(self,liRow)))) begin
+          If (Not((piCantBeNumber.i(self,liRow)))) begin
+            If (Not((StringIsNumber(lsValue,liDecChar)))) begin
               set piCantBeNumber.i liRow to DFTRUE
               send DoAddLogEntry to lhAnalyseLog liLine liRow lsValue "can not be number"
             end
           end
-          ifnot (piCantBeDate.i(self,liRow)) begin // It could still be a date
-            ifnot (StringIsDate(lsValue,liDateSep,liDateFormat)) begin
+          If (Not((piCantBeDate.i(self,liRow)))) begin
+            If (Not((StringIsDate(lsValue,liDateSep,liDateFormat)))) begin
               set piCantBeDate.i liRow to DFTRUE
               send DoAddLogEntry to lhAnalyseLog liLine liRow lsValue "can not be date"
             end
           end
-          ifnot (piCantBeDateTime.i(self,liRow)) begin // It could still be a date-time
-            ifnot (StringIsDateTime(lsValue,liDateSep,liDateFormat)) begin
+          If (Not((piCantBeDateTime.i(self,liRow)))) begin
+            If (Not((StringIsDateTime(lsValue,liDateSep,liDateFormat)))) begin
               set piCantBeDateTime.i liRow to DFTRUE
               send DoAddLogEntry to lhAnalyseLog liLine liRow lsValue "can not be date-time"
             end
@@ -189,7 +189,7 @@ class cTextDataColumnAnalyser is a cArray
       get row_count to liMax
       decrement liMax
       for liRow from 0 to liMax
-        ifnot (piDataType.i(self,liRow)) begin // If not already determined
+        If (Not((piDataType.i(self,liRow)))) begin
           if (piCantBeNumber.i(self,liRow)+piCantBeDate.i(self,liRow)+piCantBeDateTime.i(self,liRow)=2) begin
             if (piCantBeNumber.i(self,liRow) and piCantBeDate.i(self,liRow) and not(piCantBeDateTime.i(self,liRow))) begin
               set piDataType.i liRow to TDAT_CT_DATE_TIME
@@ -324,8 +324,8 @@ class cTextDataReader is a cArray
     move "" to lsEndQuote
     for liPos from 1 to liLen
       move (mid(lsLine,1,liPos)) to lsChar
-      if lsEndQuote eq "" begin
-        if lsChar eq lsFieldSep begin
+      if (lsEndQuote = "") begin
+        if (lsChar = lsFieldSep) begin
           set value item liItem to lsItem
           move "" to lsItem
           increment liItem
@@ -336,9 +336,9 @@ class cTextDataReader is a cArray
         end
       end
       else begin
-        if lsChar eq lsEndQuote begin
+        if (lsChar = lsEndQuote) begin
           move (mid(lsLine,1,liPos+1)) to lsChar
-          if lsChar eq lsEndQuote begin
+          if (lsChar = lsEndQuote) begin
             increment liPos
             move (lsItem+lsChar) to lsItem
           end
@@ -360,7 +360,7 @@ class cTextDataReader is a cArray
     string lsLineValue
     set psFileName to lsFileName
     get SEQ_DirectInput lsFileName to liChannel
-    if liChannel ge 0 begin
+    if (liChannel >= 0) begin
       get phTextDataParameters to lhTextDataParameters
       get value of lhTextDataParameters item TDAT_COLUMN_COUNT to liColumnCount
       get value of lhTextDataParameters item TDAT_OEM_CHARSET  to lbOEM
@@ -375,7 +375,7 @@ class cTextDataReader is a cArray
           send SEQ_CloseInput liChannel
         end
         else begin
-          ifnot lbOEM get ToOEM lsLineValue to lsLineValue
+          If (Not(lbOEM)) Move (Utf8ToOEM(lsLineValue)) to lsLineValue
           send DoSplitInItems lsLineValue
           if (item_count(self)) begin
             move TDATFO_OK to liRval
@@ -413,7 +413,7 @@ class cTextDataReader is a cArray
           end
           else begin
             set piLinesRead to 1
-            ifnot lbOEM get ToOEM lsLineValue to lsLineValue
+            If (Not(lbOEM)) Move (Utf8ToOEM(lsLineValue)) to lsLineValue
             send DoSplitInItems lsLineValue
             if (item_count(self)) begin
               move (oColumnHeaders(self)) to lhColumnHeaders
@@ -480,10 +480,10 @@ class cTextDataReader is a cArray
         end
         else function_return TDATRN_EOF
       end
-      ifnot lbOEM get ToOEM lsLine to lsLine
+      If (Not(lbOEM)) Move (Utf8ToOEM(lsLine)) to lsLine
       set piLinesRead to (piLinesRead(self)+1)
 
-      ifnot lbFirst move (lsLineValue+character(10)) to lsLineValue
+      If (Not(lbFirst)) move (lsLineValue+character(10)) to lsLineValue
       move (lsLineValue+lsLine) to lsLineValue
 
       move DFFALSE to lbFirst

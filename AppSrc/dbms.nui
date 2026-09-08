@@ -32,7 +32,7 @@ Use Dates.nui    // Date routines (No User Interface)
 define DBMS_MaxFileListEntry for 4095 // 255
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 
@@ -194,10 +194,10 @@ function DBMS_RootNameWhichDriver global string lsRootName returns integer
   // be used to open it.
   integer liRval
   string lsDriver
-  if ".INT" in (uppercase(lsRootName)) begin
+  if ((uppercase(lsRootName)) contains ".INT") begin
     move DBMS_DRIVER_UNKNOWN to liRval
   end
-  else if ":" in lsRootName begin
+  else if (lsRootName contains ":") begin
     move (uppercase(ExtractWord(lsRootName,":",1))) to lsDriver
     if (length(trim(lsDriver))=1) begin
       move DBMS_DRIVER_DATAFLEX to liRval
@@ -236,33 +236,33 @@ function DBMS_OpenFile global integer liFile integer liMode integer liBufIndex r
   move windowindex to liWindowIndex
   move |VI31 to |VI32 //copy ON ERROR label
   on error gosub DBMS_OpenError
-  indicate err false
+  Move (false) to err
   move DBMS_DRIVER_UNKNOWN to windowindex
   if liBufIndex open liFile mode liMode liBufIndex
   else          open liFile mode liMode
   move |VI32 to |VI31 //restore original ON ERROR label
   move windowindex to liRval // If an error was triggered the
-  indicate err false        // subroutine will have changed windowindex
+  Move (false) to err // subroutine will have changed windowindex
   move liWindowIndex to windowindex
   if liRval begin
     get_attribute DF_FILE_DRIVER of liFile to lsDriver
     get DBMS_DriverNameToType lsDriver to liRval
   end
 //  if DBMS_DRIVER_UNKNOWN eq liRval send obs ("UNKNOWN DRIVER: "+string(liRval)+" "+string(liFile))
-  ifnot liRval begin
+  If (Not(liRval)) begin
     if liFile begin
       Get_Attribute DF_FILE_ROOT_NAME of liFile to lsRoot
       If (DBMS_AutoLoadDriver(lsRoot)) Begin
           Move windowindex to liWindowIndex
           Move |VI31 to |VI32 //copy ON ERROR label
 //          on Error gosub DBMS_OpenError
-          indicate err False
+          Move (False) to err
           Move DBMS_DRIVER_UNKNOWN to windowindex
           If liBufIndex Open liFile mode liMode liBufIndex
           Else          Open liFile mode liMode
 //          Move |VI32 to |VI31 //restore original ON ERROR label                          «
           Move windowindex to liRval // If an error was triggered the
-          indicate err False        // subroutine will have changed windowindex
+          Move (False) to err // subroutine will have changed windowindex
           Move liWindowIndex to windowindex
           If liRval Begin
             Get_Attribute DF_FILE_DRIVER of liFile to lsDriver
@@ -279,18 +279,18 @@ function DBMS_OpenFileAs global string lsFileName integer liFile integer liMode 
   integer liRval liWindowIndex
   string lsDriver
   if (DBMS_IsOpenFile(liFile)) close liFile
-  move (ToAnsi(lsFileName)) to lsFileName
-  if lsFileName eq "" function_return DBMS_DRIVER_ERROR
+  move (Utf8ToAnsi(lsFileName)) to lsFileName
+  if (lsFileName = "") function_return DBMS_DRIVER_ERROR
   move windowindex to liWindowIndex
   move |VI31 to |VI32 //copy ON ERROR label
   on error gosub DBMS_OpenError
-  indicate err false
+  Move (false) to err
   move DBMS_DRIVER_UNKNOWN to windowindex
   if liBufIndex open lsFileName as liFile mode liMode liBufIndex
   else          open lsFileName as liFile mode liMode
   move |VI32 to |VI31 //restore original ON ERROR label
   move windowindex to liRval // If an error was triggered the
-  indicate err false        // subroutine will have changed windowindex
+  Move (false) to err // subroutine will have changed windowindex
   move liWindowIndex to windowindex
   if liRval begin
     get_attribute DF_FILE_DRIVER of liFile to lsDriver
@@ -311,16 +311,16 @@ function DBMS_StripPathAndDriver global string lsRoot returns string
   integer liPos
   string lsChar
   move (sysconf(SYSCONF_DIR_SEPARATOR)) to lsChar
-  if lsChar in lsRoot begin
+  if (lsRoot contains lsChar) begin
     move (pos(lsChar,lsRoot)) to liPos
     move (StringRightBut(lsRoot,liPos)) to lsRoot
   end
   move ":" to lsChar
-  if lsChar in lsRoot begin
+  if (lsRoot contains lsChar) begin
     move (pos(lsChar,lsRoot)) to liPos
     move (StringRightBut(lsRoot,liPos)) to lsRoot
   end
-  if "." in lsRoot get StripFromLastOccurance lsRoot "." to lsRoot
+  if (lsRoot contains ".") get StripFromLastOccurance lsRoot "." to lsRoot
   function_return lsRoot
 end_function
 
@@ -338,15 +338,15 @@ function DBMS_TablePath global integer liFile returns string
   if lbIsOpenedAs get_attribute DF_FILE_PHYSICAL_NAME of liFile to lsRval
   else get_attribute DF_FILE_ROOT_NAME of liFile to lsRval
 
-  if liType eq DBMS_DRIVER_DATAFLEX move (lsRval+".dat") to lsRval
+  if (liType = DBMS_DRIVER_DATAFLEX) move (lsRval+".dat") to lsRval
   else begin
     move (replace(lsDriver+":",lsRval,"")) to lsRval
 //    replace (lsDriver+":") in lsRval with ""
-    ifnot ".INT" in (uppercase(lsRval)) begin
+    If (Not((uppercase(lsRval)) contains ".INT")) begin
       move (lsRval+".int") to lsRval
     end
   end
-  ifnot (lsRval contains lsDirSep) begin
+  If (Not((lsRval contains lsDirSep))) begin
     get_file_path lsRval to lsRval
   end
   if (left(lsRval,2)=("."+lsDirSep)) begin
@@ -372,14 +372,14 @@ function DBMS_Rootname_Path global integer liFile returns string
   end
   else begin
     move (replace(lsDriver+":",lsStr,"")) to lsStr    //    replace (lsDriver+":") in lsStr with ""
-    ifnot ".INT" in (uppercase(lsStr)) Begin
+    If (Not((uppercase(lsStr)) contains ".INT")) Begin
       move (lsStr+".int") to lsStr
     end
   end
-  ifnot "\" in lsStr begin
+  If (Not(lsStr contains "\")) begin
     get_file_path lsStr to lsStr
   end
-  if (left(lsStr,2)) eq ".\" begin 
+  if ((left(lsStr,2)) = ".\") begin
 //    replace "." in lsStr with lsCurDir
     move (replace(".",lsStr,lsCurDir)) to lsStr
   end
@@ -410,7 +410,7 @@ function DBMS_FieldName global integer liFile integer liField returns string
   integer lbOpen lbWasOpen
   string lsRval
   move (DBMS_IsOpenFile(liFile)) to lbWasOpen
-  ifnot lbWasOpen move (DBMS_OpenFile(liFile,DF_SHARE,0)) to lbOpen
+  If (Not(lbWasOpen)) move (DBMS_OpenFile(liFile,DF_SHARE,0)) to lbOpen
   if (lbWasOpen or lbOpen) get_attribute DF_FIELD_NAME of liFile liField to lsRval
   else move ("FILE"+string(liFile)+"."+string(liField)+" N/A") to lsRval
   if (lbOpen and not(lbWasOpen)) close liFile
@@ -427,12 +427,12 @@ end_function
                                               // 5=main indexÄÄÄÄÄ
 function DBMS_FieldInfo global integer liFile integer liField integer liItem returns integer
   integer liRval
-  if liItem eq 0 get_attribute DF_FIELD_TYPE          of liFile liField to liRval // DF_ASCII DF_BCD DF_DATE DF_OVERLAP DF_TEXT DF_BINARY
-  if liItem eq 1 get_attribute DF_FIELD_LENGTH        of liFile liField to liRval
-  if liItem eq 2 get_attribute DF_FIELD_PRECISION     of liFile liField to liRval
-  if liItem eq 3 get_attribute DF_FIELD_RELATED_FILE  of liFile liField to liRval
-  if liItem eq 4 get_attribute DF_FIELD_RELATED_FIELD of liFile liField to liRval
-  if liItem eq 5 get_attribute DF_FIELD_INDEX         of liFile liField to liRval
+  if (liItem = 0) get_attribute DF_FIELD_TYPE of liFile liField to liRval // DF_ASCII DF_BCD DF_DATE DF_OVERLAP DF_TEXT DF_BINARY
+  if (liItem = 1) get_attribute DF_FIELD_LENGTH of liFile liField to liRval
+  if (liItem = 2) get_attribute DF_FIELD_PRECISION of liFile liField to liRval
+  if (liItem = 3) get_attribute DF_FIELD_RELATED_FILE of liFile liField to liRval
+  if (liItem = 4) get_attribute DF_FIELD_RELATED_FIELD of liFile liField to liRval
+  if (liItem = 5) get_attribute DF_FIELD_INDEX of liFile liField to liRval
   function_return liRval
 end_function                    // 0=max records ÄÄÄ¿
                                 // 1=current recs ÄÄ´
@@ -441,11 +441,11 @@ end_function                    // 0=max records ÄÄÄ¿
                                 // 4=number of fldsÄ
 function DBMS_FileInfo global integer liFile integer liItem returns integer
   integer liRval
-  if liItem eq 0 get_attribute DF_FILE_MAX_RECORDS        of liFile to liRval
-  if liItem eq 1 get_attribute DF_FILE_RECORDS_USED       of liFile to liRval
-  if liItem eq 2 get_attribute DF_FILE_RECORD_LENGTH      of liFile to liRval
-  if liItem eq 3 get_attribute DF_FILE_RECORD_LENGTH_USED of liFile to liRval
-  if liItem eq 4 get_attribute DF_FILE_NUMBER_FIELDS      of liFile to liRval
+  if (liItem = 0) get_attribute DF_FILE_MAX_RECORDS of liFile to liRval
+  if (liItem = 1) get_attribute DF_FILE_RECORDS_USED of liFile to liRval
+  if (liItem = 2) get_attribute DF_FILE_RECORD_LENGTH of liFile to liRval
+  if (liItem = 3) get_attribute DF_FILE_RECORD_LENGTH_USED of liFile to liRval
+  if (liItem = 4) get_attribute DF_FILE_NUMBER_FIELDS of liFile to liRval
   function_return liRval
 end_function
 
@@ -460,10 +460,10 @@ function DBMS_Relating_Field global integer liFile integer liRelFile integer liS
   get_attribute DF_FILE_NUMBER_FIELDS of liFile to liMax
   repeat
     increment liField
-    if liField gt liMax move 1 to lbFin
-    ifnot lbFin begin
+    if (liField > liMax) move 1 to lbFin
+    If (Not(lbFin)) begin
       get_attribute DF_FIELD_RELATED_FILE of liFile liField to lbTmp
-      if lbTmp eq liRelFile begin
+      if (lbTmp = liRelFile) begin
         move liField to liRval
         move 1 to lbFin
       end
@@ -478,7 +478,7 @@ function DBMS_CanOpenFile global integer liFile returns integer
   move 0 to liRval
   get_attribute DF_FILE_OPENED of liFile to lbOpen
   if lbOpen begin
-    ifnot (DBMS_IsOpenedAsFile(liFile)) begin // Return false if file is opened AS
+    If (Not((DBMS_IsOpenedAsFile(liFile)))) begin
       get_attribute DF_FILE_DRIVER of liFile to lsDriver
       get DBMS_DriverNameToType lsDriver to liRval
       //send obs "DBMS_CanOpenFile" liFile lsDriver liRval
@@ -508,7 +508,7 @@ function DBMS_NextNotOpen global integer liFile returns integer
   move 0 to liRval
   increment liFile
   while (liFile<=DBMS_MaxFileListEntry and liRval=0)
-    ifnot (DBMS_IsOpenFile(liFile)) move liFile to liRval
+    If (Not((DBMS_IsOpenFile(liFile)))) move liFile to liRval
     increment liFile
   end
   function_return liRval
@@ -536,7 +536,7 @@ procedure DBMS_Callback_FilelistEntries global integer liFlec integer liMsg inte
         else move 1 to lbOK
         if lbOk send liMsg to lhObj liFile
       end
-    until liFile eq 0
+    until (liFile = 0)
   end
   else begin
     move " " to lsRootNames
@@ -545,21 +545,21 @@ procedure DBMS_Callback_FilelistEntries global integer liFlec integer liMsg inte
       get_attribute DF_FILE_NEXT_USED of liFile to liFile
       if liFile begin
         move 1 to lbOk
-        ifnot (liFlec iand FLEC_ALL) begin
+        If (Not((liFlec iand FLEC_ALL))) begin
           ifnot (liFlec iand FLEC_BAD    ) move (DBMS_CanOpenFile(liFile)) to lbOk
-          ifnot (liFlec iand FLEC_NOT_BAD) move (not(DBMS_CanOpenFile(liFile))) to lbOk
+          If (Not((liFlec iand FLEC_NOT_BAD))) move (not(DBMS_CanOpenFile(liFile))) to lbOk
         end
         if lbOk begin
           if (liFlec iand FLEC_NO_ALIAS) begin
             get_attribute DF_FILE_ROOT_NAME of liFile to lsRoot
             move (lowercase(lsRoot)) to lsRoot
-            if (" "+lsRoot+" ") in lsRootNames move 0 to lbOk
+            if (lsRootNames contains (" "+lsRoot+" ")) move 0 to lbOk
             else move (lsRootNames+lsRoot+" ") to lsRootNames
           end
           if lbOk send liMsg to lhObj liFile
         end
       end
-    until liFile eq 0
+    until (liFile = 0)
   end
 end_procedure
 
@@ -682,4 +682,3 @@ end_procedure
   move !e to !3
   #POP E$
 #ENDCOMMAND
-

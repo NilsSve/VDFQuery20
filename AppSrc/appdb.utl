@@ -72,7 +72,7 @@ class cAppDbFieldList is a cArray
       get piType.i liRow to liType
       if (liType<>DF_OVERLAP) begin
         get piLength.i liRow to liLength
-        if liType eq DF_BCD move (liLength/2) to liLength
+        if (liType = DF_BCD) move (liLength/2) to liLength
         move (liRval+liLength) to liRval
       end
     loop
@@ -103,7 +103,7 @@ class cAppDbFieldList is a cArray
     get row_count to liRow
     set psName.i   liRow to lsName
     set piType.i   liRow to liType
-    if liType eq DF_BCD begin
+    if (liType = DF_BCD) begin
       move (lnLength-integer(lnLength)*10) to liPrecision
       move (integer(lnLength)) to lnLength
       set piLength.i liRow to (lnLength+liPrecision)
@@ -197,7 +197,7 @@ class cAppDbTable is a cAppDbFieldList
   end_procedure
 
   procedure DoDefine
-    ifnot (prv.DefineCalled(self)) begin
+    If (Not((prv.DefineCalled(self)))) begin
       set prv.DefineCalled to DFTRUE // Important that this is first.
       send DoReset_Help DFFALSE
       send OnDefine
@@ -455,7 +455,7 @@ procedure DoTransferDefToFdx global integer lhAppDbTable integer lhFdx
     set AttrValue_FIELD of lhFDX DF_FIELD_RELATED_FILE  liFile (liRow+1) to (piRelFile.i(lhAppDbTable,liRow))
     set AttrValue_FIELD of lhFDX DF_FIELD_RELATED_FIELD liFile (liRow+1) to (piRelField.i(lhAppDbTable,liRow))
     set AttrValue_FIELD of lhFDX DF_FIELD_INDEX         liFile (liRow+1) to (piMainIndex.i(lhAppDbTable,liRow))
-    if liFieldType eq DF_OVERLAP begin
+    if (liFieldType = DF_OVERLAP) begin
       set AttrValue_FIELD of lhFDX DF_FIELD_OFFSET      liFile (liRow+1) to (piOverlapOffset.i(lhAppDbTable,liRow))
     end
   loop

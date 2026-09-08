@@ -12,6 +12,7 @@ Use DBMS.utl     // Basic DBMS functions
 Use GridUtil.utl // Grid and List utilities
 
 Use aps.pkg         // Auto Positioning and Sizing classes for VDF
+Use cCJGrid.pkg
 class cFDX.Display.FieldList is a aps.Grid
   register_function piFDX_Server returns integer
   register_function piMain_File  returns integer
@@ -40,7 +41,7 @@ class cFDX.Display.FieldList is a aps.Grid
   function sRelFieldName.ii integer file# integer field# returns string
     integer fdx#
     string file_name# field_name#
-    ifnot file# function_return ""
+    If (Not(file#)) function_return ""
     get piFDX_Server to fdx#
     if fdx# begin
       get FDX_AttrValue_FILELIST fdx# DF_FILE_LOGICAL_NAME file# to file_name#
@@ -48,7 +49,7 @@ class cFDX.Display.FieldList is a aps.Grid
     end
     else begin
       get API_AttrValue_FILELIST DF_FILE_LOGICAL_NAME file# to file_name#
-      if file_name# eq "" move ("FILE"+string(file#)) to file_name#
+      if (file_name# = "") move ("FILE"+string(file#)) to file_name#
       if (DBMS_IsOpenFile(file#)) get API_AttrValue_FIELD DF_FIELD_NAME file# field# to field_name#
       else move ("FIELD"+string(field#)) to field_name#
     end
@@ -70,7 +71,7 @@ class cFDX.Display.FieldList is a aps.Grid
       move (FDX_AttrValue_FIELD(fdx#,DF_FIELD_TYPE,file#,field#)) to type#
       send add_item msg_none (API_ShortFieldTypeName(type#))
       move (FDX_AttrValue_FIELD(fdx#,DF_FIELD_LENGTH,file#,field#)) to len#
-      if type# eq DF_BCD begin
+      if (type# = DF_BCD) begin
         move (FDX_AttrValue_FIELD(fdx#,DF_FIELD_PRECISION,file#,field#)) to dec#
         send add_item msg_none (string(len#-dec#)+"."+string(dec#))
       end
@@ -82,8 +83,8 @@ class cFDX.Display.FieldList is a aps.Grid
 
       if iDisplayOldNumbers# begin
         move "(Old #) PhysLen: #" to str#
-        replace "#" in str# with (FDX_AttrValue_FIELD(fdx#,DF_FIELD_OLD_NUMBER,file#,field#))
-        replace "#" in str# with (FDX_AttrValue_FIELD(fdx#,DF_FIELD_NATIVE_LENGTH,file#,field#))
+        Move (Replace("#", str#, (FDX_AttrValue_FIELD(fdx#,DF_FIELD_OLD_NUMBER,file#,field#)))) to str#
+        Move (Replace("#", str#, (FDX_AttrValue_FIELD(fdx#,DF_FIELD_NATIVE_LENGTH,file#,field#)))) to str#
         send add_item msg_none str#
       end
       else send add_item msg_none (sRelFieldName.ii(self,FDX_AttrValue_FIELD(fdx#,DF_FIELD_RELATED_FILE,file#,field#),FDX_AttrValue_FIELD(fdx#,DF_FIELD_RELATED_FIELD,file#,field#)))
@@ -130,7 +131,7 @@ class cFDX.Display.IndexList is a aps.Grid
     get piFDX_Server to fdx#
     for idx# from 1 to 15
       send add_item msg_none ("Index "+string(idx#))
-      ifnot (integer(FDX_AttrValue_INDEX(fdx#,DF_INDEX_NUMBER_SEGMENTS,file#,idx#))) set shadow_state item (item_count(self)-1) to true
+      If (Not((integer(FDX_AttrValue_INDEX(fdx#,DF_INDEX_NUMBER_SEGMENTS,file#,idx#))))) set shadow_state item (item_count(self)-1) to true
     loop
     set dynamic_update_state to true
   end_procedure
@@ -244,32 +245,106 @@ object oFdxModalDisplayFileAttributes is a aps.ModalPanel label "Display table d
     set peAnchors to (anTop+anLeft+anBottom+anRight)
     object oTab1 is a aps.TabPage label "Fields"
       set p_Auto_Column to false
-      object oFields is a cFDX.Display.FieldList
+      object oFields is a cCJGrid
+          // TODO: oFields was a cFDX.Display.FieldList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set size to 160 0
         set peAnchors to (anTop+anLeft+anBottom+anRight)
-        set peResizeColumn to rcAll
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
     end_object
     register_object oIndexFields
     object oTab2 is a aps.TabPage label "Indices"
-      object oIndexNo is a cFDX.Display.IndexList
+      object oIndexNo is a cCJGrid
+          // TODO: oIndexNo was a cFDX.Display.IndexList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set size to 160 0
         set peAnchors to (anTop+anBottom)
-        set peResizeColumn to rcAll
-        procedure item_change integer from# integer to# returns integer
-          integer rval#
-          forward get msg_item_change from# to# to rval#
-          set piIndex to (rval#+1)
-          send fill_list to (oIndexFields(self))
-          send display_info
-          procedure_return rval#
-        end_procedure
+
+        // TODO: Legacy grid method -- consider using OnRowChange (note: Item_Change fires on every cell move; OnRowChange only fires when the row changes).
+//        procedure item_change integer from# integer to# returns integer
+//          integer rval#
+//          forward get msg_item_change from# to# to rval#
+//          set piIndex to (rval#+1)
+//          send fill_list to (oIndexFields(self))
+//          send display_info
+//          procedure_return rval#
+//        end_procedure
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
       set p_auto_column to false
-      object oIndexFields is a cFDX.Display.IndexSegmentList
+      object oIndexFields is a cCJGrid
+          // TODO: oIndexFields was a cFDX.Display.IndexSegmentList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set peAnchors to (anTop+anLeft+anBottom+anRight)
-        set peResizeColumn to rcAll
         set size to 160 0
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
       object oFrm1 is a aps.Form label "Key length:" abstract aft_numeric4.0 snap sl_right_space
         set peAnchors to (anTop+anRight)
@@ -298,15 +373,39 @@ object oFdxModalDisplayFileAttributes is a aps.ModalPanel label "Display table d
         move (FDX_AttrValue_INDEX(fdx#,DF_INDEX_LEVELS,file#,idx#)) to attr#
         set value of (oFrm2(self)) item 0 to attr#
         move (FDX_AttrValue_INDEX(fdx#,DF_INDEX_TYPE,file#,idx#)) to attr#
-        if attr# eq DF_INDEX_TYPE_ONLINE set value of (oFrm3(self)) item 0 to "No"
+        if (attr# = DF_INDEX_TYPE_ONLINE) set value of (oFrm3(self)) item 0 to "No"
         else                             set value of (oFrm3(self)) item 0 to "Yes"
       end_procedure
     end_object
     object oTab3 is a aps.TabPage label "Attributes"
-      object oOther is a cFDX.Display.FileOtherList
+      object oOther is a cCJGrid
+          // TODO: oOther was a cFDX.Display.FileOtherList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set size to 160 0
         set peAnchors to (anTop+anLeft+anBottom+anRight)
-        set peResizeColumn to rcAll
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
     end_object
   end_object
@@ -336,14 +435,14 @@ end_object
 register_function piMainFile returns integer
 procedure FDX_ModalDisplayFileAttributes global integer oFDX# integer file#
   integer open# was_open# lbIsEncapsulated
-  ifnot oFDX# begin
+  If (Not(oFDX#)) begin
     move (DBMS_IsOpenFile(file#)) to was_open#
     if was_open# move 1 to open#
     else move (DBMS_OpenFile(file#,DF_SHARE,0)) to open#
   end
   else begin
     move 1 to open#
-    if file# eq 0 begin
+    if (file# = 0) begin
       // File not specified means the oFDX# holds only one file
       get iFdxIsEncapsulated of oFDX# to lbIsEncapsulated
       if lbIsEncapsulated begin
@@ -355,7 +454,7 @@ procedure FDX_ModalDisplayFileAttributes global integer oFDX# integer file#
   end
   if open# send run.ii to (oFdxModalDisplayFileAttributes(self)) oFDX# file#
   else send obs "Table is not available"
-  ifnot oFDX# if (open# and not(was_open#)) close file#
+  If (Not(oFDX#)) if (open# and not(was_open#)) close file#
 end_procedure
 
 // Test code

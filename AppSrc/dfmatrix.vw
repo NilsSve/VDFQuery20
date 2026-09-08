@@ -4,13 +4,38 @@ Use Fdx3.utl     // FDX aware cFileList_List selector class
 Use SetFiles.pkg // Class for displaying the contents of a cSetOfFiles object
 Use GridUtil.utl // Grid and List utilities
 Use FDXSet.vw    // Display contents of cSetOfFiles cSetOfFieldsUse FDXSet.vw    // Display contents of cSetOfFiles cSetOfFields
+Use cCJGrid.pkg
 
 object oFdxDisplayGlobalAttributes is a aps.View label "Global attributes"
   on_key kcancel send close_panel
   set Border_Style to BORDER_THICK   // Make panel resizeable
-  object oLst is a cFdxGlobalAttrGrid
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxGlobalAttrGrid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
   set peAnchors to (anTop+anLeft+anBottom+anRight)
-  set peResizeColumn to rcAll
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oBtn1 is a aps.Multi_Button
     on_item "Folders" send Activate_Directory_Contents
@@ -48,32 +73,106 @@ object oFdxDisplayFileAttributes is a aps.View label "Table definition"
     set peAnchors to (anTop+anLeft+anBottom+anRight)
     object oTab1 is a aps.TabPage label "Fields"
       set p_Auto_Column to false
-      object oFields is a cFDX.Display.FieldList
+      object oFields is a cCJGrid
+          // TODO: oFields was a cFDX.Display.FieldList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set size to 160 0
         set peAnchors to (anTop+anLeft+anBottom+anRight)
-        set peResizeColumn to rcAll
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
     end_object
     register_object oIndexFields
     object oTab2 is a aps.TabPage label "Indices"
-      object oIndexNo is a cFDX.Display.IndexList
+      object oIndexNo is a cCJGrid
+          // TODO: oIndexNo was a cFDX.Display.IndexList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set size to 160 0
         set peAnchors to (anTop+anBottom)
-        set peResizeColumn to rcAll
-        procedure item_change integer from# integer to# returns integer
-          integer rval#
-          forward get msg_item_change from# to# to rval#
-          set piIndex to (rval#+1)
-          send fill_list to (oIndexFields(self))
-          send display_info
-          procedure_return rval#
-        end_procedure
+
+        // TODO: Legacy grid method -- consider using OnRowChange (note: Item_Change fires on every cell move; OnRowChange only fires when the row changes).
+//        procedure item_change integer from# integer to# returns integer
+//          integer rval#
+//          forward get msg_item_change from# to# to rval#
+//          set piIndex to (rval#+1)
+//          send fill_list to (oIndexFields(self))
+//          send display_info
+//          procedure_return rval#
+//        end_procedure
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
       set p_auto_column to false
-      object oIndexFields is a cFDX.Display.IndexSegmentList
+      object oIndexFields is a cCJGrid
+          // TODO: oIndexFields was a cFDX.Display.IndexSegmentList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set peAnchors to (anTop+anLeft+anBottom+anRight)
-        set peResizeColumn to rcAll
         set size to 160 0
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
       object oFrm1 is a aps.Form label "Key length:" abstract aft_numeric4.0 snap sl_right_space
         set peAnchors to (anTop+anRight)
@@ -102,15 +201,39 @@ object oFdxDisplayFileAttributes is a aps.View label "Table definition"
         move (FDX_AttrValue_INDEX(fdx#,DF_INDEX_LEVELS,file#,idx#)) to attr#
         set value of (oFrm2(self)) item 0 to attr#
         move (FDX_AttrValue_INDEX(fdx#,DF_INDEX_TYPE,file#,idx#)) to attr#
-        if attr# eq DF_INDEX_TYPE_ONLINE set value of (oFrm3(self)) item 0 to "No"
+        if (attr# = DF_INDEX_TYPE_ONLINE) set value of (oFrm3(self)) item 0 to "No"
         else                             set value of (oFrm3(self)) item 0 to "Yes"
       end_procedure
     end_object
     object oTab3 is a aps.TabPage label "Attributes"
-      object oOther is a cFDX.Display.FileOtherList
+      object oOther is a cCJGrid
+          // TODO: oOther was a cFDX.Display.FileOtherList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
         set size to 160 0
         set peAnchors to (anTop+anLeft+anBottom+anRight)
-        set peResizeColumn to rcAll
+
+          Procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow
+
+              Move 0 to iRow
+
+              // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+              //   Increment iRow
+
+              If (iRow <> 0) Begin
+                  Send ReInitializeData TheData False
+                  Send MoveToFirstRow
+              End
+              Else Begin
+                  Send InitializeData TheDataEmpty
+              End
+          End_Procedure
+
+          Procedure Activating
+              Forward Send Activating
+              Send LoadData
+          End_Procedure
+
       end_object
     end_object
   end_object
@@ -170,7 +293,7 @@ object oUserSelectTables is a aps.View label "Table selector"
   procedure DoDisplayDefinition
     integer vw# sz#
     move (oFdxDisplayFileAttributes(self)) to vw#
-    ifnot (active_state(vw#)) begin
+    If (Not((active_state(vw#)))) begin
       send Activate_Table_Definition
       set location to 5 5
       get size to sz#
@@ -191,35 +314,64 @@ object oUserSelectTables is a aps.View label "Table selector"
   on_key key_ctrl+key_p send select_parents     to (oLst(self))
   on_key key_ctrl+key_s send save_current_selection.browse to (oLst(self))
   on_key key_ctrl+key_g send Activate_Global_Attributes
-  object oLst is a cFdxFileMultiSelector
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxFileMultiSelector - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 180 0
     set piNo_Alias_State to false
     set piBad_Entries_State to BAD_ENTRIES_SHADOW
     set piGeneric_Display_Name_State to true
     on_key key_ctrl+key_d send DoDisplayDefinition
     set peAnchors to (anTop+anLeft+anBottom+anRight)
-    set peResizeColumn to rcAll
+
     procedure sort.i integer by#
       forward send sort.i by#
-      send OnChangeFile 0
+//      send OnChangeFile 0
     end_procedure
+
     procedure OnChangeFile integer row#
       if (item_count(self)) begin
         if (Row_Shadow_State(self,row#)) send DFMatrix_NewFileInSelector 0
         else send DFMatrix_NewFileInSelector (Row_File(self,row#))
       end
     end_procedure
+
     procedure row_change integer row_from# integer row_to#
-      send OnChangeFile row_to#
+//      send OnChangeFile row_to#
     end_procedure
+
     procedure re_order
     end_procedure
+
     procedure update_select_display // This is called automatically by the class
       integer selected# total#
       get File_Select_Count to selected#
-      get Row_Count to total#
-      send select_display selected# total#
+      Get piRowCount to total#
+//      send select_display selected# total#
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object // oLst
 
   object oSelectTxt is a aps.TextBox snap sl_right
@@ -337,22 +489,49 @@ object oListDirectoryContents is a aps.View label "Directory contents"
     procedure OnChange
       string path#
       get value item 0 to path#
-      if path# eq "All" move "" to path#
+      if (path# = "All") move "" to path#
       set psConstrainPath of (oList(self)) to path#
       send fill_list to (oList(self))
     end_procedure
   end_object
   send aps_goto_max_row
-  object oList is a cSetOfFilesList
+  object oList is a cCJGrid
+      // TODO: oList was a cSetOfFilesList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 196 0
+
     procedure fill_list_start
       set piSetOfFilesObject to (oListDir_SnapShot(piFDX_Server(self)))
-      send fill_list
-      send fill_other
+//      send fill_list
+//      send fill_other
     end_procedure
+
     procedure display_totals number file_count# number total_bytes#
-      send total_display (SEQ_FileSizeToString(total_bytes#)+" in "+string(file_count#)+" files")
+//      send total_display (SEQ_FileSizeToString(total_bytes#)+" in "+string(file_count#)+" files")
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   send aps_goto_max_row
 

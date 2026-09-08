@@ -9,94 +9,94 @@ Use DBMS.nui     // Basic DBMS functions (No User Interface)
 Use fieldinf.pkg // Global field info objects and abstract field types
 
 #IF LNG_DEFAULT=LNG_DUTCH
- #REPLACE t.OpenStat.UserName         "Gebruikersnaam"
- #REPLACE t.OpenStat.DFname           "Logische naam"
- #REPLACE t.OpenStat.RootName         "Bestandsnaam"
- #REPLACE t.OpenStat.LocOpenFiles     "Locatie van de open bestanden"
- #REPLACE t.OpenStat.Location         "Locatie"
- #REPLACE t.OpenStat.Driver           "DB-Driver"
- #REPLACE t.OpenStat.PrgNotFound      "Extern programma # niet gevonden"            // PvM
+ Define t.OpenStat.UserName       for "Gebruikersnaam"
+ Define t.OpenStat.DFname         for "Logische naam"
+ Define t.OpenStat.RootName       for "Bestandsnaam"
+ Define t.OpenStat.LocOpenFiles   for "Locatie van de open bestanden"
+ Define t.OpenStat.Location       for "Locatie"
+ Define t.OpenStat.Driver         for "DB-Driver"
+ Define t.OpenStat.PrgNotFound    for "Extern programma # niet gevonden"            // PvM
 #ENDIF
 #IF LNG_DEFAULT=LNG_SPANISH   // 03/10/2002 to 31/01/2005 for 2.3 Pepe GuimarÆes Moose Software  pg@moose-software.com
- #REPLACE t.OpenStat.UserName         "Usuario"
- #REPLACE t.OpenStat.DFname           "Nombre l¢gico"
- #REPLACE t.OpenStat.RootName         "Nombre de la tabla"
- #REPLACE t.OpenStat.LocOpenFiles     "Localizaci¢n tablas abiertas"
- #REPLACE t.OpenStat.Location         "Localizaci¢n"
- #REPLACE t.OpenStat.Driver           "Driver Base de Datos"
- #REPLACE t.OpenStat.PrgNotFound      "Programa # externo no encontrado"
+ Define t.OpenStat.UserName       for "Usuario"
+ Define t.OpenStat.DFname         for "Nombre l¢gico"
+ Define t.OpenStat.RootName       for "Nombre de la tabla"
+ Define t.OpenStat.LocOpenFiles   for "Localizaci¢n tablas abiertas"
+ Define t.OpenStat.Location       for "Localizaci¢n"
+ Define t.OpenStat.Driver         for "Driver Base de Datos"
+ Define t.OpenStat.PrgNotFound    for "Programa # externo no encontrado"
 #ENDIF
 #IF LNG_DEFAULT=LNG_ENGLISH
- #REPLACE t.OpenStat.UserName         "User name"
- #REPLACE t.OpenStat.DFname           "Logical name"
- #REPLACE t.OpenStat.RootName         "File name"
- #REPLACE t.OpenStat.LocOpenFiles     "Location of open files"
- #REPLACE t.OpenStat.Location         "Location"
- #REPLACE t.OpenStat.Driver           "DB-Driver"
- #REPLACE t.OpenStat.PrgNotFound      "External program # not found"
+ Define t.OpenStat.UserName       for "User name"
+ Define t.OpenStat.DFname         for "Logical name"
+ Define t.OpenStat.RootName       for "File name"
+ Define t.OpenStat.LocOpenFiles   for "Location of open files"
+ Define t.OpenStat.Location       for "Location"
+ Define t.OpenStat.Driver         for "DB-Driver"
+ Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
 #IF LNG_DEFAULT=LNG_DANISH
- #REPLACE t.OpenStat.UserName         "Bruger navn"
- #REPLACE t.OpenStat.DFname           "Logisk navn"
- #REPLACE t.OpenStat.RootName         "Filnavn"
- #REPLACE t.OpenStat.LocOpenFiles     "Placering af †bne filer"
- #REPLACE t.OpenStat.Location         "Placering"
- #REPLACE t.OpenStat.Driver           "DB-Driver"
- #REPLACE t.OpenStat.PrgNotFound      "Eksternt program '#' ikke fundet"
+ Define t.OpenStat.UserName       for "Bruger navn"
+ Define t.OpenStat.DFname         for "Logisk navn"
+ Define t.OpenStat.RootName       for "Filnavn"
+ Define t.OpenStat.LocOpenFiles   for "Placering af †bne filer"
+ Define t.OpenStat.Location       for "Placering"
+ Define t.OpenStat.Driver         for "DB-Driver"
+ Define t.OpenStat.PrgNotFound    for "Eksternt program '#' ikke fundet"
 #ENDIF
 #IF LNG_DEFAULT=LNG_SWEDISH
- #REPLACE t.OpenStat.UserName         "Anv„ndar namn"
- #REPLACE t.OpenStat.DFname           "Logiskt namn"
- #REPLACE t.OpenStat.RootName         "Fil namn"
- #REPLACE t.OpenStat.LocOpenFiles     "Placering av ”ppna filer"
- #REPLACE t.OpenStat.Location         "Placering"
- #REPLACE t.OpenStat.Driver           "DB-Driver"
- #REPLACE t.OpenStat.PrgNotFound      "External program # not found"
+ Define t.OpenStat.UserName       for "Anv„ndar namn"
+ Define t.OpenStat.DFname         for "Logiskt namn"
+ Define t.OpenStat.RootName       for "Fil namn"
+ Define t.OpenStat.LocOpenFiles   for "Placering av ”ppna filer"
+ Define t.OpenStat.Location       for "Placering"
+ Define t.OpenStat.Driver         for "DB-Driver"
+ Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
 #IF LNG_DEFAULT=LNG_NORWEGIAN   // 22.04.1999 torkild.resheim@emmaedb.no
- #REPLACE t.OpenStat.UserName         "Navn"
- #REPLACE t.OpenStat.DFname           "Logisk navn"
- #REPLACE t.OpenStat.RootName         "Filnavn"
- #REPLACE t.OpenStat.LocOpenFiles     "Plassering av †pne filer"
- #REPLACE t.OpenStat.Location         "Plassering"
- #REPLACE t.OpenStat.Driver           "dB-driver"
- #REPLACE t.OpenStat.PrgNotFound      "External program # not found"
+ Define t.OpenStat.UserName       for "Navn"
+ Define t.OpenStat.DFname         for "Logisk navn"
+ Define t.OpenStat.RootName       for "Filnavn"
+ Define t.OpenStat.LocOpenFiles   for "Plassering av †pne filer"
+ Define t.OpenStat.Location       for "Plassering"
+ Define t.OpenStat.Driver         for "dB-driver"
+ Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
 #IF LNG_DEFAULT=LNG_GERMAN
- #REPLACE t.OpenStat.UserName         "User Name"
- #REPLACE t.OpenStat.DFname           "Log. Name"
- #REPLACE t.OpenStat.RootName         "File Name"
- #REPLACE t.OpenStat.LocOpenFiles     "Pfad der offenen Dateien"
- #REPLACE t.OpenStat.Location         "Pfad"
- #REPLACE t.OpenStat.Driver           "DB-Driver"
- #REPLACE t.OpenStat.PrgNotFound      "External program # not found"
+ Define t.OpenStat.UserName       for "User Name"
+ Define t.OpenStat.DFname         for "Log. Name"
+ Define t.OpenStat.RootName       for "File Name"
+ Define t.OpenStat.LocOpenFiles   for "Pfad der offenen Dateien"
+ Define t.OpenStat.Location       for "Pfad"
+ Define t.OpenStat.Driver         for "DB-Driver"
+ Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
 #IF LNG_DEFAULT=LNG_PORTUGUESE    // by Claudio Rossoni (SP-Brasil)
- #REPLACE t.OpenStat.UserName         "Nome para o Usu rio"
- #REPLACE t.OpenStat.DFname           "Nome para o DataFlex"
- #REPLACE t.OpenStat.RootName         "Nome Base"
- #REPLACE t.OpenStat.LocOpenFiles     "Localiza‡Æo dos arquivos"
- #REPLACE t.OpenStat.Location         "Localiza‡Æo"
- #REPLACE t.OpenStat.Driver           "DB-Driver"
- #REPLACE t.OpenStat.PrgNotFound      "External program # not found"
+ Define t.OpenStat.UserName       for "Nome para o Usu rio"
+ Define t.OpenStat.DFname         for "Nome para o DataFlex"
+ Define t.OpenStat.RootName       for "Nome Base"
+ Define t.OpenStat.LocOpenFiles   for "Localiza‡Æo dos arquivos"
+ Define t.OpenStat.Location       for "Localiza‡Æo"
+ Define t.OpenStat.Driver         for "DB-Driver"
+ Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
 #IF LNG_DEFAULT=LNG_FRENCH
- #REPLACE t.OpenStat.UserName         "Nom utilisateur"
- #REPLACE t.OpenStat.DFname           "Nom logique"
- #REPLACE t.OpenStat.RootName         "Nom fichier"
- #REPLACE t.OpenStat.LocOpenFiles     "Emplacement des fichiers"
- #REPLACE t.OpenStat.Location         "Emplacement"
- #REPLACE t.OpenStat.Driver           "Drivers DB"
- #REPLACE t.OpenStat.PrgNotFound      "Programme externe # non trouv‚"
+ Define t.OpenStat.UserName       for "Nom utilisateur"
+ Define t.OpenStat.DFname         for "Nom logique"
+ Define t.OpenStat.RootName       for "Nom fichier"
+ Define t.OpenStat.LocOpenFiles   for "Emplacement des fichiers"
+ Define t.OpenStat.Location       for "Emplacement"
+ Define t.OpenStat.Driver         for "Drivers DB"
+ Define t.OpenStat.PrgNotFound    for "Programme externe # non trouv‚"
 #ENDIF
 #IF LNG_DEFAULT=LNG_ITALIAN  // 16/10/2002 Paolo Zanni CO.AS.CO.
- #REPLACE t.OpenStat.UserName         "Nome utente"
- #REPLACE t.OpenStat.DFname           "Logical name"
- #REPLACE t.OpenStat.RootName         "Nome File"
- #REPLACE t.OpenStat.LocOpenFiles     "Posizione dei files aperti"
- #REPLACE t.OpenStat.Location         "Posizione"
- #REPLACE t.OpenStat.Driver           "DB-Driver"
- #REPLACE t.OpenStat.PrgNotFound      "Programma esterno # non trovato"
+ Define t.OpenStat.UserName       for "Nome utente"
+ Define t.OpenStat.DFname         for "Logical name"
+ Define t.OpenStat.RootName       for "Nome File"
+ Define t.OpenStat.LocOpenFiles   for "Posizione dei files aperti"
+ Define t.OpenStat.Location       for "Posizione"
+ Define t.OpenStat.Driver         for "DB-Driver"
+ Define t.OpenStat.PrgNotFound    for "Programma esterno # non trovato"
 #ENDIF
 
 define OpenStat.PrgExt for "exe" // VDF 8 and on
@@ -105,7 +105,7 @@ procedure OpenStat.Chain_Wait global string program# string parameters# integer 
   string path# prg_fn#
   move (program#+"."+OpenStat.PrgExt) to prg_fn#
   get SEQ_FindFileAlongDFPath prg_fn# to path#
-  if path# ne "" begin
+  if (path# <> "") begin
     move (SEQ_ComposeAbsoluteFileName(path#,prg_fn#)) to program#
     send OpenStat_RegisterFiles
     send OpenStat_CloseAllFiles
@@ -133,6 +133,7 @@ object oOpenStatTableLocations is a aps.ModalPanel label t.OpenStat.LocOpenFiles
   set Border_Style to BORDER_THICK   // Make panel resizeable
   set pMinimumSize to 80 0
   on_key kcancel send close_panel
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oGrd is a aps.grid
     set size to 205 0
     set gridline_mode to GRID_VISIBLE_NONE
@@ -164,7 +165,7 @@ object oOpenStatTableLocations is a aps.ModalPanel label t.OpenStat.LocOpenFiles
           send add_item msg_none (uppercase(str#))
           send add_item msg_none ("("+DBMS_Driver_UserName(type#)+")")
         end
-      until file# eq 0
+      until (file# = 0)
       get item_count to max#
       for itm# from 0 to (max#-1)
         set entry_state item itm# to false
@@ -188,4 +189,3 @@ send aps_SetMinimumDialogSize (oOpenStatTableLocations(self))
 procedure OpenStat.DisplayFileLocations global
   send popup to (oOpenStatTableLocations(self))
 end_procedure
-

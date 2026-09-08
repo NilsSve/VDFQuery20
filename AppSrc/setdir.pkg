@@ -177,11 +177,11 @@ class cSetOfFilesListNew is a aps.Grid
   procedure OnListFilled integer liFileCount number lnBytes
   end_procedure
   procedure sort_by_column integer liColumn
-    if liColumn eq 0 send DoSort to (piSOF_Object(self)) SOF_ORDERING_NAME
-    if liColumn eq 1 send DoSort to (piSOF_Object(self)) SOF_ORDERING_TYPE
-    if liColumn eq 2 send DoSort to (piSOF_Object(self)) SOF_ORDERING_SIZE
-    if liColumn eq 3 send DoSort to (piSOF_Object(self)) SOF_ORDERING_TIME
-    if liColumn eq 4 send DoSort to (piSOF_Object(self)) SOF_ORDERING_PATH
+    if (liColumn = 0) send DoSort to (piSOF_Object(self)) SOF_ORDERING_NAME
+    if (liColumn = 1) send DoSort to (piSOF_Object(self)) SOF_ORDERING_TYPE
+    if (liColumn = 2) send DoSort to (piSOF_Object(self)) SOF_ORDERING_SIZE
+    if (liColumn = 3) send DoSort to (piSOF_Object(self)) SOF_ORDERING_TIME
+    if (liColumn = 4) send DoSort to (piSOF_Object(self)) SOF_ORDERING_PATH
     send fill_list
   end_procedure
   procedure header_mouse_click integer liItem
@@ -202,7 +202,7 @@ class cSetOfFilesListNew is a aps.Grid
     string lsTargetDir
     get prv.psDir to lsTargetDir
     get SEQ_CopyFile (SEQ_ComposeAbsoluteFileName(lsPath,lsFile)) (SEQ_ComposeAbsoluteFileName(lsTargetDir,lsFile)) to liRval
-    ifnot liRval send obs "Error! File could not be copied." (SEQ_ComposeAbsoluteFileName(lsPath,lsFile)) "to" (SEQ_ComposeAbsoluteFileName(lsTargetDir,lsFile))
+    If (Not(liRval)) send obs "Error! File could not be copied." (SEQ_ComposeAbsoluteFileName(lsPath,lsFile)) "to" (SEQ_ComposeAbsoluteFileName(lsTargetDir,lsFile))
   end_procedure
   procedure DoCopyFilesToDirectory
     string lsDir
@@ -216,4 +216,3 @@ class cSetOfFilesListNew is a aps.Grid
     else send obs "No files to copy"
   end_procedure
 end_class // cSetOfFilesListNew
-

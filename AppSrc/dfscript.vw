@@ -1,6 +1,7 @@
 // Use DFScript.vw  // DFScript test
 Use DFScript.utl // DF-Script interpreter
 Use Edit.utl     // Edit class for character mode DataFlex
+Use cCJGrid.pkg
 
 /DFScript.Sample1
 integer i
@@ -155,23 +156,57 @@ object oDFScriptSampleSelector is a aps.ModalPanel label "Load DFScript sample"
   set locate_mode to CENTER_ON_SCREEN
   on_key kcancel send close_panel
   property integer piResult 0
-  object oLst is a aps.List
+  object oLst is a cCJGrid
+      // TODO: oLst was a aps.List - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 100 200
     on_key kenter send close_panel_ok
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
     procedure add_selection integer img# string str#
       send add_item msg_ok str#
       set aux_value item (item_count(self)-1) to img#
     end_procedure
-    send add_selection DFScript.Sample1.N "While/End structure"
-    send add_selection DFScript.Sample2.N "For/Loop structure"
-    send add_selection DFScript.Sample3.N "If/Else structure"
-    send add_selection DFScript.Sample4.N "Repeat/Until structure"
-    send add_selection DFScript.Sample5.N "Nowhere Man"
-    send add_selection DFScript.Sample6.N "Error handling"
-    send add_selection DFScript.Sample7.N "Simple expression"
-    send add_selection DFScript.Sample8.N "Files in Filelist.cfg"
-    send add_selection DFScript.Sample9.N "Expression in while"
-    send add_selection DFScript.Sample10.N "Writing to log file"
+//    send add_selection DFScript.Sample1.N "While/End structure"
+//    send add_selection DFScript.Sample2.N "For/Loop structure"
+//    send add_selection DFScript.Sample3.N "If/Else structure"
+//    send add_selection DFScript.Sample4.N "Repeat/Until structure"
+//    send add_selection DFScript.Sample5.N "Nowhere Man"
+//    send add_selection DFScript.Sample6.N "Error handling"
+//    send add_selection DFScript.Sample7.N "Simple expression"
+//    send add_selection DFScript.Sample8.N "Files in Filelist.cfg"
+//    send add_selection DFScript.Sample9.N "Expression in while"
+//    send add_selection DFScript.Sample10.N "Writing to log file"
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Move someValue to TheData[iRow].sValue[iCol1]
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   procedure close_panel_ok
     set piResult to true
@@ -275,7 +310,7 @@ class cScriptIDE_Client is a aps.View
         repeat
           readln str#
           move (seqeof) to seqeof#
-          ifnot seqeof# begin
+          If (Not(seqeof#)) begin
             set value of oEdit# item itm# to str#
             increment itm#
           end
@@ -294,7 +329,7 @@ class cScriptIDE_Client is a aps.View
     string fn# str#
     move (piEditObject(self)) to oEdit#
     move (SEQ_SelectFile("Open DFScript source file","DFScript source file (*.dfs)|*.DFS")) to fn#
-    if fn# ne "" begin
+    if (fn# <> "") begin
       move 0 to itm#
       move (SEQ_DirectInput(fn#)) to ch#
       if (ch#>=0) begin
@@ -302,7 +337,7 @@ class cScriptIDE_Client is a aps.View
         repeat
           readln str#
           move (seqeof) to seqeof#
-          ifnot seqeof# begin
+          If (Not(seqeof#)) begin
             set value of oEdit# item itm# to str#
             increment itm#
           end
@@ -328,7 +363,7 @@ class cScriptIDE_Client is a aps.View
     string fn# str#
     move (piEditObject(self)) to oEdit#
     move (SEQ_SelectOutFile("Save DFScript source file","*.dfs")) to fn#
-    if fn# ne "" begin
+    if (fn# <> "") begin
       move (SEQ_DirectOutput(fn#)) to ch#
       if (ch#>=0) begin
         get line_count of oEdit# to max#
@@ -359,7 +394,7 @@ class cScriptIDE_Client is a aps.View
       send ScreenEndWait_SetText ("Parsing line "+string(itm#+1)+" of "+string(max#+1))
       send ScreenEndWait_Update itm#
       get value of oEdit# item itm# to str#
-      ifnot error# get iParse_Line.sis of oScriptInterpreter# str# (itm#+1) "Editor contents" to error#
+      If (Not(error#)) get iParse_Line.sis of oScriptInterpreter# str# (itm#+1) "Editor contents" to error#
     loop
     send ScreenEndWait_Off
     if error# begin

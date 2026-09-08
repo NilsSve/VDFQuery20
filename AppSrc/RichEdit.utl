@@ -26,6 +26,7 @@ Use Aps.pkg
 Use cToolbar.Pkg
 Use cImageList.Pkg
 Use Language.pkg
+Use tWinStructs.pkg
 
 Register_Object oNumbering
 
@@ -569,13 +570,14 @@ class RTF_NumberingMenu is a DFBaseEditPullDown
         // Problem: need to display the menu underneath the button
         Integer iVoid iLeft iTop iBottom iButtonCount lhToolBar
 
-        String sRect
+        tWinRect sRect
+        tWinRect sRectEmpty
         Pointer lpsRect
 
         move (parent(parent(self))) to lhToolBar
 
-        ZeroType tRect To sRect
-        GetAddress of sRect To lpsRect
+        Move sRectEmpty to sRect
+        Move (AddressOf(sRect)) to lpsRect
 
         // iButtonCount needs to contain the number (0-based) of the button under which this menu should appear,
         // which should be the same as the piImage used, if the imagelist is set up in button order
@@ -585,13 +587,13 @@ class RTF_NumberingMenu is a DFBaseEditPullDown
 
         Send Windows_Message of lhToolBar TB_GETITEMRECT iButtonCount lpsRect // get bounding rectangle of the button
 
-        GetBuff from sRect at tRect.Bottom To iBottom
-        Put iBottom To sRect at tRect.Top
+        Move sRect.Bottom to iBottom
+        Move iBottom to sRect.Top
 
         Move (ClientToScreen(window_handle(lhToolBar), lpsRect)) To iVoid // convert Client to Screen coordinates
 
-        GetBuff from sRect at tRect.left To iLeft
-        GetBuff from sRect at tRect.top To iTop
+        Move sRect.left to iLeft
+        Move sRect.top to iTop
 
         Set GuiLocation To iTop iLeft
         Send Popup

@@ -21,13 +21,15 @@ Use TrckBr.pkg   // TrackBar class
 Use DeoCnfrm.pkg // DEO confirm save/delete functions
 Use dbd.rv // DBD - Report object
 
-Use Language     // Set default languange if not set by compiler command line
+Use Language.pkg     // Set default languange if not set by compiler command line
 
 Use FdxSet.nui   // cFdxSetOfTables, cFdxSetOfFields, cFdxSetOfIndices
 Use FdxSet.pkg   // cFdxSetOfFieldsList class
 Use API_Attr.pkg // UI objects for use with API_Attr.utl
 Use GridUtil.utl // Grid and List utilities (not for dbGrid's or Table's)
 Use RGB.utl      // Some color functions
+Use cDbCJGrid.pkg
+Use cCJGrid.pkg
 
 object oDbdFilelistReassigner is a cArray
   item_property_list
@@ -112,7 +114,7 @@ object oDbdFilelistReassigner is a cArray
         for liRow from 0 to liMax
           get piCurrentEntry.i liRow to liCurrentEntry
           get piNewEntry.i     liRow to liNewEntry
-          ifnot (piEntryAlreadyExists.i(self,liRow)) begin
+          If (Not((piEntryAlreadyExists.i(self,liRow)))) begin
 
             clear liTableFile
             set_field_value liTableFile 1 to liCurrentEntry
@@ -171,6 +173,7 @@ object oDbdFilelistReassignerConfirm is a aps.ModalPanel label "Reassign table n
   on_key kcancel send close_panel
   property integer pbResult
 
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_AddCheckBoxColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oGrid is a aps.Grid
     set peAnchors to (anTop+anLeft+anRight+anBottom)
     send GridPrepare_AddColumn "Logical name"                   AFT_ASCII12
@@ -264,16 +267,41 @@ object oDbdSetOfFieldsResultModal is a aps.ModalPanel
   property integer phResultSet 0
   property integer phTargetSet 0
   register_object oTxt
-  object oLst is a cFdxSetOfFieldsList
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxSetOfFieldsList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 100 0
-    set peResizeColumn to rcAll
     set peAnchors to (anTop+anLeft+anRight+anBottom)
+
     procedure update_display_counter integer liFiles integer liFields
       string lsValue
       if liFields move (string(liFields)+" fields from "+string(liFiles)+" tables") to lsValue
       else move "" to lsValue
       set value of (oTxt(self)) item 0 to lsValue
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oTxt is a aps.TextBox snap SL_DOWN
     set peAnchors to (anRight+anBottom+anLeft)
@@ -346,13 +374,14 @@ object oDbdFieldSearcher is a aps.View label "Field search"
     set piFDX_Server to ghFDX
     set psTitle to "Field search result"
   end_object
-  object oLst is a cFdxSetOfFieldsList
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxSetOfFieldsList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set piAllowDelete to dfTrue
     set size to 100 0
     set piFDX_Server to ghFDX
     set piSOF_Server to (oSetOfFields(self))
-    set peResizeColumn to rcAll
     set peAnchors to (anTop+anLeft+anRight+anBottom)
+
     procedure update_display_counter integer liFiles integer liFields
       string lsValue
       if liFields move (string(liFields)+" fields from "+string(liFiles)+" tables") to lsValue
@@ -361,15 +390,40 @@ object oDbdFieldSearcher is a aps.View label "Field search"
     end_procedure
 
     procedure row_change integer liRowFrom integer liRowTo
-      send DisplayDbd liRowTo
+//      send DisplayDbd liRowTo
     end_procedure
-    procedure item_change integer liItm1 integer liItm2 returns integer
-      integer liRval liColumns
-      get Grid_Columns self to liColumns
-      forward get msg_item_change liItm1 liItm2 to liRval
-      if (liItm1/liColumns) ne (liItm2/liColumns) send row_change (liItm1/liColumns) (liItm2/liColumns)
-      procedure_return liRval
-    end_procedure
+
+    // TODO: Legacy grid method -- consider using OnRowChange (note: Item_Change fires on every cell move; OnRowChange only fires when the row changes).
+//    procedure item_change integer liItm1 integer liItm2 returns integer
+//      integer liRval liColumns
+//      get Grid_Columns self to liColumns
+//      forward get msg_item_change liItm1 liItm2 to liRval
+//      if ((liItm1/liColumns) <> (liItm2/liColumns)) send row_change (liItm1/liColumns) (liItm2/liColumns)
+//      procedure_return liRval
+//    end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
 
   end_object
   procedure DoWriteToFile
@@ -592,13 +646,13 @@ DEFINE_OBJECT_GROUP OG_Dbd_View
   // WindowIndex is a globally defined integer that I use
 
   get DoOpenTables of (oDBD_TableAccess(OG_Current_Object#)) to WindowIndex
-  ifnot WindowIndex begin
+  If (Not(WindowIndex)) begin
     //send Popup_DbdControlPanel OG_Current_Object#
     send Popup_DbdCreateTablesPanel OG_Current_Object#
     get DoOpenTables of (oDBD_TableAccess(OG_Current_Object#)) to WindowIndex
   end
 
-  ifnot WindowIndex begin // Tables were not opened: therefore we abort the whole thing
+  If (Not(WindowIndex)) begin
     send Request_Destroy_Object of OG_Current_Object#
     move 0 to OG_Current_Object#
   end
@@ -881,43 +935,57 @@ DEFINE_OBJECT_GROUP OG_Dbd_View
         set peAnchors to (anTop+anLeft+anRight+anBottom)
         object oTab1 is a aps.dbTabpage label "Fields"
           set p_auto_column to 0
-          object oLst is a aps.dbGrid // Fields
+          object oLst is a cDbCJGrid
+              // TODO: oLst was a aps.dbGrid - a subclass of dbGrid whose own behaviour this cDbCJGrid does not inherit; port it here, or subclass cDbCJGrid the same way.
             set server to oField_DD
             set ordering to 2
 //          set highlight_row_state to DFTRUE
 //          set highlight_row_color to (rgb(0,255,255))
 //          set current_item_color to (rgb(0,255,255))
 
-            set highlight_row_state to DFTRUE
-            set CurrentCellColor     to clHighlight
-            set CurrentCellTextColor to clHighlightText
-            set CurrentRowColor      to clHighlight
-            set CurrentRowTextColor  to clHighlightText
+            Set pbShowRowFocus to False
+            Set piFocusCellBackColor to clHighlight
+            Set piFocusCellForeColor to clHighlightText
+            Set piHighlightBackColor to clHighlight
+            Set piHighlightForeColor to clHighlightText
 
             set peAnchors to (anTop+anLeft+anBottom)
             get piField_FileNumber to filenumber
             set size to 83 0
-            begin_row
-              move 2 to fieldindex
-              entry_item indirect_file.recnum {noput}      // dbField.Fld_Pos          {noput}
-              move 3 to fieldindex
-              entry_item indirect_file.recnum {noenter}    // dbField.Fld_Name         {noenter}
-              entry_item ""                                // ""
-//            move 4 to fieldindex
-//            entry_item indirect_file.recnum {noenter}    // dbField.Fld_Not_Found    {noenter}
-              move 8 to fieldindex
-              entry_item indirect_file.recnum              // dbField.Obsolete         {noenter}
-              move 6 to fieldindex
-              entry_item indirect_file.recnum              // dbField.Suggested_Label  {noenter}
-            end_row
-            set header_label 0 to "Pos"
-            set header_label 1 to "Name"
+
+              Object oindirect_file_recnum is a cDbCJGridColumn
+                  Entry_Item indirect_file.recnum // dbField.Fld_Pos          {noput} (TODO: dropped entry-item options {noput})
+                  Set piWidth to 100
+                  Set psCaption to "Pos"
+              End_Object
+
+              Object oindirect_file_recnum is a cDbCJGridColumn
+                  Entry_Item indirect_file.recnum // dbField.Fld_Name         {noenter} (TODO: dropped entry-item options {noenter})
+                  Set piWidth to 100
+                  Set psCaption to "Name"
+              End_Object
+
+              Object oCol_"" is a cDbCJGridColumn
+                  Entry_Item "" // ""
+                  Set piWidth to 100
+                  Set psCaption to """"
+              End_Object
+
+              Object oindirect_file_recnum is a cDbCJGridColumn
+                  Entry_Item indirect_file.recnum // dbField.Obsolete         {noenter}
+                  Set piWidth to 100
+                  Set psCaption to "recnum"
+              End_Object
+
+              Object oindirect_file_recnum is a cDbCJGridColumn
+                  Entry_Item indirect_file.recnum // dbField.Suggested_Label  {noenter}
+                  Set piWidth to 100
+                  Set psCaption to "recnum"
+              End_Object
 //          set column_checkbox_state 3 to true
 //          set header_label 3 to "Err"
-            set column_checkbox_state 3 to true
-            set header_label 3 to "Obsolete"
-            set header_label 4 to "Better name"
             set aps_fixed_column_width 2 to 16
+
             procedure color_the_row
               integer liBase liMax liItem
               get base_item to liBase
@@ -927,19 +995,20 @@ DEFINE_OBJECT_GROUP OG_Dbd_View
                 set item_color item liItem  to (RGB_Brighten(clRed,75))
               loop
             end_procedure
-            procedure entry_display integer liInt1 integer liInt2
-              integer liBase liFile lbFieldNotFound
-              string lsBmp lsValue
-              get piField_FileNumber to liFile
-              get base_item to liBase
-              forward send entry_display liInt1 liInt2
-              get_field_value liFile 5 to lsValue
-              if (lsValue<>"") move "openbook.bmp" to lsBmp // dbField.Fld_Description
-              else move "" to lsBmp
-              set form_bitmap (liBase+2) to lsBmp
-              get_field_value liFile 4 to lbFieldNotFound
-              if lbFieldNotFound send color_the_row
-            end_procedure
+
+//            procedure entry_display integer liInt1 integer liInt2
+//              integer liBase liFile lbFieldNotFound
+//              string lsBmp lsValue
+//              get piField_FileNumber to liFile
+//              get base_item to liBase
+//              forward send entry_display liInt1 liInt2
+//              get_field_value liFile 5 to lsValue
+//              if (lsValue<>"") move "openbook.bmp" to lsBmp // dbField.Fld_Description
+//              else move "" to lsBmp
+//              set form_bitmap (liBase+2) to lsBmp
+//              get_field_value liFile 4 to lbFieldNotFound
+//              if lbFieldNotFound send color_the_row
+//            end_procedure
           end_object
           send aps_goto_max_row
           object oOrdering is a aps.ComboForm label "&Order fields by:" abstract AFT_ASCII8
@@ -1081,48 +1150,61 @@ DEFINE_OBJECT_GROUP OG_Dbd_View
         end_object // oTab1
         object oTab2 is a aps.dbTabpage label "Indices"
           set p_auto_column to 0
-          object oLst is a aps.dbGrid // Indices
+          object oLst is a cDbCJGrid
+              // TODO: oLst was a aps.dbGrid - a subclass of dbGrid whose own behaviour this cDbCJGrid does not inherit; port it here, or subclass cDbCJGrid the same way.
             set server to oIndex_DD
             set ordering to 1
           //set highlight_row_state to DFTRUE
           //set highlight_row_color to (rgb(0,255,255))
           //set current_item_color to (rgb(0,255,255))
 
-            set highlight_row_state to DFTRUE
-            set CurrentCellColor     to clHighlight
-            set CurrentCellTextColor to clHighlightText
-            set CurrentRowColor      to clHighlight
-            set CurrentRowTextColor  to clHighlightText
+            Set pbShowRowFocus to False
+            Set piFocusCellBackColor to clHighlight
+            Set piFocusCellForeColor to clHighlightText
+            Set piHighlightBackColor to clHighlight
+            Set piHighlightForeColor to clHighlightText
 
             set peAnchors to (anTop+anLeft+anBottom)
           //  set Verify_Save_Msg to GET_Verify_Save_AutoName
           //  set Verify_Delete_Msg to GET_Verify_Delete_AutoName
             get piIndex_FileNumber to filenumber
-            begin_row
-              move 2 to fieldindex
-              entry_item indirect_file.recnum {noput}   //entry_item dbIndex.Idx_Pos          {noput}
-              move 3 to fieldindex
-              entry_item indirect_file.recnum {noenter} //entry_item dbIndex.Idx_Name         {noenter}
-              entry_item ""                             //entry_item ""
-              move 5 to fieldindex
-              entry_item indirect_file.recnum {noenter} //entry_item dbIndex.Idx_Not_Found    {noenter}
-            end_row
-            set header_label 0 to "Pos"
-            set header_label 1 to "Ordering fields"
+
+              Object oindirect_file_recnum is a cDbCJGridColumn
+                  Entry_Item indirect_file.recnum //entry_item dbIndex.Idx_Pos          {noput} (TODO: dropped entry-item options {noput})
+                  Set piWidth to 100
+                  Set psCaption to "Pos"
+              End_Object
+
+              Object oindirect_file_recnum is a cDbCJGridColumn
+                  Entry_Item indirect_file.recnum //entry_item dbIndex.Idx_Name         {noenter} (TODO: dropped entry-item options {noenter})
+                  Set piWidth to 100
+                  Set psCaption to "Ordering fields"
+              End_Object
+
+              Object oCol_"" is a cDbCJGridColumn
+                  Entry_Item "" //entry_item ""
+                  Set piWidth to 100
+                  Set psCaption to """"
+              End_Object
+
+              Object oindirect_file_recnum is a cDbCJGridColumn
+                  Entry_Item indirect_file.recnum //entry_item dbIndex.Idx_Not_Found    {noenter} (TODO: dropped entry-item options {noenter})
+                  Set piWidth to 100
+                  Set psCaption to "recnum"
+              End_Object
             set aps_fixed_column_width 2 to 16
-            set column_checkbox_state 3 to true
-            set header_label 3 to "Not found"
-            procedure entry_display integer liInt1 integer liInt2
-              integer liBase liFile
-              string lsBmp lsValue
-              get piIndex_FileNumber to liFile
-              get base_item to liBase
-              forward send entry_display liInt1 liInt2
-              get_field_value liFile 4 to lsValue
-              if (lsValue<>"") move "openbook.bmp" to lsBmp // dbIndex.Idx_Description
-              else move "" to lsBmp
-              set form_bitmap (liBase+2) to lsBmp
-            end_procedure
+
+//            procedure entry_display integer liInt1 integer liInt2
+//              integer liBase liFile
+//              string lsBmp lsValue
+//              get piIndex_FileNumber to liFile
+//              get base_item to liBase
+//              forward send entry_display liInt1 liInt2
+//              get_field_value liFile 4 to lsValue
+//              if (lsValue<>"") move "openbook.bmp" to lsBmp // dbIndex.Idx_Description
+//              else move "" to lsBmp
+//              set form_bitmap (liBase+2) to lsBmp
+//            end_procedure
           end_object
           object dbIndex_Idx_Description is a aps.dbEdit label "Description of index:" snap SL_RIGHT_SPACE
             set label_justification_mode to JMODE_TOP

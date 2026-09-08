@@ -42,7 +42,7 @@ object oDfmFnc05 is a fdxrpt.ModalClient label "Import/Export data"
 
         if (iExport(self)) begin
           move (SEQ_DirectOutput(root#+".ASC")) to ch#
-          if ch# ge 0 begin
+          if (ch# >= 0) begin
             clear file#
             repeat
               vfind file# 0 gt // Find next
@@ -57,13 +57,13 @@ object oDfmFnc05 is a fdxrpt.ModalClient label "Import/Export data"
 
         if (iImport(self)) begin
           move (SEQ_DirectInput(root#+".ASC")) to ch#
-          if ch# ge 0 begin
+          if (ch# >= 0) begin
             lock
               repeat
                 clear file#
                 send SEQ_ReadRecordBuffer_LD ch# file#
                 move (seqeof) to seqeof#
-                ifnot seqeof# saverecord file#
+                If (Not(seqeof#)) saverecord file#
               until seqeof#
             unlock
             send SEQ_CloseInput ch#
@@ -80,9 +80,9 @@ object oDfmFnc05 is a fdxrpt.ModalClient label "Import/Export data"
     string filelist#
     get File_Select_Count of (DFMatrix_SelectorObject()) to select_count#
     get piFDX_Server to oFDX#
-    if (piDataOrigin(oFDX#)) ne FDX_REAL_WORLD send obs "Only works with real data"
+    if ((piDataOrigin(oFDX#)) <> FDX_REAL_WORLD) send obs "Only works with real data"
     else begin
-      ifnot select_count# send obs "No tables selected!"
+      If (Not(select_count#)) send obs "No tables selected!"
       else begin
         send cursor_wait to (cursor_control(self))
         get_attribute DF_DATE_FORMAT to liInteger1

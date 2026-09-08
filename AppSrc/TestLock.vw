@@ -27,6 +27,7 @@ Use Files.utl    // Utilities for handling file related stuff
 Use OpenStat.nui // cTablesOpenStatus class (formely cFileAllFiles) (No User Interface)
 Use DBMS.nui     // Basic DBMS functions (No User Interface)
 Use Version.nui
+Use cCJGrid.pkg
 
 enumeration_list
   define TLOP_DoOpenShare
@@ -45,7 +46,7 @@ object oTestLockVw is a aps.ModalPanel label "Test file locking"
     procedure prompt
       string lsFileName
       get SEQ_SelectInFile "Select data file" "DataFlex data files|*.dat|Intermediate files|*.int" to lsFileName
-      if lsFileName ne "" set value item 0 to lsFileName
+      if (lsFileName <> "") set value item 0 to lsFileName
     end_procedure
     on_key kprompt send Prompt
     set peAnchors to (anRight+anLeft+anTop)
@@ -55,14 +56,34 @@ object oTestLockVw is a aps.ModalPanel label "Test file locking"
     set peAnchors to (anRight+anTop)
   end_object
   send aps_goto_max_row
-  object oLst is a aps.List
+  object oLst is a cCJGrid
+      // TODO: oLst was a aps.List - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 100 360
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
     procedure Add_Line string lsValue
-      integer liItem
-      get item_count to liItem
-      send add_item MSG_NONE lsValue
-      set current_item to liItem
-    end_procedure
+      tDataSourceRow[] TheData TheDataEmpty
+      Integer iRow iCol1 liItem
+
+      Get piColumnId of oCol1 to iCol1
+      Move 0 to iRow
+
+      Move lsValue to TheData[iRow].sValue[iCol1]
+      Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
     set peAnchors to (anRight+anLeft+anTop+anBottom)
   end_object
 

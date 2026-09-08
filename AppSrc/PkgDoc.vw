@@ -16,6 +16,7 @@ use aps.pkg
 use pkgdoc.nui
 use setdir.pkg   // cSetOfDirectories class
 use Masks_DF.nui // DataFlex related file masks
+Use cCJGrid.pkg
 
 object oPkgDocSetOfDirectories is a cSetOfDirectories 
   object oWait is a cProcessStatusPanel
@@ -48,18 +49,41 @@ object oPkgDoc_View is a aps.View label "Document your source code"
    set Border_Style to BORDER_THICK   // Make panel resizeable
    object oDirLstHeader is a aps.Textbox label "Folders in search path:"
    end_object
-   object oDirLst is a cSetOfDirectoriesList snap SL_DOWN
+   object oDirLst is a cCJGrid
+       // TODO: oDirLst was a cSetOfDirectoriesList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
      set size to 70 0
      set peAnchors to (anLeft+anRight+anTop)
-     set peResizeColumn to rcSelectedColumn // Resize mode (rcAll or rcSelectedColumn)
      set piResizeColumn to 0                // This is the column to resize
      set piSetOfDirectoriesObject to (oPkgDocSetOfDirectories(self))
      register_object oDirLstTotal
-     set Horz_Scroll_Bar_Visible_State to false
 
      procedure OnListChanged integer liItems
        set value of (oDirLstTotal(self)) to ("  "+string(liItems)+" folders")
      end_procedure
+
+       Procedure LoadData
+           tDataSourceRow[] TheData TheDataEmpty
+           Integer iRow
+
+           Move 0 to iRow
+
+           // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+           //   Increment iRow
+
+           If (iRow <> 0) Begin
+               Send ReInitializeData TheData False
+               Send MoveToFirstRow
+           End
+           Else Begin
+               Send InitializeData TheDataEmpty
+           End
+       End_Procedure
+
+       Procedure Activating
+           Forward Send Activating
+           Send LoadData
+       End_Procedure
+
    end_object
    object oDirLstTotal is a aps.Textbox label "  0 folders         "
      set peAnchors to (anRight+anTop)
@@ -90,7 +114,7 @@ object oPkgDoc_View is a aps.View label "Document your source code"
      get phoWorkspace of ghoApplication To lhoWorkSpace
      if (DFMatrix_WorkSpaceLoaded()) move (psDfPath(lhoWorkSpace)) to lsPath
      else move (API_AttrValue_GLOBAL(DF_OPEN_PATH)) to lsPath // Oem fixed!
-     move (ToOem(lsPath)) to lsPath
+     move (Utf8ToOem(lsPath)) to lsPath
 #ELSE
      move (API_AttrValue_GLOBAL(DF_OPEN_PATH)) to lsPath
 #ENDIF
@@ -211,7 +235,7 @@ object oPkgDoc_View is a aps.View label "Document your source code"
      integer lbFirstOnly
      string lsPrnFile
      get SEQ_SelectFile "Select compiler listing file" "Compiler listing (*.prn)|*.PRN|Precompile listing (*.prp)|*.PRP" to lsPrnFile
-     if lsPrnFile ne "" begin
+     if (lsPrnFile <> "") begin
        get select_state of (oFirstOccuranceOnly(self)) to lbFirstOnly
        send DoFindFilesCompilerListing to (oPkgDocSetOfFiles(self)) lsPrnFile lbFirstOnly
        send Update_ResultList
@@ -228,20 +252,46 @@ object oPkgDoc_View is a aps.View label "Document your source code"
    end_object
 
    send aps_goto_max_row
-   object oResultList is a cSetOfFilesListNew
+   object oResultList is a cCJGrid
+       // TODO: oResultList was a cSetOfFilesListNew - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
      set peAnchors to (anTop+anLeft+anRight+anBottom)
-     set peResizeColumn to rcSelectedColumn // Resize mode (rcAll or rcSelectedColumn)
      set piResizeColumn to 4                // This is the column to resize
      set size to 100 0
      set piSOF_Object to (oPkgDocSetOfFiles(self))
      set aps_fixed_column_width item 4 to 200
+
      procedure OnListFilled integer liFileCount number lnBytes
-       send total_display (SEQ_FileSizeToString(lnBytes)+" in "+string(liFileCount)+" files")
+//       send total_display (SEQ_FileSizeToString(lnBytes)+" in "+string(liFileCount)+" files")
      end_procedure
+
      procedure DoReset
        forward send DoReset
 //       send Activate_SetDirTestVw
      end_procedure
+
+       Procedure LoadData
+           tDataSourceRow[] TheData TheDataEmpty
+           Integer iRow
+
+           Move 0 to iRow
+
+           // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+           //   Increment iRow
+
+           If (iRow <> 0) Begin
+               Send ReInitializeData TheData False
+               Send MoveToFirstRow
+           End
+           Else Begin
+               Send InitializeData TheDataEmpty
+           End
+       End_Procedure
+
+       Procedure Activating
+           Forward Send Activating
+           Send LoadData
+       End_Procedure
+
    end_object
    send aps_goto_max_row
 

@@ -94,12 +94,12 @@ class cTableUpdater is a cArray
               get psFilePathName to lsFilePathName
               get value of (phTableUpdateParameters(self)) item TUPD_LOCK_MODE to liLockMode
               // If the file is not already open:
-              ifnot (integer(API_AttrValue_FILE(DF_FILE_OPENED,liFile))) begin
+              If (Not((integer(API_AttrValue_FILE(DF_FILE_OPENED,liFile))))) begin
                 if (liLockMode=TUPD_LOCK_MODE_OPEN_EXCLUSIVE) move DF_EXCLUSIVE to liOpenMode
                 else move DF_SHARE to liOpenMode
                 if (lsFilePathName="") move (DBMS_OpenFile(liFile,liOpenMode,0)) to liOpenRes
                 else move (DBMS_OpenFileAs(lsFilePathName,liFile,liOpenMode,0)) to liOpenRes
-                ifnot liOpenRes move TUPD_ILOCK_RTN_TABLE_COULDNT_OPEN to liRval
+                If (Not(liOpenRes)) move TUPD_ILOCK_RTN_TABLE_COULDNT_OPEN to liRval
               end
               set piLockRequestCount to 0
               set piRequestSaveCount to 0
@@ -141,7 +141,7 @@ class cTableUpdater is a cArray
         // If it has been specified that all should be done in one
         // transaction, we lock the file here:
         get value of lhTableUpdateParameters item TUPD_LOCK_MODE to liLockMode
-        if liLockMode eq TUPD_LOCK_MODE_ONE_TRANSACTION lock
+        if (liLockMode = TUPD_LOCK_MODE_ONE_TRANSACTION) lock
       end
     end
     else move TUPD_ILOCK_RTN_MISSING_PARAM_OBJECT to liRval
@@ -166,7 +166,7 @@ class cTableUpdater is a cArray
     // We lock only if lock mode has been set to TUPD_LOCK_MODE_UNLOCK_EVERY
     if (piPrv.LockMode(self)=TUPD_LOCK_MODE_UNLOCK_EVERY) begin
       get piLockRequestCount to liLockRequestCount
-      ifnot liLockRequestCount lock
+      If (Not(liLockRequestCount)) lock
       set piLockRequestCount to (liLockRequestCount+1)
     end
   end_procedure

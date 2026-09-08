@@ -53,7 +53,7 @@ class apl.dbList is a aps.dbList
   end_procedure
   procedure end_construct_object
     forward send end_construct_object
-    ifnot (move_value_out_state(self)) begin
+    If (Not(move_value_out_state(self))) begin
       on_key kenter send close_panel_ok
     end
   end_procedure
@@ -111,12 +111,14 @@ class aps_PromptListDynamo is a aps_ObjectDynamo
     integer ModalPanel# lst# data_file# data_field# dd#
     integer idx# element# itm# max# btn#
 
-    ifnot file# function_return 0
+    If (Not(file#)) ;
+      function_return 0
 
     // If no fields were passed, we find some ourselves:
-    if fields# eq "" get prompt_list_fields of (private.oIndexAnalyzer(self)) file# to fields#
+    if (fields# = "") ;
+      get prompt_list_fields of (private.oIndexAnalyzer(self)) file# to fields#
 
-    if fields# ne "" begin // If we have any fields to display:
+    if (fields# <> "") begin // If we have any fields to display:
       send add_top_message set_label (File_Display_Name(file#))
       get icreate_dynamo_object class.dbModalPanel to ModalPanel#
         // Indentation indicates that the object was pushed on the
@@ -152,12 +154,13 @@ class aps_PromptListDynamo is a aps_ObjectDynamo
         get item_count of element# to max#
         for itm# from 0 to (max#-1)
           get data_file of element# item itm# to data_file#
-          if file# eq data_file# begin
+          if (file# = data_file#) begin
             get data_field of element# item itm# to data_field#
             if data_field# begin // If recnum we allow search
               get_attribute df_field_index of data_file# data_field# to idx# // Have an index?
-              ifnot idx# set item_option of element# item itm# to noenter true // (not(idx#))
-              //else       set item_option of element# item itm# to noenter false
+              If (Not(idx#)) ;
+	        set item_option of element# item itm# to noenter true
+              //else set item_option of element# item itm# to noenter false
             end
           end
           else set item_option of element# item itm# to noenter true
@@ -211,7 +214,8 @@ class cDefaultPromptList is a cArray
     set !$.pAuto_Server_State  to 0
     set !$.pDataFile           to file#
     set !$.pMoveValueOutState  to 1
-    if num_arguments ge 1 set !$.pFields to fields#
+    if (num_arguments >= 1) ;
+      set !$.pFields to fields#
   end_procedure
 
   procedure Initialize_From_Deo integer focus#
@@ -223,7 +227,7 @@ class cDefaultPromptList is a cArray
     set !$.pAuto_Server_State  to 1
     set !$.pMoveValueOutState  to 1
 
-    if focus# gt desktop begin
+    if (focus# > desktop) begin
       get delegation_mode of focus# to dm#
       set delegation_mode of focus# to no_delegate_or_error
       get data_file of focus# item current to file#
@@ -233,7 +237,7 @@ class cDefaultPromptList is a cArray
 
       if file# begin
         if svr# get which_data_set of svr# file# to svr#
-        if (svr# and file# eq main_file(svr#) and Extended_DSO_State(svr#)) begin
+        if (svr# and file# = main_file(svr#) and Extended_DSO_State(svr#)) begin
           get delegation_mode of svr# to dm#
           set delegation_mode of svr# to no_delegate_or_error
           get is_apl.DataDictionary of svr# to is_apl_DD#
@@ -338,7 +342,7 @@ end_object
 function PromptList_File integer file# returns integer
   integer obj#
   get value of (oDefPLs(self)) item file# to obj#
-  ifnot obj# begin
+  If (Not(obj#)) begin
     object oDefaultPromptList_File is a cDefaultPromptList_File
       set main_file to file#
       move self to obj#

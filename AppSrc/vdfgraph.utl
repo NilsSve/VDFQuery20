@@ -100,10 +100,10 @@
 
 use dfallent.pkg     // I cannot figure out which packages to use so we use 'em all
 
-CompilerWarnings Suspend
+// CompilerWarnings Suspend
 
 //Use Dftypes.pkg
-Use font_dlg     // Standard DAC package. Contains useful constant declarations.
+Use font_dlg.pkg     // Standard DAC package. Contains useful constant declarations.
 use Strings.nui  // String manipulation for VDF
 Use RGB.utl      // Some color functions
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes
@@ -148,7 +148,7 @@ End_Struct
 Function Grph_OemToChar Global String OemStr Returns String
   string  CharStr
   Integer Grb#
-  Address OemAdress CharAdress
+  Pointer OemAdress CharAdress
   Append OemStr (Character(0))
   Move (Repeat(Character(0), (Length(OemStr)))) to CharStr
   Move (AddressOf(OemStr)) to OemAdress
@@ -159,14 +159,14 @@ End_Function
 
 Use version.nui
 
-#REPLACE GRAPH$TEST 0
+Define GRAPH$TEST for 0
 #COMMAND GRAPH$SHOWLN
  #IF GRAPH$TEST
   showln !1 !2 !3 !4 !5 !6 !7 !8 !9
  #ENDIF
 #ENDCOMMAND
 
-#REPLACE GRAPH_RES$TEST 0 // Ressource test
+Define GRAPH_RES$TEST for 0 // Ressource test
 #COMMAND GRAPH_RES$SHOWLN
  #IF GRAPH_RES$TEST
   showln !1 !2 !3 !4 !5 !6 !7 !8 !9
@@ -183,23 +183,23 @@ DEFINE TA_NOUPDATECP FOR  0 //|CI$0000
 DEFINE TA_UPDATECP   FOR  1 //|CI$0001
 DEFINE TA_BASELINE   FOR 24 //|CI$0024
 
-#REPLACE VDFGR_TA_LEFT      1
-#REPLACE VDFGR_TA_CENTER    2
-#REPLACE VDFGR_TA_RIGHT     3
-#REPLACE VDFGR_TA_TOP       4
-#REPLACE VDFGR_TA_VCENTER   8
-#REPLACE VDFGR_TA_BOTTOM   12
+Define VDFGR_TA_LEFT    for 1
+Define VDFGR_TA_CENTER  for 2
+Define VDFGR_TA_RIGHT   for 3
+Define VDFGR_TA_TOP     for 4
+Define VDFGR_TA_VCENTER for 8
+Define VDFGR_TA_BOTTOM for 12
 
-#REPLACE VDFGR_DA_LEFT_SPACE      1
-#REPLACE VDFGR_DA_LEFT            2
-#REPLACE VDFGR_DA_CENTER          3
-#REPLACE VDFGR_DA_RIGHT           4
-#REPLACE VDFGR_DA_RIGHT_SPACE     5
-#REPLACE VDFGR_DA_TOP_SPACE       8
-#REPLACE VDFGR_DA_TOP            16
-#REPLACE VDFGR_DA_VCENTER        24
-#REPLACE VDFGR_DA_BOTTOM         32
-#REPLACE VDFGR_DA_BOTTOM_SPACE   40
+Define VDFGR_DA_LEFT_SPACE    for 1
+Define VDFGR_DA_LEFT          for 2
+Define VDFGR_DA_CENTER        for 3
+Define VDFGR_DA_RIGHT         for 4
+Define VDFGR_DA_RIGHT_SPACE   for 5
+Define VDFGR_DA_TOP_SPACE     for 8
+Define VDFGR_DA_TOP          for 16
+Define VDFGR_DA_VCENTER      for 24
+Define VDFGR_DA_BOTTOM       for 32
+Define VDFGR_DA_BOTTOM_SPACE for 40
 
 // Hatch Styles:
 DEFINE HS_NONE       FOR -1  //* ªªªªª */
@@ -331,7 +331,7 @@ if DFFALSE begin // Do not execution this on program start up.
     end
     if gr$BrushDirty begin
       move gr$hCurrentBrush to gr$hCurrentTemp
-      if gr$HatchStyle ne HS_NONE  ;
+      if (gr$HatchStyle <> HS_NONE) ;
         move (GrphCreateHatchBrush(gr$HatchStyle,gr$FillColor)) to gr$hCurrentBrush
       else ;
         move (CreateSolidBrush(gr$FillColor)) to gr$hCurrentBrush
@@ -342,7 +342,7 @@ if DFFALSE begin // Do not execution this on program start up.
     end
   return
   vdfgraph$DeletePreviousTTFont:
-    if gr$hCurrentTTFont ne 0 begin
+    if (gr$hCurrentTTFont <> 0) begin
       move (SelectObject(gr$hCurrentDC,gr$PreviousFont)) to gr$Void
       move (DeleteObject(gr$hCurrentTTFont)) to gr$Void
       graph_res$showln ("DeleteObject 6 "+string(gr$Void))
@@ -370,7 +370,7 @@ if DFFALSE begin // Do not execution this on program start up.
     move (integer(hi(gr$CoordXY2#)*gr$GuiSizeX#/gr$X_Range)+gr$GuiOffsetX#*65536+(low(gr$CoordXY2#)*gr$GuiSizeY#/gr$Y_Range)+gr$GuiOffsetY#) to gr$CoordXY2#
   return
   vdfgraph$ConvertToVirtual:
-    if gr$CoordXY1# lt 0 move 0 to gr$CoordXY1#
+    if (gr$CoordXY1# < 0) move 0 to gr$CoordXY1#
     move (integer(hi(gr$CoordXY1#)-gr$GuiOffsetX#*gr$X_Range/gr$GuiSizeX#)*65536+(low(gr$CoordXY1#)-gr$GuiOffsetY#*gr$Y_Range/gr$GuiSizeY#)) to gr$CoordXY1#
   return
 end
@@ -400,12 +400,12 @@ end
 
 #IFDEF SET_DEFAULT_STATE
 #ELSE
- #REPLACE FF_DONTCARE          0
- #REPLACE DEFAULT_PITCH        0
- #REPLACE DEFAULT_QUALITY      0
- #REPLACE CLIP_DEFAULT_PRECIS  0
- #REPLACE OUT_TT_PRECIS        4
- #REPLACE ANSI_CHARSET         0
+ Define FF_DONTCARE        for 0
+ Define DEFAULT_PITCH      for 0
+ Define DEFAULT_QUALITY    for 0
+ Define CLIP_DEFAULT_PRECIS for 0
+ Define OUT_TT_PRECIS      for 4
+ Define ANSI_CHARSET       for 0
 #ENDIF
 
 Register_Procedure WMSG_GrphPaint dWord wParam dWord lParam
@@ -456,7 +456,7 @@ class cTrackableObjects is a cArray
     // GRAPH$SHOWLN
     for_ex row# from max# down_to 0
       GRAPH$SHOWLN "Test: " x# "," y# " against: " (piX1.i(self,row#)) "," (piX2.i(self,row#)) " " (piY1.i(self,row#)) "," (piY2.i(self,row#))
-      if (piType.i(self,row#)) eq GR_TRACK_RECTANGLE if ((x#>=piX1.i(self,row#)) and (x#<=piX2.i(self,row#)) and (y#>=piY1.i(self,row#)) and (y#<=piY2.i(self,row#))) begin
+      if (((piType.i(self,row#)) = GR_TRACK_RECTANGLE) and ((x#>=piX1.i(self,row#)) and (x#<=piX2.i(self,row#)) and (y#>=piY1.i(self,row#)) and (y#<=piY2.i(self,row#)))) begin
         send track_msg# (piCB_Value.i(self,row#)) level#
         increment level#
       end
@@ -633,14 +633,19 @@ class GraphicArea is a cWinControl
   End_Function
   Function iColorNuance.ii integer color# integer nuance# returns integer
     integer base#
-    if nuance# eq 0 move 24 to base# // Very dark
-    if nuance# eq 1 move 16 to base# // Dark
-    if nuance# eq 2 move  0 to base# // Normal
-    if nuance# eq 3 move  8 to base# // Ligth
+    if (nuance# = 0) ;
+      move 24 to base# // Very dark
+    if (nuance# = 1) ;
+      move 16 to base# // Dark
+    if (nuance# = 2) ;
+      move 0 to base# // Normal
+    if (nuance# = 3) ;
+      move 8 to base# // Ligth
     function_return (value(oColors(self),base#+color#))
   End_Function
   Function iColorNuance.iii integer color# integer nuance# integer maxnuance# returns integer
-    if maxnuance# ne 3 increment nuance#
+    if (maxnuance# <> 3) ;
+      increment nuance#
     function_return (iColorNuance.ii(self,color#,nuance#))
   End_Function
   Function iHatch integer hatch# returns integer
@@ -681,7 +686,7 @@ class GraphicArea is a cWinControl
   Procedure PaintArea
     integer max# msg#
     get item_count of gr$CPU$RAM to max#
-    while gr$CPU$PC lt max# // If this works well, it could be changed to
+    while (gr$CPU$PC < max#) // If this works well, it could be changed to
       get value of gr$CPU$RAM item gr$CPU$PC to msg# // GOSUB label# instead
       increment gr$CPU$PC // Increment beyond op-code
       send msg#
@@ -882,7 +887,7 @@ class GraphicArea is a cWinControl
     send Draw_Background
     get pTitle to title#
 
-    if title# ne "" begin
+    if (title# <> "") begin
       send SetTextAlign (VDFGR_TA_CENTER+VDFGR_TA_BOTTOM)
       send SetTextColor clBlack
       send SetStockFont SYSTEM_FONT
@@ -948,7 +953,7 @@ class GraphicArea is a cWinControl
     increment gr$CPU$PC
     move (tAlign# iand 3) to horz#       // 1:left 2:center 3:right
     move ((tAlign# iand 12)/4) to vert#  // 1:top 2:vcenter 3:bottom
-    if vert# ne 2 begin
+    if (vert# <> 2) begin
       // Left:
       if (horz#=1 and vert#=1) move (TA_LEFT+TA_TOP) to tAlign#
       if (horz#=1 and vert#=2) move (TA_LEFT+TA_BASELINE) to tAlign#
@@ -966,9 +971,12 @@ class GraphicArea is a cWinControl
     end
     else begin
       move (GrphSetTextAlign(gr$hCurrentDC,0)) to gr$Void
-      if horz# eq 1 move (XDT_LEFT  +XDT_VCENTER+XDT_NOCLIP+XDT_SINGLELINE) to gr$vCenterActive // Left
-      if horz# eq 2 move (XDT_CENTER+XDT_VCENTER+XDT_NOCLIP+XDT_SINGLELINE) to gr$vCenterActive // Center
-      if horz# eq 3 move (XDT_RIGHT +XDT_VCENTER+XDT_NOCLIP+XDT_SINGLELINE) to gr$vCenterActive // Right
+      if (horz# = 1) ;
+        move (XDT_LEFT +XDT_VCENTER+XDT_NOCLIP+XDT_SINGLELINE) to gr$vCenterActive // Left
+      if (horz# = 2) ;
+        move (XDT_CENTER+XDT_VCENTER+XDT_NOCLIP+XDT_SINGLELINE) to gr$vCenterActive // Center
+      if (horz# = 3) ;
+        move (XDT_RIGHT +XDT_VCENTER+XDT_NOCLIP+XDT_SINGLELINE) to gr$vCenterActive // Right
     end
   end_procedure
   procedure mthd_SetTextColor
@@ -1007,64 +1015,66 @@ class GraphicArea is a cWinControl
   procedure mthd_AddDot
     Integer dsz# type# corr_x# corr_y# just# x# y#
     String struct#
-    Address address# 
+    Pointer address# 
     tPOINTS3 st3Points
     tPOINTS4 st4Points
 
     move (gr$DotSize/2) to dsz#
-    if type# eq DT_SQUARE move (dsz#/1.2) to dsz#
-    if dsz# lt 1 move 1 to dsz#
+    if (type# = DT_SQUARE) ;
+      move (dsz#/1.2) to dsz#
+    if (dsz# < 1) ;
+      move 1 to dsz#
     move gr$DotType to type#
     gosub vdfgraph$PreparePoint
-    if type# eq DT_PIXEL begin
+    if (type# = DT_PIXEL) begin
       move 1 to dsz#
       move DT_PLUS to type#
     end
 
-    if type# ne DT_PIXEL begin // If dot type is pixel, we do no aligning
+    if (type# <> DT_PIXEL) begin // If dot type is pixel, we do no aligning
       // Check for horizontal alignment
-      if type# ne DT_VERTICAL begin
+      if (type# <> DT_VERTICAL) begin
         move (gr$DotAlign iand 7) to just#       // 1:left_sp 2:left 3:center 4:right 5:right_sp
-        if just# eq 1 move (dsz#*2)  to corr_y#
-        if just# eq 2 move dsz#  to corr_y#
-        if just# eq 4 move (-dsz#) to corr_y#
-        if just# eq 5 move (-dsz#*2) to corr_y#
+        if (just# = 1) move (dsz#*2) to corr_y#
+        if (just# = 2) move dsz# to corr_y#
+        if (just# = 4) move (-dsz#) to corr_y#
+        if (just# = 5) move (-dsz#*2) to corr_y#
       end
       // Check for vertical alignment
-      if type# ne DT_HORIZONTAL begin
+      if (type# <> DT_HORIZONTAL) begin
         move ((gr$DotAlign iand 56)/8) to just#  // 1:top_sp 2:top 3:vcenter 4:bottom 5:bottom_sp
-        if just# eq 1 move (-dsz#*2) to corr_x#
-        if just# eq 2 move (-dsz#) to corr_x#
-        if just# eq 4 move dsz# to corr_x#
-        if just# eq 5 move (dsz#*2) to corr_x#
+        if (just# = 1) move (-dsz#*2) to corr_x#
+        if (just# = 2) move (-dsz#) to corr_x#
+        if (just# = 4) move dsz# to corr_x#
+        if (just# = 5) move (dsz#*2) to corr_x#
       end
     end
     move (low(gr$CoordXY1#)+corr_y#) to y#
     move (hi(gr$CoordXY1#)+corr_x#)  to x#
-    if type# eq DT_CROSS           begin
+    if (type# = DT_CROSS) begin
       move (MoveTo(gr$hCurrentDC,y#-dsz#+1,x#-dsz#+1,0)) to gr$Void
       move (LineTo(gr$hCurrentDC,y#+dsz#,x#+dsz#)) to gr$Void
       move (MoveTo(gr$hCurrentDC,y#-dsz#+1,x#+dsz#-1,0)) to gr$Void
       move (LineTo(gr$hCurrentDC,y#+dsz#,x#-dsz#)) to gr$Void
     end
-    if type# eq DT_PLUS            begin
+    if (type# = DT_PLUS) begin
       move (MoveTo(gr$hCurrentDC,y#-dsz#+1,x#,0)) to gr$Void
       move (LineTo(gr$hCurrentDC,y#+dsz#,x#)) to gr$Void
       move (MoveTo(gr$hCurrentDC,y#,x#+dsz#-1,0)) to gr$Void
       move (LineTo(gr$hCurrentDC,y#,x#-dsz#)) to gr$Void
     end
-    if type# eq DT_HORIZONTAL      begin
+    if (type# = DT_HORIZONTAL) begin
       move (MoveTo(gr$hCurrentDC,y#-dsz#+1,x#,0)) to gr$Void
       move (LineTo(gr$hCurrentDC,y#+dsz#,x#)) to gr$Void
     end
-    if type# eq DT_VERTICAL        begin
+    if (type# = DT_VERTICAL) begin
       move (MoveTo(gr$hCurrentDC,y#,x#+dsz#-1,0)) to gr$Void
       move (LineTo(gr$hCurrentDC,y#,x#-dsz#)) to gr$Void
     end
-    if type# eq DT_CIRCLE          begin
+    if (type# = DT_CIRCLE) begin
       move (Ellipse(gr$hCurrentDC,y#-dsz#,x#-dsz#,y#+dsz#,x#+dsz#)) To gr$Void
     end
-    if type# eq DT_TRIANGLE_UP     begin
+    if (type# = DT_TRIANGLE_UP) begin
 //      zerotype tPOINTS3 to struct#
 //      put (y#+dsz#) to struct# at tPOINTS3.x1
 //      put (x#+dsz#) to struct# at tPOINTS3.y1
@@ -1084,7 +1094,7 @@ class GraphicArea is a cWinControl
       Move (AddressOf(st3Points)) to address#
       Move (GrphPolyGon(gr$hCurrentDC,address#,3)) to gr$Void
     end
-    if type# eq DT_TRIANGLE_DOWN   begin
+    if (type# = DT_TRIANGLE_DOWN) begin
       Move (y#-dsz#) to st3Points.x1
       Move (x#-dsz#) to st3Points.y1
       Move  y#       to st3Points.x2
@@ -1104,7 +1114,7 @@ class GraphicArea is a cWinControl
 //      getaddress of struct# to address#
 //      move (GrphPolyGon(gr$hCurrentDC,address#,3)) to gr$Void
     end
-    if type# eq DT_TRIANGLE_RIGHT  begin
+    if (type# = DT_TRIANGLE_RIGHT) begin
       Move (y#-dsz#) to st3Points.x1
       Move (x#-dsz#) to st3Points.y1
       Move (y#+dsz#) to st3Points.x2
@@ -1124,7 +1134,7 @@ class GraphicArea is a cWinControl
 //      getaddress of struct# to address#
 //      Move (GrphPolyGon(gr$hCurrentDC,address#,3)) to gr$Void
     end
-    if type# eq DT_TRIANGLE_LEFT   begin
+    if (type# = DT_TRIANGLE_LEFT) begin
       Move (y#+dsz#) to st3Points.x1
       Move (x#+dsz#) to st3Points.y1
       Move (y#-dsz#) to st3Points.x2
@@ -1144,9 +1154,9 @@ class GraphicArea is a cWinControl
 //      getaddress of struct# to address#
 //      move (GrphPolyGon(gr$hCurrentDC,address#,3)) to gr$Void
     end
-    If type# eq DT_SQUARE          Begin
+    If (type# = DT_SQUARE) Begin
       move (dsz#/1.2) to dsz#      
-      If dsz# lt 1 Move 1 to dsz#  
+      If (dsz# < 1) Move 1 to dsz#
       Move (y#-dsz#) to st4Points.x1
       Move (x#-dsz#) to st4Points.y1
       Move (y#-dsz#) to st4Points.x2
@@ -1172,7 +1182,7 @@ class GraphicArea is a cWinControl
 //      getaddress of struct# to address#
 //      move (GrphPolyGon(gr$hCurrentDC,address#,4)) to gr$Void
     end
-    if type# eq DT_DIAMOND         begin
+    if (type# = DT_DIAMOND) begin
       Move (y#-dsz#) to st4Points.x1
       Move  x#       to st4Points.y1
       Move  y#       to st4Points.x2
@@ -1417,7 +1427,7 @@ class GraphicArea is a cWinControl
   end_procedure
 
   procedure AddText string str# integer x1# integer y1#
-    if str# ne "" begin // If an empty string is added the program may GPF
+    if (str# <> "") begin // If an empty string is added the program may GPF
       set value of gr$CPU$RAM item gr$CPU$PC to msg_mthd_TextOut
       set value of gr$CPU$RAM item (gr$CPU$PC+1) to str#
       set value of gr$CPU$RAM item (gr$CPU$PC+2) to (x1#*65536+y1#)
@@ -1428,7 +1438,7 @@ class GraphicArea is a cWinControl
   procedure AddPolyLine // Must be preceded by calls to AddPolyPoint
     integer iPolyPointsOffS#
     get pPolyPointsOffS to iPolyPointsOffS#
-    ifnot iPolyPointsOffS# error 666 "No points specified for polyline! (vdfgraph.utl)"
+    If (Not(iPolyPointsOffS#)) error 666 "No points specified for polyline! (vdfgraph.utl)"
     set value of gr$CPU$RAM item (iPolyPointsOffS#-1) to msg_mthd_PolyLine
     set value of gr$CPU$RAM item  iPolyPointsOffS#    to (gr$CPU$PC-iPolyPointsOffS#-1)
     set pPolyPointsOffS to 0
@@ -1437,7 +1447,7 @@ class GraphicArea is a cWinControl
   procedure AddPolyGon // Must be preceded by calls to AddPolyPoint
     integer iPolyPointsOffS#
     get pPolyPointsOffS to iPolyPointsOffS#
-    ifnot iPolyPointsOffS# error 666 "No points specified for polygon! (vdfgraph.utl)"
+    If (Not(iPolyPointsOffS#)) error 666 "No points specified for polygon! (vdfgraph.utl)"
     set value of gr$CPU$RAM item (iPolyPointsOffS#-1) to msg_mthd_PolyGon
     set value of gr$CPU$RAM item  iPolyPointsOffS#    to (gr$CPU$PC-iPolyPointsOffS#-1)
     set pPolyPointsOffS to 0
@@ -1465,7 +1475,7 @@ class GraphicArea is a cWinControl
   end_procedure
 
   procedure AddPolyPoint integer x# integer y#
-    ifnot (pPolyPointsOffS(self)) begin
+    If (Not((pPolyPointsOffS(self)))) begin
       set pPolyPointsOffS to (gr$CPU$PC+1)
       move (gr$CPU$PC+2) to gr$CPU$PC // Reserve space for method and number of points
     end
@@ -1555,7 +1565,7 @@ class GraphicArea is a cWinControl
 
   procedure Read_From_File integer channel# integer reset_tmp#
     integer grb# reset#
-    if num_arguments gt 1 move reset_tmp# to reset#
+    if (num_arguments > 1) move reset_tmp# to reset#
     else move 0 to reset#
     if reset# send BeginDraw
     get Read_Program_RAM of (oGraphOperationMsgTabel(self)) (piProgram_RAM(self)) 1 to grb#
@@ -1621,8 +1631,8 @@ object oGraphOperationMsgTabel is an array
     integer row# max#
     move 0 to row#
     get row_count to max#
-    while row# lt max#
-      if (piMsg_Id.i(self,row#)) eq msg# function_return row#
+    while (row# < max#)
+      if ((piMsg_Id.i(self,row#)) = msg#) function_return row#
       increment row#
     loop
     function_return -1
@@ -1633,19 +1643,19 @@ object oGraphOperationMsgTabel is an array
     get item_count of obj# to max#
     move 0 to itm#
     move 0 to err#
-    while itm# lt max#
+    while (itm# < max#)
       get value of obj# item itm# to msg#
       increment itm#
       move (MsgToGO(self,msg#)) to GO#
-      if GO# ne -1 begin
+      if (GO# <> -1) begin
         writeln channel ch# GO#
         move (piNum_Arguments.i(self,GO#)) to args#
-        if args# eq -1 begin
+        if (args# = -1) begin
           get value of obj# item itm# to args#
           increment itm#
           writeln args#
         end
-        while args# gt 0
+        while (args# > 0)
           get value of obj# item itm# to str#
           increment itm#
           writeln str#
@@ -1663,16 +1673,16 @@ object oGraphOperationMsgTabel is an array
     repeat
       readln channel ch# GO#
       move (seqeof) to seqeof#
-      ifnot seqeof# begin
+      If (Not(seqeof#)) begin
         move (piMsg_Id.i(self,GO#)) to msg#
         if msg# begin
           set value of obj# item (item_count(obj#)) to msg#
           move (piNum_Arguments.i(self,GO#)) to args#
-          if args# eq -1 begin
+          if (args# = -1) begin
             readln args#
             set value of obj# item (item_count(obj#)) to args#
           end
-          while args# gt 0
+          while (args# > 0)
             readln str#
             set value of obj# item (item_count(obj#)) to str#
             decrement args#
@@ -1699,14 +1709,14 @@ class cAutoScaler is an array
     property integer pMaxSteps    11 // highest acceptable number of steps
 
     // Local properties:
-    property number  pMinValue    private 0  // minimum value
-    property number  pMaxValue    private 0  // maximum value
-    property number  pMinValueTmp private 0  // minimum value
-    property number  pMaxValueTmp private 0  // maximum value
-    property integer pStepsTmp    private 0  // maximum value
+    property number  pMinValue     Private 0  // minimum value
+    property number  pMaxValue     Private 0  // maximum value
+    property number  pMinValueTmp  Private 0  // minimum value
+    property number  pMaxValueTmp  Private 0  // maximum value
+    property integer pStepsTmp     Private 0  // maximum value
 
-    property integer pCorrection  private 0  // 0=no corr,   1=positive corr,
-                                             // 2=neg corr, -1=negative scale.
+    property integer pCorrection   Private 0  // 0=no corr,   1=positive corr,
+                                              // 2=neg corr, -1=negative scale.
     set value item  0 to 0
     set value item  1 to 0.1
     set value item  2 to 0.2
@@ -1764,11 +1774,13 @@ class cAutoScaler is an array
     number  tmp#
     get !$.pCorrection to correction#
     // Negative scale:
-    if correction# eq -1 set pLowValue to (0-(pLowValue(self)+(pStepSize(self)*pSteps(self))))
+    if (correction# = -1) ;
+      set pLowValue to (0-(pLowValue(self)+(pStepSize(self)*pSteps(self))))
     // Scale based on positive part:
-    if correction# eq  1 set pLowValue to (pLowValue(self)-(pStepSize(self)*(pSteps(self)-!$.pStepsTmp(self))))
+    if (correction# = 1) ;
+      set pLowValue to (pLowValue(self)-(pStepSize(self)*(pSteps(self)-!$.pStepsTmp(self))))
     // Scale based on negative part:
-    if correction# eq  2 begin
+    if (correction# = 2) begin
       move (pLowValue(self)-(pStepSize(self)*(pSteps(self)-!$.pStepsTmp(self)))) to tmp#
       set pLowValue to (0-tmp#-(pSteps(self)*pStepSize(self)))
     end
@@ -1821,7 +1833,7 @@ class cAutoScaler is an array
     loop
     if OffSet# begin
       for itm# from 0 to (max#-1-OffSet#)
-        if StepSize# eq (number_value(self,itm#)) ;
+        if (StepSize# = (number_value(self,itm#))) ;
           function_return (number_value(self,itm#+OffSet#))
       loop
     end
@@ -1836,7 +1848,7 @@ class cAutoScaler is an array
     integer count#
     number rval#
     move 1 to rval#
-    if base# ge 0 begin
+    if (base# >= 0) begin
       for count# from 1 to base#
         move (rval#*10) to rval#
       loop
@@ -1863,7 +1875,7 @@ class cAutoScaler is an array
     repeat
       // Calculate step size:
       move ((!$.pMaxValueTmp(self)-!$.pMinValueTmp(self))/!$.pStepsTmp(self)) to Range#
-      if range# gt 0 begin
+      if (range# > 0) begin
         move (log(range#)/log(10)) to base#
         move (range#/(Exp10(self,base#))) to StepSize#
         //showln (string(range#)) " " (string(base#)) " " (string(StepSize#))
@@ -1871,14 +1883,14 @@ class cAutoScaler is an array
         move (StepSize(self,StepSize#,OffSet#)) to StepSize#
         move (StepSize#*Exp10(self,base#)) to StepSize#
         move (StepSize#*(integer(!$.pMinValueTmp(self)/StepSize#))) to LowValue#
-        if (StepSize#*!$.pStepsTmp(self)+LowValue#) ge (!$.pMaxValueTmp(self)) begin
+        if (StepSize#*!$.pStepsTmp(self)+LowValue# >= (!$.pMaxValueTmp(self))) begin
           set pLowValue to (StepSize#*(integer(!$.pMinValueTmp(self)/StepSize#)))
           set pStepSize to StepSize#
           procedure_return
         end
       end
       increment OffSet#
-    until OffSet# gt MaxOffSet#
+    until (OffSet# > MaxOffSet#)
   end_procedure
 
   procedure MaxDecimals
@@ -1889,9 +1901,10 @@ class cAutoScaler is an array
     move -20 to maxdec#
     for count# from 0 to (pSteps(self))
       move (pLowValue(self)+(count#*pStepSize(self))) to value#
-      if value# ne 0 begin
+      if (value# <> 0) begin
         move (NumberOfDecs(value#)) to dec#
-        if dec# gt maxdec# move dec# to maxdec#
+        if (dec# > maxdec#) ;
+	  move dec# to maxdec#
       end
     loop
     set pDecimals to (maxdec# max 0)
@@ -1910,7 +1923,7 @@ class cAutoScaler is an array
       send TmpScale
       send UndoCorrections
       get ScaleEfficiency to best_eff_tmp#
-      if best_eff_tmp# gt best_eff# begin
+      if (best_eff_tmp# > best_eff#) begin
         move best_eff_tmp# to best_eff#
         move count# to best_eff_stps#
       end
@@ -1927,7 +1940,7 @@ end_class // cAutoScaler
 #REPLACE GLS_Dot  PS_DOT
 #REPLACE GLS_Dash PS_DASH
 #REPLACE GLS_Mark PS_DASHDOTDOT
-#REPLACE GLS_Base -337
+Define GLS_Base for -337
 
 //#REPLACE GLS_None  1
 //#REPLACE GLS_Major 2
@@ -2355,7 +2368,7 @@ Class cCoordinateSystem is an array
       get pyLowValue to MinValue#
       get nyHighValue to MaxValue#
 
-      if (pxMajorScale(self)) eq GLS_Base begin
+      if ((pxMajorScale(self)) = GLS_Base) begin
         send SetPenStyle PS_Solid
         move 0 to MajorStepMax#
       end
@@ -2372,7 +2385,7 @@ Class cCoordinateSystem is an array
       get pxLowValue to MinValue#
       get nxHighValue to MaxValue#
 
-      if (pyMajorScale(self)) eq GLS_Base begin
+      if ((pyMajorScale(self)) = GLS_Base) begin
         send SetPenStyle PS_Solid
         move 0 to MajorStepMax#
       end
@@ -2402,12 +2415,16 @@ Class cCoordinateSystem is an array
       get pxTextTTFontAngle to angle#
       send SetTTFont (pxTextTTFontName(self)) (pxTextTTFontSize(self)) angle# (pxTextTTFontBold(self)) (pxTextTTFontItalic(self)) 0
     end
-    if angle# eq 0      send SetTextAlign (VDFGR_TA_CENTER+VDFGR_TA_TOP)
+    if (angle# = 0) ;
+      send SetTextAlign (VDFGR_TA_CENTER+VDFGR_TA_TOP)
     else begin
-      if angle# ge 1800 send SetTextAlign (VDFGR_TA_LEFT  +VDFGR_TA_BOTTOM)
+      if (angle# >= 1800) ;
+        send SetTextAlign (VDFGR_TA_LEFT +VDFGR_TA_BOTTOM)
       else begin
-        if angle# gt 900  send SetTextAlign (VDFGR_TA_RIGHT +VDFGR_TA_BOTTOM)
-        else              send SetTextAlign (VDFGR_TA_RIGHT +VDFGR_TA_TOP)
+        if (angle# > 900) ;
+	  send SetTextAlign (VDFGR_TA_RIGHT +VDFGR_TA_BOTTOM)
+        else ;
+	  send SetTextAlign (VDFGR_TA_RIGHT +VDFGR_TA_TOP)
       end
     end
   end_procedure
@@ -2422,10 +2439,13 @@ Class cCoordinateSystem is an array
       get pyTextTTFontAngle to angle#
       send SetTTFont (pyTextTTFontName(self)) (pyTextTTFontSize(self)) angle# (pyTextTTFontBold(self)) (pyTextTTFontItalic(self)) 0
     end
-    if angle# eq 0      send SetTextAlign (VDFGR_TA_RIGHT+VDFGR_TA_VCENTER)
+    if (angle# = 0) ;
+      send SetTextAlign (VDFGR_TA_RIGHT+VDFGR_TA_VCENTER)
     else begin
-      if angle# ge 1800 send SetTextAlign (VDFGR_TA_LEFT+VDFGR_TA_VCENTER)
-      else              send SetTextAlign (VDFGR_TA_RIGHT +VDFGR_TA_TOP)
+      if (angle# >= 1800) ;
+        send SetTextAlign (VDFGR_TA_LEFT+VDFGR_TA_VCENTER)
+      else ;
+        send SetTextAlign (VDFGR_TA_RIGHT +VDFGR_TA_TOP)
     end
   end_procedure
 
@@ -2469,7 +2489,7 @@ Class cCoordinateSystem is an array
       end
     end
     get pTitleX to title#
-    if title# ne "" begin
+    if (title# <> "") begin
       move self to self#
       send SetTextAlign (VDFGR_TA_CENTER+VDFGR_TA_TOP)
       send SetTextColor clBlack
@@ -2478,7 +2498,7 @@ Class cCoordinateSystem is an array
       send AddText title# (nxHighValue(self#)-(nxRange(self#)/2.0)) (pyLowValue(self#)-(nyRange(self#)/10.0))
     end
     get pTitleY to title#
-    if title# ne "" begin
+    if (title# <> "") begin
       move self to self#
       send SetTextAlign (VDFGR_TA_CENTER+VDFGR_TA_BOTTOM)
       send SetTextColor clBlack
@@ -2571,7 +2591,7 @@ class cBoxSignatures is a cArray
     move 0 to row_offset#
     move 0 to col_offset#
     for row# from 0 to (max#-1)
-      if row_offset# ge MaxRow# begin
+      if (row_offset# >= MaxRow#) begin
         move 0 to row_offset#
         increment col_offset#
       end
@@ -2634,8 +2654,8 @@ class cBarChartData is an array
   End_Function
 
   Procedure UpdateColumnsUsed integer column#
-    if column# gt (pMaxColumnUsed(self)) set pMaxColumnUsed to column#
-    if column# lt (pMinColumnUsed(self)) set pMinColumnUsed to column#
+    if (column# > (pMaxColumnUsed(self))) set pMaxColumnUsed to column#
+    if (column# < (pMinColumnUsed(self))) set pMinColumnUsed to column#
   End_Procedure
 
   Procedure Sto_Data number value# integer column# integer serie# integer stack#
@@ -2657,7 +2677,8 @@ class cBarChartData is an array
   Function iColumns returns integer
     number rval#
     move (1.0*item_count(self)/(pSeries(self)*pStacks(self))) to rval#
-    if rval# ne (integer(rval#)) move (rval#+1) to rval#
+    if (rval# <> (integer(rval#))) ;
+      move (rval#+1) to rval#
     function_return rval#
   End_Function
 
@@ -2668,11 +2689,14 @@ class cBarChartData is an array
     for stack# from 0 to (pStacks(self)-1)
       move (nRcl_Data.iii(self,column#,serie#,stack#)) to tmp#
       // top:
-      if code# eq 0 if tmp# ge 0 move (rval#+tmp#) to rval#
+      if ((code# = 0) and (tmp# >= 0)) ;
+        move (rval#+tmp#) to rval#
       // bottom:
-      if code# eq 1 if tmp# le 0 move (rval#+tmp#) to rval#
+      if ((code# = 1) and (tmp# <= 0)) ;
+        move (rval#+tmp#) to rval#
       // top reduced with negative bottom:
-      if code# eq 2              move (rval#+tmp#) to rval#
+      if (code# = 2) ;
+        move (rval#+tmp#) to rval#
     loop
     function_return rval#
   End_Function
@@ -2692,11 +2716,15 @@ class cBarChartData is an array
         move 0 to tmp_pos#
         for stack# from 0 to (max_stack#-1)
           get nRcl_Data.iii column# serie# stack# to value#
-          if value# ge 0 move (tmp_pos#+value#) to tmp_pos#
-          else           move (tmp_neg#+value#) to tmp_neg#
+          if (value# >= 0) ;
+	    move (tmp_pos#+value#) to tmp_pos#
+          else ;
+	    move (tmp_neg#+value#) to tmp_neg#
         loop
-        if tmp_pos# gt max# move tmp_pos# to max#
-        if tmp_neg# lt min# move tmp_neg# to min#
+        if (tmp_pos# > max#) ;
+	  move tmp_pos# to max#
+        if (tmp_neg# < min#) ;
+	  move tmp_neg# to min#
       loop
     loop
     set pMinY to min#
@@ -2736,11 +2764,11 @@ end_class
 // nuance coded. Otherwise ugly hatches are used
 
 // Bar Chart Coloring Strategies
-#REPLACE BC_COLOR_ON_SERIES -1
-#REPLACE BC_COLOR_ON_STACKS -2
-#REPLACE BC_COLOR_ON_COLUMN -3
-#REPLACE BC_HATCH_ON_SERIES -2
-#REPLACE BC_HATCH_ON_STACKS -3
+Define BC_COLOR_ON_SERIES for -1
+Define BC_COLOR_ON_STACKS for -2
+Define BC_COLOR_ON_COLUMN for -3
+Define BC_HATCH_ON_SERIES for -2
+Define BC_HATCH_ON_STACKS for -3
 
 class cBarChart is a cBarChartData
   procedure construct_object
@@ -2769,12 +2797,12 @@ class cBarChart is a cBarChartData
     if obj# begin
       get pStacks to max_stack#
       get pSeries to max_serie#
-      if max_serie# gt 1 begin
+      if (max_serie# > 1) begin
         for serie# from 0 to (max_serie#-1)
 //          send add_signature to obj# string str# integer color_frame# integer color_back# integer hatch# integer color_hatch#
         loop
       end
-      if max_stack# gt 1 begin
+      if (max_stack# > 1) begin
         for stack# from 0 to (max_stack#-1)
         loop
       end
@@ -2801,17 +2829,17 @@ class cBarChart is a cBarChartData
     integer ColorState#
     if (private.pSmartColor(self)) function_return (iColorNuance.iii(self,serie#,stack#,pStacks(self)-1))
     get pColorState to ColorState#
-    if ColorState# ge 0 function_return ColorState# // Constant color
-    if ColorState# eq BC_COLOR_ON_SERIES function_return (iColor(self,serie#))
-    if ColorState# eq BC_COLOR_ON_STACKS function_return (iColor(self,stack#))
+    if (ColorState# >= 0) function_return ColorState# // Constant color
+    if (ColorState# = BC_COLOR_ON_SERIES) function_return (iColor(self,serie#))
+    if (ColorState# = BC_COLOR_ON_STACKS) function_return (iColor(self,stack#))
   end_function
   function iHatch.iii integer column# integer serie# integer stack# returns integer
     integer HatchState#
     if (private.pSmartColor(self)) function_return HS_NONE
     get pHatchState to HatchState#
-    if HatchState# ge -1 function_return HatchState# // Constant hatch
-    if HatchState# eq BC_HATCH_ON_SERIES function_return (iHatch(self,serie#))
-    if HatchState# eq BC_HATCH_ON_STACKS function_return (iHatch(self,stack#))
+    if (HatchState# >= -1) function_return HatchState# // Constant hatch
+    if (HatchState# = BC_HATCH_ON_SERIES) function_return (iHatch(self,serie#))
+    if (HatchState# = BC_HATCH_ON_STACKS) function_return (iHatch(self,stack#))
   end_function
 
   function nColumnWidth returns number
@@ -2863,8 +2891,8 @@ class cBarChart is a cBarChartData
     decrement liMaxStack
     for liTestStack from 0 to liMaxStack
       get nRcl_Data.iii liColumn liSerie liTestStack to lnValue
-      if lnValue ne 0 begin // Only if there is something to draw#
-        if lnValue ge 0 begin
+      if (lnValue <> 0) begin // Only if there is something to draw#
+        if (lnValue >= 0) begin
           if (liTestStack=liStack) begin
             if (liWhere=0) function_return lnPositiveSum
             if (liWhere=1) function_return (lnValue/2+lnPositiveSum)
@@ -2896,9 +2924,9 @@ class cBarChart is a cBarChartData
     get iHatch.iii column# serie# stack# to hatch#
     get iColor.iii column# serie# stack# to color#
     get pBarFrameColor to BarFrameColor#
-    if BarFrameColor# eq -1 send SetPenColor Color#
+    if (BarFrameColor# = -1) send SetPenColor Color#
     else                    send SetPenColor BarFrameColor#
-    if hatch# ne HS_NONE begin
+    if (hatch# <> HS_NONE) begin
       send SetHatchStyle HS_NONE
       send SetFillColor  clWhite
       send AddRectangle OffsetX# from# (OffsetX#+width#) to#
@@ -2929,8 +2957,8 @@ class cBarChart is a cBarChartData
         move 0 to tmp_pos#
         for stack# from 0 to (max_stack#-1)
           get nRcl_Data.iii column# serie# stack# to value#
-          if value# ne 0 begin // Only if there is something to draw#
-            if value# ge 0 begin
+          if (value# <> 0) begin // Only if there is something to draw#
+            if (value# >= 0) begin
               send draw_bar column# serie# stack# tmp_pos# (tmp_pos#+value#)
               move (tmp_pos#+value#) to tmp_pos#
             end

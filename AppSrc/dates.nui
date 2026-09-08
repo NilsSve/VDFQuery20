@@ -17,7 +17,7 @@
 Use VdfBase.pkg // Define FMAC_VERSION and FMAC_REVISION
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use language.pkg // Set default languange if not set by compiler command line
@@ -25,6 +25,7 @@ Use seq_chnl.pkg // Defines global sequential device management operations (DAW)
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes (No User Interface)
 Use Strings.nui  // String manipulation for VDF (No User Interface)
 Use ErrorHnd.nui // cErrorHandlerRedirector class and oErrorHandlerQuiet object (No User Interface)
+Use tWinStructs.pkg // tWinSystemTime (the SYSTEMTIME struct DataFlex ships)
 
 // Påske søndag: Forårsjævndøgn -> Fuldmåne -> Søndag
 
@@ -345,33 +346,33 @@ procedure DateDecompose global date ldDate //very internal!!
   move (date(ldDate)) to ldDate
   get_attribute DF_DATE_FORMAT to liFormat
   get_attribute DF_DATE_SEPARATOR to liPos1 // overload
-  character liPos1 to lsSep                  // end overload
+  Move (Character(liPos1)) to lsSep // end overload
   move ldDate to lsValue
-  replace lsSep in lsValue with "$"
-  move strmark to liPos1
-  if [found] begin
-    replace lsSep in lsValue with "$"
-    move strmark to liPos2
+  Move (Pos(lsSep, lsValue)) to liPos1
+  Move (Replace(lsSep, lsValue, "$")) to lsValue
+  if (liPos1 > 0) begin
+    Move (Pos(lsSep, lsValue)) to liPos2
+    Move (Replace(lsSep, lsValue, "$")) to lsValue
   end
   else begin
     move 0 to Dates$Year
     move 0 to Dates$Month
     move 0 to Dates$Day
   end
-  [ found] begin
-    if liFormat eq DF_DATE_EUROPEAN ;
-          left lsValue to Dates$Day    (liPos1-1)
-    if liFormat eq DF_DATE_USA begin
-          mid  lsValue to Dates$Day    (liPos2-liPos1-1) (liPos1+1)
-          left lsValue to Dates$Month  (liPos1-1)
+  If (liPos1 > 0 and liPos2 > 0) begin
+    if (liFormat = DF_DATE_EUROPEAN) ;
+          Move (Left(lsValue, (liPos1-1))) to Dates$Day
+    if (liFormat = DF_DATE_USA) begin
+          Move (Mid(lsValue, (liPos2-liPos1-1), (liPos1+1))) to Dates$Day
+          Move (Left(lsValue, (liPos1-1))) to Dates$Month
     end
-    else  mid  lsValue to Dates$Month  (liPos2-liPos1-1) (liPos1+1)
+    else Move (Mid(lsValue, (liPos2-liPos1-1), (liPos1+1))) to Dates$Month
 
-    if liFormat eq DF_DATE_MILITARY begin
-          mid  lsValue to Dates$Day  2 (liPos2+1)
-          left lsValue to Dates$Year   (liPos1-1)
+    if (liFormat = DF_DATE_MILITARY) begin
+          Move (Mid(lsValue, 2, (liPos2+1))) to Dates$Day
+          Move (Left(lsValue, (liPos1-1))) to Dates$Year
     end
-    else  mid  lsValue to Dates$Year 4 (liPos2+1)
+    else Move (Mid(lsValue, 4, (liPos2+1))) to Dates$Year
   end
   //showln ""
   //showln (string(date#)+": "+string(Dates$Day)+","+string(Dates$Month)+","+string(Dates$Year))
@@ -381,38 +382,38 @@ function DateCompose global integer liDay integer liMonth integer liYear returns
   integer liFormat
   date ldDate
   string lsSep
-  ifnot (liDay*liMonth) function_return 0
+  If (Not((liDay*liMonth))) function_return 0
 //  ifnot (liDay*liMonth*liYear) function_return 0
   get_attribute DF_DATE_SEPARATOR to liFormat // overload
-  character liFormat to lsSep                 // end overload
+  Move (Character(liFormat)) to lsSep // end overload
   get_attribute DF_DATE_FORMAT to liFormat
-  if liDay gt 28 begin
-    if liFormat eq DF_DATE_EUROPEAN move (date(string(liDay)+lsSep+string(liMonth)+lsSep+string(liYear))) to ldDate // DMY
-    if liFormat eq DF_DATE_USA      move (date(string(liMonth)+lsSep+string(liDay)+lsSep+string(liYear))) to ldDate // MDY
-    if liFormat eq DF_DATE_MILITARY move (date(string(liYear)+lsSep+string(liMonth)+lsSep+string(liDay))) to ldDate // YMD
+  if (liDay > 28) begin
+    if (liFormat = DF_DATE_EUROPEAN) move (date(string(liDay)+lsSep+string(liMonth)+lsSep+string(liYear))) to ldDate // DMY
+    if (liFormat = DF_DATE_USA) move (date(string(liMonth)+lsSep+string(liDay)+lsSep+string(liYear))) to ldDate // MDY
+    if (liFormat = DF_DATE_MILITARY) move (date(string(liYear)+lsSep+string(liMonth)+lsSep+string(liDay))) to ldDate // YMD
     send DateDecompose ldDate
-    if Dates$Month ne liMonth move (liDay-Dates$Day) to liDay
+    if (Dates$Month <> liMonth) move (liDay-Dates$Day) to liDay
   end
-  if liFormat eq DF_DATE_EUROPEAN function_return (date(string(liDay)+lsSep+string(liMonth)+lsSep+string(liYear))) // DMY
-  if liFormat eq DF_DATE_USA function_return (date(string(liMonth)+lsSep+string(liDay)+lsSep+string(liYear))) // MDY
+  if (liFormat = DF_DATE_EUROPEAN) function_return (date(string(liDay)+lsSep+string(liMonth)+lsSep+string(liYear))) // DMY
+  if (liFormat = DF_DATE_USA) function_return (date(string(liMonth)+lsSep+string(liDay)+lsSep+string(liYear))) // MDY
   function_return (date(string(liYear)+lsSep+string(liMonth)+lsSep+string(liDay))) // YMD
 end_function
 
 function DateIsLegalComponents global integer liDay integer liMonth integer liYear returns integer
   date ldDate
   get Year2to4 liYear to liYear
-  if liDay gt 31 function_return DFFALSE
-  if liMonth gt 12 function_return DFFALSE
-  if liYear gt 2500 function_return DFFALSE
+  if (liDay > 31) function_return DFFALSE
+  if (liMonth > 12) function_return DFFALSE
+  if (liYear > 2500) function_return DFFALSE
   get DateCompose liDay liMonth liYear to ldDate
   send DateDecompose ldDate
   function_return (Dates$Year=liYear and Dates$Month=liMonth and Dates$Day=liDay)
 end_function
 
 function DateFormatName global integer liFormat returns string
-  if liFormat eq DF_DATE_EUROPEAN function_return "European"
-  if liFormat eq DF_DATE_USA      function_return "United States"
-  if liFormat eq DF_DATE_MILITARY function_return "Military"
+  if (liFormat = DF_DATE_EUROPEAN) function_return "European"
+  if (liFormat = DF_DATE_USA) function_return "United States"
+  if (liFormat = DF_DATE_MILITARY) function_return "Military"
 end_function
 
 function DateCurrentSeparator global returns string
@@ -429,19 +430,19 @@ end_function
 
 function DateFormatAsString global integer liFormat integer lbLong string lsSep returns string
   string lsRval lsLetter
-  if liFormat eq DF_DATE_EUROPEAN move "3342241111" to lsRval
-  if liFormat eq DF_DATE_USA      move "2243341111" to lsRval
-  if liFormat eq DF_DATE_MILITARY move "1111422433" to lsRval
-  left t.calendar.year to lsLetter 1
-  replace "1" in lsRval with lsLetter
-  replace "1" in lsRval with lsLetter
-  ifnot lbLong move "" to lsLetter
+  if (liFormat = DF_DATE_EUROPEAN) move "3342241111" to lsRval
+  if (liFormat = DF_DATE_USA) move "2243341111" to lsRval
+  if (liFormat = DF_DATE_MILITARY) move "1111422433" to lsRval
+  Move (Left(t.calendar.year, 1)) to lsLetter
+  Move (Replace("1", lsRval, lsLetter)) to lsRval
+  Move (Replace("1", lsRval, lsLetter)) to lsRval
+  If (Not(lbLong)) move "" to lsLetter
   move (replaces("1",lsRval,lsLetter)) to lsRval
   move (replaces("2",lsRval,left(t.calendar.month,1))) to lsRval
   move (replaces("3",lsRval,left(t.calendar.day,1))) to lsRval
-  if lsSep eq "" begin
+  if (lsSep = "") begin
     get_attribute DF_DATE_SEPARATOR to liFormat
-    character liFormat to lsSep
+    Move (Character(liFormat)) to lsSep
   end
   move (replaces("4",lsRval,lsSep)) to lsRval
   function_return lsRval
@@ -452,17 +453,17 @@ function StrToDate global string lsDate integer liFormat integer lbLong string l
   move (length(lsSep)) to liSepLen
   if lbLong move 4 to lbLong // ugly overload
   else move 2 to lbLong
-  if liFormat eq DF_DATE_EUROPEAN begin // DMY
+  if (liFormat = DF_DATE_EUROPEAN) begin // DMY
     move (mid(lsDate,2,1)) to liDay
     move (mid(lsDate,2,3+liSepLen)) to liMonth
     move (mid(lsDate,lbLong,5+liSepLen+liSepLen)) to liYear
   end
-  if liFormat eq DF_DATE_USA begin // MDY
+  if (liFormat = DF_DATE_USA) begin // MDY
     move (mid(lsDate,2,1)) to liMonth
     move (mid(lsDate,2,3+liSepLen)) to liDay
     move (mid(lsDate,lbLong,5+liSepLen+liSepLen)) to liYear
   end
-  if liFormat eq DF_DATE_MILITARY begin // YMD
+  if (liFormat = DF_DATE_MILITARY) begin // YMD
     move (mid(lsDate,lbLong,1)) to liYear
     move (mid(lsDate,2,1+lbLong+liSepLen)) to liMonth
     move (mid(lsDate,2,3+lbLong+liSepLen+liSepLen)) to liDay
@@ -477,14 +478,14 @@ function DateToStr global date ldDate integer liFormat integer lbLong string lsS
   if (integer(ldDate)) begin
     send DateDecompose ldDate
     move Dates$Day to lsDay
-    if Dates$Day lt 10 insert "0" in lsDay at 1
+    if (Dates$Day < 10) Move (Insert("0",lsDay,1)) to lsDay
     move Dates$Month to lsMonth
-    if Dates$Month lt 10 insert "0" in lsMonth at 1
+    if (Dates$Month < 10) Move (Insert("0",lsMonth,1)) to lsMonth
     move Dates$Year to lsYear
-    ifnot lbLong move (right(lsYear,2)) to lsYear
-    if liFormat eq DF_DATE_EUROPEAN move (lsDay+lsSep+lsMonth+lsSep+lsYear) to lsRval // DMY
-    if liFormat eq DF_DATE_USA      move (lsMonth+lsSep+lsDay+lsSep+lsYear) to lsRval // MDY
-    if liFormat eq DF_DATE_MILITARY move (lsYear+lsSep+lsMonth+lsSep+lsDay) to lsRval // YMD
+    If (Not(lbLong)) move (right(lsYear,2)) to lsYear
+    if (liFormat = DF_DATE_EUROPEAN) move (lsDay+lsSep+lsMonth+lsSep+lsYear) to lsRval // DMY
+    if (liFormat = DF_DATE_USA) move (lsMonth+lsSep+lsDay+lsSep+lsYear) to lsRval // MDY
+    if (liFormat = DF_DATE_MILITARY) move (lsYear+lsSep+lsMonth+lsSep+lsDay) to lsRval // YMD
   end
   else move "" to lsRval
   function_return lsRval
@@ -497,7 +498,7 @@ function DateIsValid global string lsValue returns integer
   send ErrorHnd_Quiet_Activate     // Deactivate error handler
   move lsValue to ldDate           // Move the value to a date variable
   send ErrorHnd_Quiet_Deactivate   // Re-activate the normal error handler
-  ifnot (ErrorHnd_Quiet_ErrorCount()) function_return (integer(ldDate))
+  If (Not((ErrorHnd_Quiet_ErrorCount()))) function_return (integer(ldDate))
   function_return DFFALSE
 end_function
 
@@ -517,26 +518,26 @@ end_function
 //>  integer liAmount   is the (positive or negative) amount of units (indicated by liSegment) to be added.
 function DateIncr global date ldDate integer liSegment integer liAmount returns date
   if (ldDate=0) function_return 0
-  if liSegment eq DS_QUARTER function_return (DateIncr(ldDate,DS_MONTH,liAmount*3))
-  if liSegment eq DS_WEEK function_return (ldDate+(liAmount*7)) //weeks
+  if (liSegment = DS_QUARTER) function_return (DateIncr(ldDate,DS_MONTH,liAmount*3))
+  if (liSegment = DS_WEEK) function_return (ldDate+(liAmount*7)) //weeks
   if (liSegment<>DS_DAY) begin // months or years
     send DateDecompose ldDate
-    if liSegment eq DS_MONTH begin //months
+    if (liSegment = DS_MONTH) begin //months
       move (Dates$Month+liAmount) to Dates$Month
-      if liAmount ge 0 function_return (DateCompose(Dates$Day,Dates$Month-(((Dates$Month-1)/12)*12),Dates$Year+((Dates$Month-1)/12)))
+      if (liAmount >= 0) function_return (DateCompose(Dates$Day,Dates$Month-(((Dates$Month-1)/12)*12),Dates$Year+((Dates$Month-1)/12)))
       function_return (DateCompose(Dates$Day,Dates$Month-(((Dates$Month-12)/12)*12),Dates$Year+((Dates$Month-12)/12)))
     end //years:
-    if liSegment eq DS_YEAR function_return (DateCompose(Dates$Day,Dates$Month,Dates$Year+liAmount))
+    if (liSegment = DS_YEAR) function_return (DateCompose(Dates$Day,Dates$Month,Dates$Year+liAmount))
   end
   else function_return (ldDate+liAmount) //days
 end_function
 
 function vdfq_DateSegment global date ldDate integer liSegment returns integer
   send DateDecompose ldDate
-  if liSegment eq DS_DAY     function_return Dates$Day
-  if liSegment eq DS_MONTH   function_return Dates$Month
-  if liSegment eq DS_YEAR    function_return Dates$Year
-  if liSegment eq DS_QUARTER function_return (Dates$Month+2/3)
+  if (liSegment = DS_DAY) function_return Dates$Day
+  if (liSegment = DS_MONTH) function_return Dates$Month
+  if (liSegment = DS_YEAR) function_return Dates$Year
+  if (liSegment = DS_QUARTER) function_return (Dates$Month+2/3)
 end_function
 
 function DateToInteger global date ldDate returns integer // 20011231
@@ -622,28 +623,28 @@ function DateWeekNumber global date ldDate returns integer
   get DateDayNumber (FirstDayInYear(ldDate)) to liFirstWeekDay
   move (ldDate-FirstDayInYear(ldDate)) to liDayOfYear
   move (liDayOfYear-1-7+liFirstWeekDay) to liDayOfYear
-  If (liDayOfYear/7.0) ge 0 ; 
+  If ((liDayOfYear/7.0) >= 0) ;
         Move (liDayOfYear/7+1) to liWeek
   Else ;
         Move 0 to liWeek
-  if liFirstWeekDay le 4 increment liWeek
-  if liWeek gt 52 begin
+  if (liFirstWeekDay <= 4) increment liWeek
+  if (liWeek > 52) begin
     move 1 to liWeek
-    If liFirstWeekDay eq 4 ;
+    If (liFirstWeekDay = 4) ;
             Move 53 to liWeek
-    If liFirstWeekDay eq 3 ;
-        If ((liYear/4)*4) eq liYear ;
-            ifnot ((liYear/100)*100) eq liYear ;
+    If (liFirstWeekDay = 3) ;
+        If (((liYear/4)*4) = liYear) ;
+            ifnot (((liYear/100)*100) = liYear) ;
                 Move 53 to liWeek
   end
-  if liWeek eq 0 begin
+  if (liWeek = 0) begin
     // Week 52 or 53
     get DateDayNumber (DateIncr(FirstDayInYear(ldDate),DS_YEAR,-1)) to liFirstWeekDay
     move 52 to liWeek
-    If liFirstWeekDay eq 4 ;
+    If (liFirstWeekDay = 4) ;
             Move 53 to liWeek
-    If liFirstWeekDay eq 3 ;
-            If ((liYear/4)*4) eq liYear ifnot ((liYear/100)*100) eq liYear Move 53 to liWeek
+    If (liFirstWeekDay = 3) ;
+            If (((liYear/4)*4) = liYear) ifnot (((liYear/100)*100) = liYear) Move 53 to liWeek
   end
   Function_Return liWeek
 End_Function
@@ -656,22 +657,22 @@ Move False to gbSundayIsFirstDayOfWeek
 
 Function vdfq_DayName Global Integer liWeekDay Returns String
   If (gbSundayIsFirstDayOfWeek) Begin 
-    If liWeekDay eq 1 Function_Return t.calendar.Sunday
-    If liWeekDay eq 2 Function_Return t.calendar.Monday
-    If liWeekDay eq 3 Function_Return t.calendar.Tuesday
-    If liWeekDay eq 4 Function_Return t.calendar.Wednesday
-    If liWeekDay eq 5 Function_Return t.calendar.Thursday
-    If liWeekDay eq 6 Function_Return t.calendar.Friday
-    If liWeekDay eq 7 Function_Return t.calendar.Saturday
+    If (liWeekDay = 1) Function_Return t.calendar.Sunday
+    If (liWeekDay = 2) Function_Return t.calendar.Monday
+    If (liWeekDay = 3) Function_Return t.calendar.Tuesday
+    If (liWeekDay = 4) Function_Return t.calendar.Wednesday
+    If (liWeekDay = 5) Function_Return t.calendar.Thursday
+    If (liWeekDay = 6) Function_Return t.calendar.Friday
+    If (liWeekDay = 7) Function_Return t.calendar.Saturday
   End
   Else Begin
-    If liWeekDay eq 1 Function_Return t.calendar.Monday
-    If liWeekDay eq 2 Function_Return t.calendar.Tuesday
-    If liWeekDay eq 3 Function_Return t.calendar.Wednesday
-    If liWeekDay eq 4 Function_Return t.calendar.Thursday
-    If liWeekDay eq 5 Function_Return t.calendar.Friday
-    If liWeekDay eq 6 Function_Return t.calendar.Saturday
-    If liWeekDay eq 7 Function_Return t.calendar.Sunday
+    If (liWeekDay = 1) Function_Return t.calendar.Monday
+    If (liWeekDay = 2) Function_Return t.calendar.Tuesday
+    If (liWeekDay = 3) Function_Return t.calendar.Wednesday
+    If (liWeekDay = 4) Function_Return t.calendar.Thursday
+    If (liWeekDay = 5) Function_Return t.calendar.Friday
+    If (liWeekDay = 6) Function_Return t.calendar.Saturday
+    If (liWeekDay = 7) Function_Return t.calendar.Sunday
   End
   Function_Return ""
 end_function
@@ -682,17 +683,17 @@ Function DateDayNumber Global Date ldDate Returns Integer
   Move ldDate to liRval
   If (gbSundayIsFirstDayOfWeek) Begin
     If liRval Begin
-      If liRval gt 693975 Move (liRval-2) to liRval
+      If (liRval > 693975) Move (liRval-2) to liRval
       Move (liRval-((liRval/7)*7)) to liRval
       Move (liRval+1) to liRval       //GM 02/24/2012 for US Week Display (Sunday First) - Added this line
-      If liRval eq 0 Move 7 to liRval
+      If (liRval = 0) Move 7 to liRval
     End
   End
   Else Begin
     If liRval Begin
-      If liRval gt 693975 Move (liRval-2) to liRval
+      If (liRval > 693975) Move (liRval-2) to liRval
       Move (liRval-((liRval/7)*7)) to liRval
-      If liRval eq 0 Move 7 to liRval
+      If (liRval = 0) Move 7 to liRval
     End
   End 
   Function_Return liRval
@@ -712,41 +713,41 @@ end_function
 function WeekToDate global integer liYear integer liWeek returns date
   date ldDate
   move (DateCompose(1,1,liYear)) to ldDate
-  if (DateWeekNumber(ldDate)) ne 1 move (ldDate+7) to ldDate // week 52 or 53
+  if ((DateWeekNumber(ldDate)) <> 1) move (ldDate+7) to ldDate // week 52 or 53
   move (ldDate-DateDayNumber(ldDate)+1) to ldDate // Now it's a Monday
   function_return (liWeek-1*7+ldDate)
 end_function
 
 function vdfq_MonthName global integer liMonth returns string
-  if liMonth eq  1 function_return t.calendar.January
-  if liMonth eq  2 function_return t.calendar.February
-  if liMonth eq  3 function_return t.calendar.March
-  if liMonth eq  4 function_return t.calendar.April
-  if liMonth eq  5 function_return t.calendar.May
-  if liMonth eq  6 function_return t.calendar.June
-  if liMonth eq  7 function_return t.calendar.July
-  if liMonth eq  8 function_return t.calendar.August
-  if liMonth eq  9 function_return t.calendar.September
-  if liMonth eq 10 function_return t.calendar.October
-  if liMonth eq 11 function_return t.calendar.November
-  if liMonth eq 12 function_return t.calendar.December
+  if (liMonth = 1) function_return t.calendar.January
+  if (liMonth = 2) function_return t.calendar.February
+  if (liMonth = 3) function_return t.calendar.March
+  if (liMonth = 4) function_return t.calendar.April
+  if (liMonth = 5) function_return t.calendar.May
+  if (liMonth = 6) function_return t.calendar.June
+  if (liMonth = 7) function_return t.calendar.July
+  if (liMonth = 8) function_return t.calendar.August
+  if (liMonth = 9) function_return t.calendar.September
+  if (liMonth = 10) function_return t.calendar.October
+  if (liMonth = 11) function_return t.calendar.November
+  if (liMonth = 12) function_return t.calendar.December
   function_return ""
 end_function
 
 function vdfq_MonthNumber global string lsMonth returns Integer // By Michael Mullan
   move (Uppercase(lsMonth)) to lsMonth
-  if lsMonth eq (Uppercase(t.calendar.January  )) function_return   1
-  if lsMonth eq (Uppercase(t.calendar.February )) function_return   2
-  if lsMonth eq (Uppercase(t.calendar.March    )) function_return   3
-  if lsMonth eq (Uppercase(t.calendar.April    )) function_return   4
-  if lsMonth eq (Uppercase(t.calendar.May      )) function_return   5
-  if lsMonth eq (Uppercase(t.calendar.June     )) function_return   6
-  if lsMonth eq (Uppercase(t.calendar.July     )) function_return   7
-  if lsMonth eq (Uppercase(t.calendar.August   )) function_return   8
-  if lsMonth eq (Uppercase(t.calendar.September)) function_return   9
-  if lsMonth eq (Uppercase(t.calendar.October  )) function_return  10
-  if lsMonth eq (Uppercase(t.calendar.November )) function_return  11
-  if lsMonth eq (Uppercase(t.calendar.December )) function_return  12
+  if (lsMonth = (Uppercase(t.calendar.January ))) function_return 1
+  if (lsMonth = (Uppercase(t.calendar.February ))) function_return 2
+  if (lsMonth = (Uppercase(t.calendar.March ))) function_return 3
+  if (lsMonth = (Uppercase(t.calendar.April ))) function_return 4
+  if (lsMonth = (Uppercase(t.calendar.May ))) function_return 5
+  if (lsMonth = (Uppercase(t.calendar.June ))) function_return 6
+  if (lsMonth = (Uppercase(t.calendar.July ))) function_return 7
+  if (lsMonth = (Uppercase(t.calendar.August ))) function_return 8
+  if (lsMonth = (Uppercase(t.calendar.September))) function_return 9
+  if (lsMonth = (Uppercase(t.calendar.October ))) function_return 10
+  if (lsMonth = (Uppercase(t.calendar.November ))) function_return 11
+  if (lsMonth = (Uppercase(t.calendar.December ))) function_return 12
   function_return 0 // No match
 end_function
 
@@ -759,7 +760,7 @@ end_function
 //  => lsValue = 6-Jul-2006
 function DateAsText global date ldDate string lsFormat returns string
   integer liDay liMonth liYear liYearTmp
-  if ldDate eq 0 function_return ""
+  if (ldDate = 0) function_return ""
   move (replace("#DN3",lsFormat,left(vdfq_DateDayName(ldDate),3)))   to lsFormat
   move (replace("#DN2",lsFormat,left(vdfq_DateDayName(ldDate),2)))   to lsFormat // Dutch request. 01/08/2005
   move (replace("#MN3",lsFormat,left(vdfq_DateMonthName(ldDate),3))) to lsFormat
@@ -786,8 +787,8 @@ end_function
 function Year2to4 global integer liYear returns integer
   integer liEpochValue
   get_date_attribute EPOCH_VALUE to liEpochValue
-  if liYear lt 100 begin
-    if liYear gt liEpochValue function_return (liYear+1900)
+  if (liYear < 100) begin
+    if (liYear > liEpochValue) function_return (liYear+1900)
     function_return (liYear+2000)
   end
   function_return liYear // No conversion done!
@@ -801,9 +802,9 @@ function Date2to4 global date ldDate returns date
   integer liEpochValue
   move (date(ldDate)) to ldDate
   get_date_attribute EPOCH_VALUE to liEpochValue
-  if ldDate gt 0 begin // Only if there is a date to convert
-    if (vdfq_DateSegment(ldDate,DS_YEAR)) lt 105 begin
-      if Dates$Year gt liEpochValue function_return (DateIncr(ldDate,DS_YEAR,1900))
+  if (ldDate > 0) begin // Only if there is a date to convert
+    if ((vdfq_DateSegment(ldDate,DS_YEAR)) < 105) begin
+      if (Dates$Year > liEpochValue) function_return (DateIncr(ldDate,DS_YEAR,1900))
       function_return (DateIncr(ldDate,DS_YEAR,2000))
     end
     function_return ldDate // No conversion done!
@@ -813,11 +814,11 @@ end_function
 function Date4to2 global date ldDate returns date
   integer liEpochValue liYear
   get_date_attribute EPOCH_VALUE to liEpochValue
-  if ldDate gt 0 begin // Only if there is a date to convert
+  if (ldDate > 0) begin // Only if there is a date to convert
     move (vdfq_DateSegment(ldDate,DS_YEAR)) to liYear
-    if liYear ge 100 begin // Only then conversion is needed!
+    if (liYear >= 100) begin // Only then conversion is needed!
       if (liYear>=(1900+liEpochValue) and liYear<(2000+liEpochValue)) begin
-        if liYear lt 2000 function_return (DateIncr(ldDate,DS_YEAR,-1900))
+        if (liYear < 2000) function_return (DateIncr(ldDate,DS_YEAR,-1900))
         else             function_return (DateIncr(ldDate,DS_YEAR,-2000))
       end
       else error 301 "Date is out of epoch range"
@@ -828,13 +829,13 @@ end_function
 
 function dSysDate global returns date
   date ldDate
-  sysdate4 ldDate
+  Move (Date(CurrentDateTime())) to ldDate
   function_return ldDate
 end_function
 
 function iSysYear global returns integer
   date ldDate
-  sysdate4 ldDate
+  Move (Date(CurrentDateTime())) to ldDate
   function_return (vdfq_DateSegment(ldDate,DS_YEAR))
 end_function
 
@@ -843,8 +844,8 @@ end_function
  procedure FieldSysdate for DataDictionary integer liField
    date ldDate
    get field_current_value liField to ldDate
-   if ldDate eq 0 begin
-     sysdate4 ldDate
+   if (ldDate = 0) begin
+     Move (Date(CurrentDateTime())) to ldDate
      set field_changed_value liField to ldDate
    end
  end_procedure
@@ -864,7 +865,7 @@ end_function
      error 15 // Illegal entry in this window
      procedure_return 1
    end
-   if ldNewDate ne ldDate set field_changed_value liField to ldNewDate
+   if (ldNewDate <> ldDate) set field_changed_value liField to ldNewDate
  end_procedure
 
  procedure FieldYear2to4 for DataDictionary integer liField
@@ -877,7 +878,7 @@ end_function
        procedure_return 1
      end
      move (Year2to4(liYear)) to liNewYear
-     if liNewYear ne liYear set field_changed_value liField to liNewYear
+     if (liNewYear <> liYear) set field_changed_value liField to liNewYear
    end
  end_procedure
 #ENDIF
@@ -891,13 +892,21 @@ end_function
 
 function sSysTime global returns string
   integer h# m# s#
-  sysdate4 h# h# m# s#
+//  sysdate4 h# h# m# s#
+  Move (Date(CurrentDateTime())) to h#
+  Move (DateGetHour(CurrentDateTime())) to h#
+  Move (DateGetMinute(CurrentDateTime())) to m#
+  Move (DateGetSecond(CurrentDateTime())) to s#
   function_return (if(h#<10,"0","")+string(h#)+":"+if(m#<10,"0","")+string(m#)+":"+if(s#<10,"0","")+string(s#))
 end_function
 
 function TS_SysTime global returns number
   integer liDate liHour liMinute liSecond
-  sysdate4 liDate liHour liMinute liSecond
+//  sysdate4 liDate liHour liMinute liSecond
+  Move (Date(CurrentDateTime())) to liDate
+  Move (DateGetHour(CurrentDateTime())) to liHour
+  Move (DateGetMinute(CurrentDateTime())) to liMinute
+  Move (DateGetSecond(CurrentDateTime())) to liSecond
   function_return (liDate*24.0+liHour*60+liMinute*60+liSecond)
 end_function
 
@@ -906,9 +915,9 @@ end_function
 //> "hh:mm:ss".
 function TS_Compose global date ldDate string lsTime returns number
   integer liHour liMinute liSecond
-  left lsTime to liHour 2
-  mid lsTime to liMinute 2 4
-  mid lsTime to liSecond 2 7
+  Move (Left(lsTime, 2)) to liHour
+  Move (Mid(lsTime, 2, 4)) to liMinute
+  Move (Mid(lsTime, 2, 7)) to liSecond
   function_return (integer(ldDate)*24.0+liHour*60+liMinute*60+liSecond)
 end_function
 
@@ -958,7 +967,7 @@ end_function
 // This procedure is used when a TS-variable must be displayed on screen.
 procedure TS_UI_Update global number lnTS integer lhObj1 integer liItm1 integer lhTmpObj2 integer liTmpItm2
   integer lhObj2 liItm2
-  if num_arguments gt 3 begin
+  if (num_arguments > 3) begin
     move lhTmpObj2 to lhObj2
     move liTmpItm2 to liItm2
   end
@@ -1015,8 +1024,8 @@ function TS_Module_Compile_Time global string lsPath returns number
   date ldDate
   integer liHour liMin liSec
   string lsAppName
-  move (ToOem(SysConf(SYSCONF_RUNTIME_NAME))) to lsAppName
-  get_file_mod_time (ToOem(lsAppName)) to ldDate liHour liMin liSec
+  move (Utf8ToOem(SysConf(SYSCONF_RUNTIME_NAME))) to lsAppName
+  get_file_mod_time (Utf8ToOem(lsAppName)) to ldDate liHour liMin liSec
   function_return (TS_Compose2(ldDate,liHour,liMin,liSec))
 end_function
 
@@ -1035,7 +1044,7 @@ end_function
 function Module_Compile_Time global returns string
   date ldGarbage
   // Module_Compile_Date must be called before this one!
-  if Dates$Module_Compile_Time eq "" move (Module_Compile_Date()) to ldGarbage
+  if (Dates$Module_Compile_Time = "") move (Module_Compile_Date()) to ldGarbage
   function_return Dates$Module_Compile_Time
 end_function
 
@@ -1055,48 +1064,38 @@ end_function
 
 // The necessary information to do the following comes from Oliver Nelson
 
-Type Dates$SystemTime
-  field Dates$SystemTime.iYear As Word
-  field Dates$SystemTime.iMonth As Word
-  field Dates$SystemTime.iDayOfWeek As Word
-  field Dates$SystemTime.iDay As Word
-  field Dates$SystemTime.iHour As Word
-  field Dates$SystemTime.iMinute As Word
-  field Dates$SystemTime.iSecond As Word
-  field Dates$SystemTime.iMilliseconds As Word
-End_Type
+// The SYSTEMTIME buffer is DataFlex's own tWinSystemTime struct (tWinStructs.pkg) since 2026-09-07;
+// the legacy Type it replaced had the same eight Word fields (iYear .. iMilliseconds).
 external_function Dates.GetSystemTime "GetSystemTime" kernel32.dll Pointer lpGST Returns VOID_TYPE
        
-function MilliSeconds_Systime global returns string
+function MilliSeconds_Systime global returns tWinSystemTime
   integer liGrb
-  string lsTimeData
+  tWinSystemTime stTime
   Pointer lpST
-  ZeroType Dates$SystemTime to lsTimeData
-  getAddress of lsTimeData to lpST
+  Move (AddressOf(stTime)) to lpST
   move (Dates.GetSystemTime(lpST)) to liGrb
-  function_return lsTimeData
-  //getbuff from TimeData as SystemTime.IVAL to var
+  function_return stTime
 end_function
 
-function MilliSeconds_Elapsed global string lsStart string lsStop returns integer
+function MilliSeconds_Elapsed global tWinSystemTime stStart tWinSystemTime stStop returns integer
   integer liYear1 liMonth1 liDay1 liHour1 liMinute1 liSecond1 liMilli1
   integer liYear2 liMonth2 liDay2 liHour2 liMinute2 liSecond2 liMilli2
   date    ldDate1 ldDate2
 
-  getbuff from lsStart at Dates$SystemTime.iYear         to liYear1
-  getbuff from lsStart at Dates$SystemTime.iMonth        to liMonth1
-  getbuff from lsStart at Dates$SystemTime.iDay          to liDay1
-  getbuff from lsStart at Dates$SystemTime.iHour         to liHour1
-  getbuff from lsStart at Dates$SystemTime.iMinute       to liMinute1
-  getbuff from lsStart at Dates$SystemTime.iSecond       to liSecond1
-  getbuff from lsStart at Dates$SystemTime.iMilliseconds to liMilli1
-  getbuff from lsStop  at Dates$SystemTime.iYear         to liYear2
-  getbuff from lsStop  at Dates$SystemTime.iMonth        to liMonth2
-  getbuff from lsStop  at Dates$SystemTime.iDay          to liDay2
-  getbuff from lsStop  at Dates$SystemTime.iHour         to liHour2
-  getbuff from lsStop  at Dates$SystemTime.iMinute       to liMinute2
-  getbuff from lsStop  at Dates$SystemTime.iSecond       to liSecond2
-  getbuff from lsStop  at Dates$SystemTime.iMilliseconds to liMilli2
+  move stStart.wYear         to liYear1
+  move stStart.wMonth        to liMonth1
+  move stStart.wDay          to liDay1
+  move stStart.wHour         to liHour1
+  move stStart.wMinute       to liMinute1
+  move stStart.wSecond       to liSecond1
+  move stStart.wMilliseconds to liMilli1
+  move stStop.wYear          to liYear2
+  move stStop.wMonth         to liMonth2
+  move stStop.wDay           to liDay2
+  move stStop.wHour          to liHour2
+  move stStop.wMinute        to liMinute2
+  move stStop.wSecond        to liSecond2
+  move stStop.wMilliseconds  to liMilli2
   get DateCompose liDay1 liMonth1 liYear1 to ldDate1
   get DateCompose liDay2 liMonth2 liYear2 to ldDate2
 
@@ -1110,11 +1109,11 @@ function MilliSeconds_Elapsed global string lsStart string lsStop returns intege
 end_function
 
 procedure MilliSeconds_Wait global integer liMS
-  string lsSys lsNow
-  get MilliSeconds_Systime to lsSys
+  tWinSystemTime stSys stNow
+  get MilliSeconds_Systime to stSys
   repeat
-    get MilliSeconds_Systime to lsNow
-  until (MilliSeconds_Elapsed(lsSys,lsNow)>=liMS)
+    get MilliSeconds_Systime to stNow
+  until (MilliSeconds_Elapsed(stSys,stNow)>=liMS)
 end_procedure
 
 

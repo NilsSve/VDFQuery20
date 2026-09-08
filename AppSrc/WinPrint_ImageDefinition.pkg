@@ -257,7 +257,7 @@ class cWinPrint_ImageDefinition is a cArray
               get row_count to liMax
               decrement liMax
               for liRow from 0 to liMax
-                if NUM_ARGUMENTS eq 0 begin
+                if (NUM_ARGUMENTS = 0) begin
                   set pnSumTotal.i  liRow to 0
                   set pnSumTotal2.i liRow to 0
                   set pnSumTotal3.i liRow to 0
@@ -293,7 +293,7 @@ class cWinPrint_ImageDefinition is a cArray
     Integer lbForceRight
     Number lnPosition
     String lsValue
-    If NUM_ARGUMENTS eq 0 Move 1 to liLevel
+    If (NUM_ARGUMENTS = 0) Move 1 to liLevel
     Else Move liLevelTmp to liLevel
     Get row_count to liMax
     Decrement liMax
@@ -508,4 +508,3 @@ class cWinPrint_ImageDefinition is a cArray
     set psColumnHeader.i liRow to lsValue
   end_procedure
 end_class // cWinPrint_ImageDefinition
-

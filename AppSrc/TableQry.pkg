@@ -2585,7 +2585,7 @@ Class cTableQueryFunctions is a cObject
 
                                 Send _TableRelateStatesReset (&strQuery)
                                 Get SQLSelectStatement strQuery Self to sStatement
-                                Move (ToANSI(sStatement)) to sStatement
+                                Move (Utf8ToAnsi(sStatement)) to sStatement
                                 Send SQLExecDirect of strStatement.hHandle sStatement
                                 Send SQLFetchActivatesBuffer of strStatement.hHandle strQuery.iTable True // True: DF_FILE_ACTIVATE will be true
                                 
@@ -3921,7 +3921,7 @@ Class cTableQueryFunctions is a cObject
                         End
                         Else If (iType=tqSTRING or iType=tqTEXT) Begin
                             If (strQ._strControlBlock.bSQLTableIsAnsi) Begin
-                                Move (ToOEM(sValue)) to sValue
+                                Move (Utf8ToOem(sValue)) to sValue
                             End
                             Move (Rtrim(sValue)) to sValue
                         End
@@ -4682,7 +4682,7 @@ Class cTableQueryFunctions is a cObject
 
                     Send _TableRelateStatesReset (&strQuery)
                     Get SQLDeleteStatement strQuery Self to sStatement
-                    Move (ToANSI(sStatement)) to sStatement
+                    Move (Utf8ToAnsi(sStatement)) to sStatement
                     If (sStatement<>"") Begin
                         Send SQLExecDirect of strStatement.hHandle sStatement
                     End
@@ -5160,4 +5160,3 @@ End_Class // cTableQueryTester
 //        Send AddTableRelationAutoFixed of oTQ (&strIn.strCQ) strIn.strCQ.iTable strIn.strPQ.iTable
 //    End_Procedure
 //End_Class
-

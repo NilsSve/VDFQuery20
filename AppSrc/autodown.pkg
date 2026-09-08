@@ -45,7 +45,7 @@ object oAutoSystemDowner is a cSystemDowner
 #ELSE
         get MB_Verify4 "Do you want the system to remain shut down, when this program is terminated?" "" "If you answer YES you must delete the file below to open it up again" lsDownNowFile 0 to lbKeepFile
 #ENDIF
-        ifnot lbKeepFile begin
+        If (Not(lbKeepFile)) begin
           get bFileDelete (psDownNowFile(self)) to lbGrb
         end
       end
@@ -192,6 +192,7 @@ object oDownSystemMonitorPanel is a aps.ModalPanel
     send UpdateDisplay_Tables
   end_procedure
 
+  //TODO dfTimer->cTimer (skipped): Uses the Timer_Message/Timer_object dispatch - rewrite OnTimer by hand.
   object oTimer is a DFTimer
     set Auto_Start_State to TRUE //<- If this is set to TRUE to timer is activated when
     set Auto_Stop_State to TRUE  //   the applications start regardless of the oTimedObs "activeness".
@@ -261,4 +262,3 @@ end_procedure
 
 //Eksklusiv tabel adgang: Opn†et/Ikke opn†et
 //Exclusive table access: Achieved/Not achieved
-

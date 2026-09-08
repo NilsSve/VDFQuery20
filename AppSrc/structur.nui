@@ -76,22 +76,22 @@ object oStructureErrorInfo is a cArray
     get value item 0 to ErrTrapType#
     move "" to line1#
     move "" to line2#
-    if ErrTrapType# eq ERRORTRAP_ATTRCHANGE  begin
+    if (ErrTrapType# = ERRORTRAP_ATTRCHANGE) begin
       get value item 1 to attr#
       get API_AttrType attr# to attr_type#
-      if attr_type# eq ATTRTYPE_FILELIST begin
+      if (attr_type# = ATTRTYPE_FILELIST) begin
         get value item 3 to value#
         move "Set_Attribute # to #" to line1#
         move (replace("#",line1#,API_Attr_Name(attr#)))             to line1#  // replace "#" in line1# with (API_Attr_Name(attr#))            
         move (replace("#",line1#,API_Attr_ValueName(attr#,value#))) to line1#  // replace "#" in line1# with (API_Attr_ValueName(attr#,value#))        
       end
-      if attr_type# eq ATTRTYPE_FILE begin
+      if (attr_type# = ATTRTYPE_FILE) begin
         get value item 3 to value#
         move "Set_Attribute # to #" to line1#
         move (replace("#",line1#,API_Attr_Name(attr#)))             to line1# // replace "#" in line1# with (API_Attr_Name(attr#))            
         move (replace("#",line1#,API_Attr_ValueName(attr#,value#))) to line1# // replace "#" in line1# with (API_Attr_ValueName(attr#,value#))
       end
-      if attr_type# eq ATTRTYPE_FIELD begin
+      if (attr_type# = ATTRTYPE_FIELD) begin
         get value item 3 to field#
         get value item 4 to value#
         move "Set_Attribute # field #" to line1#
@@ -100,7 +100,7 @@ object oStructureErrorInfo is a cArray
         move (replace("#",line1#,string(field#)))                   to line1# // replace "#" in line1# with (string(field#))                  
         move (replace("#",line2#,API_Attr_ValueName(attr#,value#))) to line2# // replace "#" in line2# with (API_Attr_ValueName(attr#,value#))
       end
-      if attr_type# eq ATTRTYPE_INDEX begin
+      if (attr_type# = ATTRTYPE_INDEX) begin
         get value item 3 to index#
         get value item 4 to value#
         move "Set_Attribute # index #" to line1#
@@ -109,7 +109,7 @@ object oStructureErrorInfo is a cArray
         move (replace("#",line1#,string(index#)))                   to line1# // replace "#" in line1# with (string(index#))                   
         move (replace("#",line2#,API_Attr_ValueName(attr#,value#))) to line2# // replace "#" in line2# with (API_Attr_ValueName(attr#,value#)) 
       end
-      if attr_type# eq ATTRTYPE_IDXSEG begin
+      if (attr_type# = ATTRTYPE_IDXSEG) begin
         get value item 3 to index#
         get value item 4 to segment#
         get value item 5 to value#
@@ -121,21 +121,21 @@ object oStructureErrorInfo is a cArray
         move (replace("#",line2#,API_Attr_ValueName(attr#,value#))) to line2# // replace "#" in line2# with (API_Attr_ValueName(attr#,value#))
       end
     end
-    if ErrTrapType# eq ERRORTRAP_FIELDCREATE begin
+    if (ErrTrapType# = ERRORTRAP_FIELDCREATE) begin
       move "Create_Field # at #" to line1#
       move (replace("#",line1#,string(value(self,1)))) to line1#
       move (replace("#",line1#,string(value(self,2)))) to line1#
     end
-    if ErrTrapType# eq ERRORTRAP_FIELDDELETE begin
+    if (ErrTrapType# = ERRORTRAP_FIELDDELETE) begin
       move "Delete_Field #" to line1#
       move (replace("#",line1#,string(value(self,1)))) to line1#
     end
-    if ErrTrapType# eq ERRORTRAP_INDEXCREATE begin
+    if (ErrTrapType# = ERRORTRAP_INDEXCREATE) begin
       move "Create_Index # at #" to line1#
       move (replace("#",line1#,string(value(self,1)))) to line1#
       move (replace("#",line1#,string(value(self,2)))) to line1#
     end
-    if ErrTrapType# eq ERRORTRAP_INDEXDELETE begin
+    if (ErrTrapType# = ERRORTRAP_INDEXDELETE) begin
       move "Delete_Index #" to line1#
       move (replace("#",line1#,string(value(self,1)))) to line1#
     end
@@ -224,5 +224,4 @@ end_procedure
     send DoClearStructureErrorInfo
   #ENDIF
 #ENDCOMMAND
-
 

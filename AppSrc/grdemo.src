@@ -2,7 +2,7 @@
 Use aps.pkg         // Auto Positioning and Sizing classes for VDF
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>170) // If 17.1 or higher
@@ -46,6 +46,8 @@ Use aps.pkg         // Auto Positioning and Sizing classes for VDF
 
 Use VdfGraph.utl // Graphics for Visual DataFlex
 Use msgbox.utl
+Use cCJStandardMenuItemClasses.pkg   // ChangeDFCreateMenuToCodeJock: classes of the converted menu
+Use cCJMDIWindowsMenuItem.pkg   // ChangeDFCreateMenuToCodeJock: classes of the converted menu
 
 // Splash screen without a bitmap:
 object oSplash is a ToolPanel // A little splash screen to wet your appetite.
@@ -59,7 +61,11 @@ object oSplash is a ToolPanel // A little splash screen to wet your appetite.
       integer liCount liColor
       forward send draw_data
       // This command will land the seconds in the liColor variable:
-      sysdate liColor liColor liColor liColor
+//      sysdate liColor liColor liColor liColor
+      Move (Date(CurrentDateTime())) to liColor
+      Move (DateGetHour(CurrentDateTime())) to liColor
+      Move (DateGetMinute(CurrentDateTime())) to liColor
+      Move (DateGetSecond(CurrentDateTime())) to liColor
       move (mod(liColor,5)) to liColor
       if (liColor=0) move clRed to liColor
       if (liColor=1) move clGreen to liColor
@@ -122,67 +128,370 @@ Use dfAbout.pkg
 
 Object Main is a Panel
   Set Label to "Graphics for Visual DataFlex, Demo routines"
-  DFCreate_Menu Main_Menu
-    DFCreate_Menu "&File" FilePopupMenu is a ViewPopupMenu
-      DFCreate_Menu "&Test" TestPopupMenu is a ViewPopupMenu
-        On_Item "Minimize/maximize" send activate_MinimizeMaximize
-        On_Item "Empty area" Send run_test99
-        On_Item "Color dialog (not VdfGraph)" send run_test4
-        On_Item "Display splash screen" send Display_Splash
-        On_Item "Remove splash screen" send Remove_Splash
-      End_Pull_down
-      On_Item ""
-      On_Item "E&xit\aAlt+F4" send Exit_Application to desktop
-    End_Pull_down
-    DFCreate_Menu "&Samples" ViewPopupMenu is a ViewPopupMenu
-      DFCreate_Menu "&Basics" oBasics_Menu is a ViewPopupMenu
-        On_Item "Resizable graphic area" Send run_test1
-        On_Item "Display color array" Send run_test5
-        On_Item "Display hatch array" Send run_test6
-        On_Item "Dots" Send run_test16
-        On_Item "Dot alignment" Send run_test17
-        On_Item "Dot alignment (2)" Send run_test17_2
-        On_Item "Piece of cake" Send run_test23
-      End_Pull_down
-      DFCreate_Menu "&Text" oText_Menu is a ViewPopupMenu
-        On_Item "Text alignment" Send run_test11
-        On_Item "Rotated TT font" Send run_test13
-        On_Item "Font selector" Send run_test24
-      End_Pull_down
-      DFCreate_Menu "&Graphs" oGraphs_Menu is a ViewPopupMenu
-        On_Item "Test Auto Scaler" Send run_test2
-        On_Item "Tab dialog example" Send run_test3
-        On_Item "Bar chart" Send run_test8
-//        On_Item "Pie chart" Send run_test22
-      End_Pull_down
-      DFCreate_Menu "&Polygons and polylines" oPoly_Menu is a ViewPopupMenu
-        On_Item "Poly lines" Send run_test7
-        On_Item "Polygon (120 points)" Send run_test15
-      End_Pull_down
-      DFCreate_Menu "&Miscellaneous" oMisc_Menu is a ViewPopupMenu
-        On_Item "Guitar chords" Send run_test12
-        On_Item "Clickable graphic area" Send run_test18
-        On_Item "Trackable objects" Send run_test25
-        On_Item "Viewport experiment" Send run_test19
-        On_Item "Dragable objects" Send run_test31
-        On_Item "3D example" Send run_test52
-//      On_Item "Four areas" Send run_test32
-//      On_Item "Areas updated by timer" Send run_test33
-//      On_Item "Incremental updates" Send run_test34
-//        On_Item "Pre-fabricated graphic area" Send run_test21
-//        On_Item "DF Draw" Send run_test20
-      End_Pull_down
-      DFCreate_Menu "&Pixel based coordinates" oPixel_Menu is a ViewPopupMenu
-        On_Item "Pixel Paxel" Send run_test51
-      End_Pull_down
-      On_Item "" send none
-      On_Item "Open all" send Open_All
+//  TODO (DFRefactor): converted to the CodeJock menu above by ChangeDFCreateMenuToCodeJock.
+//    DFCreate_Menu Main_Menu
+//      DFCreate_Menu "&File" FilePopupMenu is a ViewPopupMenu
+//        DFCreate_Menu "&Test" TestPopupMenu is a ViewPopupMenu
+//          On_Item "Minimize/maximize" send activate_MinimizeMaximize
+//          On_Item "Empty area" Send run_test99
+//          On_Item "Color dialog (not VdfGraph)" send run_test4
+//          On_Item "Display splash screen" send Display_Splash
+//          On_Item "Remove splash screen" send Remove_Splash
+//        End_Pull_down
+//        On_Item ""
+//        On_Item "E&xit\aAlt+F4" send Exit_Application to desktop
+//      End_Pull_down
+//      DFCreate_Menu "&Samples" ViewPopupMenu is a ViewPopupMenu
+//        DFCreate_Menu "&Basics" oBasics_Menu is a ViewPopupMenu
+//          On_Item "Resizable graphic area" Send run_test1
+//          On_Item "Display color array" Send run_test5
+//          On_Item "Display hatch array" Send run_test6
+//          On_Item "Dots" Send run_test16
+//          On_Item "Dot alignment" Send run_test17
+//          On_Item "Dot alignment (2)" Send run_test17_2
+//          On_Item "Piece of cake" Send run_test23
+//        End_Pull_down
+//        DFCreate_Menu "&Text" oText_Menu is a ViewPopupMenu
+//          On_Item "Text alignment" Send run_test11
+//          On_Item "Rotated TT font" Send run_test13
+//          On_Item "Font selector" Send run_test24
+//        End_Pull_down
+//        DFCreate_Menu "&Graphs" oGraphs_Menu is a ViewPopupMenu
+//          On_Item "Test Auto Scaler" Send run_test2
+//          On_Item "Tab dialog example" Send run_test3
+//          On_Item "Bar chart" Send run_test8
+//  //        On_Item "Pie chart" Send run_test22
+//        End_Pull_down
+//        DFCreate_Menu "&Polygons and polylines" oPoly_Menu is a ViewPopupMenu
+//          On_Item "Poly lines" Send run_test7
+//          On_Item "Polygon (120 points)" Send run_test15
+//        End_Pull_down
+//        DFCreate_Menu "&Miscellaneous" oMisc_Menu is a ViewPopupMenu
+//          On_Item "Guitar chords" Send run_test12
+//          On_Item "Clickable graphic area" Send run_test18
+//          On_Item "Trackable objects" Send run_test25
+//          On_Item "Viewport experiment" Send run_test19
+//          On_Item "Dragable objects" Send run_test31
+//          On_Item "3D example" Send run_test52
+//  //      On_Item "Four areas" Send run_test32
+//  //      On_Item "Areas updated by timer" Send run_test33
+//  //      On_Item "Incremental updates" Send run_test34
+//  //        On_Item "Pre-fabricated graphic area" Send run_test21
+//  //        On_Item "DF Draw" Send run_test20
+//        End_Pull_down
+//        DFCreate_Menu "&Pixel based coordinates" oPixel_Menu is a ViewPopupMenu
+//          On_Item "Pixel Paxel" Send run_test51
+//        End_Pull_down
+//        On_Item "" send none
+//        On_Item "Open all" send Open_All
 
-//      On_Item "3D experiment" Send run_test14
-    End_Pull_down
-    #include Navi_pm.inc
-    #include win_PM.inc
-  End_Menu
+//  //      On_Item "3D experiment" Send run_test14
+//      End_Pull_down
+//      #include Navi_pm.inc
+//      #include win_PM.inc
+//    End_Menu
+  Object oCommandBarSystem is a cCJCommandBarSystem
+      Set pbTimerUpdate to True
+      Object oMenuBar is a cCJMenuBar
+          Object oFile_Menu is a cCJMenuItem
+              Set peControlType to xtpControlPopup
+              Set psCaption to "&File"
+              Object oTest_Menu is a cCJMenuItem
+                  Set peControlType to xtpControlPopup
+                  Set psCaption to "&Test"
+                  Object oMinimizemaximize_MenuItem is a cCJMenuItem
+                      Set psCaption to "Minimize/maximize"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send activate_MinimizeMaximize
+                      End_Procedure
+                  End_Object
+                  Object oEmptyarea_MenuItem is a cCJMenuItem
+                      Set psCaption to "Empty area"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test99
+                      End_Procedure
+                  End_Object
+                  Object oColordialognotVdfGraph_MenuItem is a cCJMenuItem
+                      Set psCaption to "Color dialog (not VdfGraph)"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test4
+                      End_Procedure
+                  End_Object
+                  Object oDisplaysplashscreen_MenuItem is a cCJMenuItem
+                      Set psCaption to "Display splash screen"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send Display_Splash
+                      End_Procedure
+                  End_Object
+                  Object oRemovesplashscreen_MenuItem is a cCJMenuItem
+                      Set psCaption to "Remove splash screen"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send Remove_Splash
+                      End_Procedure
+                  End_Object
+              End_Object
+              Object oExit_MenuItem is a cCJExitMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set pbControlBeginGroup to True
+              //  \aAlt+F4   // TODO (DFRefactor): legacy accelerator - bind a CodeJock shortcut by hand.
+              End_Object
+          End_Object
+          Object oSamples_Menu is a cCJMenuItem
+              Set peControlType to xtpControlPopup
+              Set psCaption to "&Samples"
+              Object oBasics_Menu is a cCJMenuItem
+                  Set peControlType to xtpControlPopup
+                  Set psCaption to "&Basics"
+                  Object oResizablegraphicarea_MenuItem is a cCJMenuItem
+                      Set psCaption to "Resizable graphic area"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test1
+                      End_Procedure
+                  End_Object
+                  Object oDisplaycolorarray_MenuItem is a cCJMenuItem
+                      Set psCaption to "Display color array"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test5
+                      End_Procedure
+                  End_Object
+                  Object oDisplayhatcharray_MenuItem is a cCJMenuItem
+                      Set psCaption to "Display hatch array"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test6
+                      End_Procedure
+                  End_Object
+                  Object oDots_MenuItem is a cCJMenuItem
+                      Set psCaption to "Dots"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test16
+                      End_Procedure
+                  End_Object
+                  Object oDotalignment_MenuItem is a cCJMenuItem
+                      Set psCaption to "Dot alignment"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test17
+                      End_Procedure
+                  End_Object
+                  Object oDotalignment2_MenuItem is a cCJMenuItem
+                      Set psCaption to "Dot alignment (2)"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test17_2
+                      End_Procedure
+                  End_Object
+                  Object oPieceofcake_MenuItem is a cCJMenuItem
+                      Set psCaption to "Piece of cake"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test23
+                      End_Procedure
+                  End_Object
+              End_Object
+              Object oText_Menu is a cCJMenuItem
+                  Set peControlType to xtpControlPopup
+                  Set psCaption to "&Text"
+                  Object oTextalignment_MenuItem is a cCJMenuItem
+                      Set psCaption to "Text alignment"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test11
+                      End_Procedure
+                  End_Object
+                  Object oRotatedTTfont_MenuItem is a cCJMenuItem
+                      Set psCaption to "Rotated TT font"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test13
+                      End_Procedure
+                  End_Object
+                  Object oFontselector_MenuItem is a cCJMenuItem
+                      Set psCaption to "Font selector"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test24
+                      End_Procedure
+                  End_Object
+              End_Object
+              Object oGraphs_Menu is a cCJMenuItem
+                  Set peControlType to xtpControlPopup
+                  Set psCaption to "&Graphs"
+                  Object oTestAutoScaler_MenuItem is a cCJMenuItem
+                      Set psCaption to "Test Auto Scaler"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test2
+                      End_Procedure
+                  End_Object
+                  Object oTabdialogexample_MenuItem is a cCJMenuItem
+                      Set psCaption to "Tab dialog example"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test3
+                      End_Procedure
+                  End_Object
+                  Object oBarchart_MenuItem is a cCJMenuItem
+                      Set psCaption to "Bar chart"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test8
+                      End_Procedure
+                  End_Object
+              End_Object
+              Object oPolygonsandpolylines_Menu is a cCJMenuItem
+                  Set peControlType to xtpControlPopup
+                  Set psCaption to "&Polygons and polylines"
+                  Object oPolylines_MenuItem is a cCJMenuItem
+                      Set psCaption to "Poly lines"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test7
+                      End_Procedure
+                  End_Object
+                  Object oPolygon120points_MenuItem is a cCJMenuItem
+                      Set psCaption to "Polygon (120 points)"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test15
+                      End_Procedure
+                  End_Object
+              End_Object
+              Object oMiscellaneous_Menu is a cCJMenuItem
+                  Set peControlType to xtpControlPopup
+                  Set psCaption to "&Miscellaneous"
+                  Object oGuitarchords_MenuItem is a cCJMenuItem
+                      Set psCaption to "Guitar chords"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test12
+                      End_Procedure
+                  End_Object
+                  Object oClickablegraphicarea_MenuItem is a cCJMenuItem
+                      Set psCaption to "Clickable graphic area"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test18
+                      End_Procedure
+                  End_Object
+                  Object oTrackableobjects_MenuItem is a cCJMenuItem
+                      Set psCaption to "Trackable objects"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test25
+                      End_Procedure
+                  End_Object
+                  Object oViewportexperiment_MenuItem is a cCJMenuItem
+                      Set psCaption to "Viewport experiment"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test19
+                      End_Procedure
+                  End_Object
+                  Object oDragableobjects_MenuItem is a cCJMenuItem
+                      Set psCaption to "Dragable objects"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test31
+                      End_Procedure
+                  End_Object
+                  Object oM3Dexample_MenuItem is a cCJMenuItem
+                      Set psCaption to "3D example"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test52
+                      End_Procedure
+                  End_Object
+              End_Object
+              Object oPixelbasedcoordinates_Menu is a cCJMenuItem
+                  Set peControlType to xtpControlPopup
+                  Set psCaption to "&Pixel based coordinates"
+                  Object oPixelPaxel_MenuItem is a cCJMenuItem
+                      Set psCaption to "Pixel Paxel"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send run_test51
+                      End_Procedure
+                  End_Object
+              End_Object
+              Object oOpenall_MenuItem is a cCJMenuItem
+                  Set psCaption to "Open all"
+                  Set pbControlBeginGroup to True
+                  Procedure OnExecute Variant vCommandBarControl
+                      Send Open_All
+                  End_Procedure
+              End_Object
+          End_Object
+          Object oNavigate_Menu is a cCJMenuItem
+              Set peControlType to xtpControlPopup
+              Set psCaption to "&Navigate"
+              Set psToolTip to "Move to different areas of the application."
+              Object oNextarea_MenuItem is a cCJNextAreaMenu
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Move to the Next area"
+              //  \aF6   // TODO (DFRefactor): legacy accelerator - bind a CodeJock shortcut by hand.
+              End_Object
+              Object oPreviousarea_MenuItem is a cCJPriorAreaMenu
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Move to the Previous area"
+              //  \aShift+F6   // TODO (DFRefactor): legacy accelerator - bind a CodeJock shortcut by hand.
+              End_Object
+              Object oNextview_MenuItem is a cCJNextViewMenu
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Move to the Next view"
+              //  \aAlt+F6   // TODO (DFRefactor): legacy accelerator - bind a CodeJock shortcut by hand.
+              End_Object
+              Object oPreviousView_MenuItem is a cCJPriorViewMenu
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Move to the Previous view"
+              //  \aCtrl+F6   // TODO (DFRefactor): legacy accelerator - bind a CodeJock shortcut by hand.
+              End_Object
+              Object oPrompt_MenuItem is a cCJPromptMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set pbControlBeginGroup to True
+                  Set psToolTip to "Show available selections"
+              //  \aF4   // TODO (DFRefactor): legacy accelerator - bind a CodeJock shortcut by hand.
+              End_Object
+              Object oZoom_MenuItem is a cCJZoomMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Show appropriate Zoom"
+              //  \aAlt+F9   // TODO (DFRefactor): legacy accelerator - bind a CodeJock shortcut by hand.
+              End_Object
+          End_Object
+          Object oWindow_Menu is a cCJMDIWindowsMenuItem
+              Set peControlType to xtpControlPopup
+              Set psCaption to "&Window"
+              Set psToolTip to "Display Current Views and set other display options."
+              Object oDisplayOptions_Menu is a cCJMenuItem
+                  Set peControlType to xtpControlPopup
+                  Set psCaption to "&Display_Options"
+                  Set psToolTip to "Set tool-bar, status-bar, and icon display options"
+                  Object oToolbar_MenuItem is a cCJMenuItem
+                      Set psCaption to "&Tool-bar"
+                      Procedure OnExecute Variant vCommandBarControl
+                          Send Toggle_ToolBar
+                      End_Procedure
+                  End_Object
+                  Object oStatusbar_MenuItem is a cCJStatusbarMenuItem
+                      Set pbAddToDesignerMenu to True
+                  End_Object
+                  Object oAutoArrangeIcons_MenuItem is a cCJAutoArrangeIconsMenuItem
+                      Set pbAddToDesignerMenu to True
+                      Set psToolTip to "Remove the Tool-bar"
+                  End_Object
+              End_Object
+              Object oCascade_MenuItem is a cCJCascadeMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set pbControlBeginGroup to True
+                  Set psToolTip to "Cascade all open Windows/Views"
+              End_Object
+              Object oTileHorizontally_MenuItem is a cCJTileHorizontally
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Tile all open Windows/Views horizontally"
+              End_Object
+              Object oTileVertically_MenuItem is a cCJTileVertically
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Tile all open Windows/Views vertically"
+              End_Object
+              Object oMinimizeallWindows_MenuItem is a cCJMinimizeWindowsMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set pbControlBeginGroup to True
+                  Set psToolTip to "Minimize all open Windows/Views"
+              End_Object
+              Object oRestoreallWindows_MenuItem is a cCJRestoreWindowsMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set psToolTip to "Restore all open Windows/Views to normal screen display mode"
+              End_Object
+              Object oArrangeIcons_MenuItem is a cCJArrangeIconsMenuItem
+                  Set pbAddToDesignerMenu to True
+                  Set pbControlBeginGroup to True
+                  Set psToolTip to "Arrange the icons at the bottom"
+              End_Object
+          End_Object
+      End_Object
+  End_Object
+
   Object Main_Client is an ClientArea
 
     // *********************************************************************
@@ -282,19 +591,19 @@ Object Main is a Panel
           object oFrm1 is a aps.Form label "Minimum value:" abstract AFT_NUMERIC8.8
             set value item 0 to 35
             procedure OnChange
-              send calculate
+              send CalculateIt
             end_procedure
           end_object
           object oFrm2 is a aps.Form label "Maximum value:" abstract AFT_NUMERIC8.8
             set value item 0 to 256
             procedure OnChange
-              send calculate
+              send CalculateIt
             end_procedure
           end_object
           object oFrm3 is a aps.SpinForm label "Air, percent:" abstract AFT_NUMERIC2.0
             set value item 0 to 0
             procedure OnChange
-              send calculate
+              send CalculateIt
             end_procedure
           end_object
           object oTxt is an aps.TextBox label "%" snap SL_RIGHT
@@ -302,18 +611,18 @@ Object Main is a Panel
           object oFrm4 is a aps.SpinForm label "Minimum steps:" abstract AFT_NUMERIC2.0
             set value item 0 to 5
             procedure OnChange
-              send calculate
+              send CalculateIt
             end_procedure
           end_object
           object oFrm5 is a aps.spinForm label "Max:" abstract AFT_NUMERIC2.0 snap SL_RIGHT
             set value item 0 to 5
             procedure OnChange
-              send calculate
+              send CalculateIt
             end_procedure
           end_object
           object oCb1 is a aps.CheckBox label "Zero based"
             procedure OnChange
-              send calculate
+              send CalculateIt
             end_procedure
           end_object
         end_object
@@ -746,31 +1055,31 @@ Object Main is a Panel
         object oFrm1 is a aps.SpinForm label "Columns:" abstract AFT_NUMERIC2.0
           set value item 0 to 5
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFrm2 is a aps.SpinForm label "Series:" abstract AFT_NUMERIC2.0
           set value item 0 to 3
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFrm3 is a aps.SpinForm label "Stacks:" abstract AFT_NUMERIC2.0
           set value item 0 to 2
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFrm4 is a aps.SpinForm label "Min:" abstract AFT_NUMERIC4.2
           set value item 0 to 2
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFrm5 is a aps.SpinForm label "Max:" abstract AFT_NUMERIC4.2 snap SL_RIGHT_SPACE
           set value item 0 to 12
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
       end_object
@@ -784,7 +1093,7 @@ Object Main is a Panel
           send Combo_Add_Item "Times New Roman"
           set value item 0 to "Stock Font"
           procedure OnChange
-            send calculate
+            send CalculateIt
             send auto_shade
           end_procedure
         end_object
@@ -801,7 +1110,7 @@ Object Main is a Panel
           set value item 0 to "12"
           set object_shadow_state to true
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFontColor is a aps.ComboFormAux label "Color" abstract AFT_ASCII10
@@ -815,26 +1124,26 @@ Object Main is a Panel
           send Combo_Add_Item "White"  clWhite
           set value item 0 to "Black"
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFontRotation is a aps.SpinForm label "Rotation:" abstract AFT_NUMERIC3.0
           set value item 0 to 0
           set object_shadow_state to true
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFontBold is a aps.CheckBox label "Bold" snap SL_RIGHT_SPACE
           set object_shadow_state to true
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFontItalics is a aps.CheckBox label "Ital." snap SL_RIGHT_SPACE
           set object_shadow_state to true
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         procedure auto_shade
@@ -857,7 +1166,7 @@ Object Main is a Panel
           set value item 0 to "Stock Font"
           procedure OnChange
             send auto_shade
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFontSize is a aps.ComboForm abstract AFT_NUMERIC2.0 snap SL_RIGHT
@@ -873,7 +1182,7 @@ Object Main is a Panel
           send Combo_Add_Item "20"
           set value item 0 to "12"
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFontColor is a aps.ComboFormAux label "Color" abstract AFT_ASCII10
@@ -887,26 +1196,26 @@ Object Main is a Panel
           send Combo_Add_Item "White"  clWhite
           set value item 0 to "Black"
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFontRotation is a aps.SpinForm label "Rotation:" abstract AFT_NUMERIC3.0
           set value item 0 to 0
           set object_shadow_state to true
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFontBold is a aps.CheckBox label "Bold" snap SL_RIGHT_SPACE
           set object_shadow_state to true
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         object oFontItalics is a aps.CheckBox label "Ital." snap SL_RIGHT_SPACE
           set object_shadow_state to true
           procedure OnChange
-            send calculate
+            send CalculateIt
           end_procedure
         end_object
         procedure auto_shade
@@ -985,7 +1294,7 @@ Object Main is a Panel
           Set AxisTextX 10 to "November"
           Set AxisTextX 11 to "December"
         end_object
-        procedure calculate
+        procedure CalculateIt
           integer liColumns column# stack# liStacks serie# liSeries obj#
           integer angle# fontsize# fontliColor bold# italics#
           number min# max#
@@ -1018,7 +1327,7 @@ Object Main is a Panel
           get select_state of (oFontBold(oGrp2(self))) item 0 to bold#
           get select_state of (oFontItalics(oGrp2(self))) item 0 to italics#
           move (angle#*10) to angle#
-          if font# eq "Stock Font" set pxTextStockFont of obj# to ANSI_VAR_FONT
+          if (font# = "Stock Font") set pxTextStockFont of obj# to ANSI_VAR_FONT
           else set pxTextTTFontName of obj# to font#
           set pxTextTTFontSize of obj# to fontsize#
           set pxTextTTFontAngle of obj# to angle#
@@ -1034,7 +1343,7 @@ Object Main is a Panel
           get select_state of (oFontBold(oGrp3(self))) item 0 to bold#
           get select_state of (oFontItalics(oGrp3(self))) item 0 to italics#
           move (angle#*10) to angle#
-          if font# eq "Stock Font" set pyTextStockFont of obj# to ANSI_VAR_FONT
+          if (font# = "Stock Font") set pyTextStockFont of obj# to ANSI_VAR_FONT
           else set pyTextTTFontName of obj# to font#
           set pyTextTTFontSize of obj# to fontsize#
           set pyTextTTFontAngle of obj# to angle#
@@ -1045,10 +1354,10 @@ Object Main is a Panel
           send Draw_Data
           send RePaintFull
         end_procedure
-        send calculate
+        send CalculateIt
       end_object
       procedure calculate
-        send Calculate to (oGraph(self))
+        send CalculateIt to (oGraph(self))
       end_procedure
 
       object oBtn1 is a aps.multi_button
@@ -1250,7 +1559,7 @@ Object Main is a Panel
         // Hah! First time I ever declared an integer with the name string!
         procedure draw_chord_dot integer string# integer pos# integer x# integer y#
           if pos# begin // Loose strings are not marked
-            if pos# eq -1 begin // Keep string quiet!
+            if (pos# = -1) begin // Keep string quiet!
               send SetDotStyle DT_CROSS
               send AddDot (x#+500) (string#-1*200+y#)
             end
@@ -2070,7 +2379,7 @@ Object Main is a Panel
       function user_fontname string name# integer height# returns integer
         integer row# oAvailableFonts#
         move (oAvailableFonts(self)) to oAvailableFonts#
-        if name# ne "" begin // Add font to the array
+        if (name# <> "") begin // Add font to the array
           get row_count of oAvailableFonts# to row#
           set psFontName.i of oAvailableFonts# row# to name#
           set piFontSize.i of oAvailableFonts# row# to height#
@@ -2087,7 +2396,7 @@ Object Main is a Panel
         move (oAvailableFonts(self)) to oAvailableFonts#
         get row_count of oAvailableFonts# to max#
         for row# from 0 to max#
-          if (psFontName.i(oAvailableFonts#,row#)) ne "" ;
+          if ((psFontName.i(oAvailableFonts#,row#)) <> "") ;
             send combo_add_item (psFontName.i(oAvailableFonts#,row#)) row#
         loop
         set entry_state item 0 to false
@@ -2542,7 +2851,7 @@ Object Main is a Panel
 
 //  use dftimer
 //  object oStatusBarTimer is a dftimer // This timer makes sure that the
-//    set timer_active_state to true    // status bar is updated at least
+//    set pbEnabled to true    // status bar is updated at least
 //    procedure onTimer                 // every second.
 //      send update_status_line
 //    end_procedure
@@ -2564,11 +2873,11 @@ Object Main is a Panel
 //      get pIterations to iter#
 //      set pIterations to (iter#-1)
 //      send update_minmax_count iter#
-//      if iter# le 0 set timer_active_state to false
+//      if iter# le 0 set pbEnabled to false
 //    end_procedure
 //    procedure go integer iter#
 //      set pIterations to (iter#-1)
-//      set timer_active_state to true
+//      set pbEnabled to true
 //    end_procedure
 //  end_object
 
@@ -2618,7 +2927,7 @@ Object Main is a Panel
     End_Procedure
     procedure update_status_line
       ULongptr mem#
-      memory mem#
+      // memory mem# // obsolete command - no-op in modern DataFlex
       set pNumToStringConversionMode to NUMTOSTR_THOUSANDS_SEPARATOR_ON
       set value item 2 to (NumToStr(mem#,0))
       set pNumToStringConversionMode to NUMTOSTR_THOUSANDS_SEPARATOR_OFF
@@ -2632,7 +2941,7 @@ Object Main is a Panel
       send update_status_line
     End_Procedure
     procedure update_minmax_count integer liCount
-      if liCount gt 0 set value item 10 to ("Iterations left: "+string(liCount))
+      if (liCount > 0) set value item 10 to ("Iterations left: "+string(liCount))
       else set value item 10 to ""
     end_procedure
 //    { MethodType=Event Visibility=Private }

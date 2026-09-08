@@ -165,7 +165,7 @@ class cSystemDowner is a cArray
       get bFileExists (psDownNowFile(self)) to lbAlreadyDownNow
 
       if lbState begin
-        ifnot lbAlreadyDownNow begin
+        If (Not(lbAlreadyDownNow)) begin
           get bFileCreate (psDownNowFile(self)) to lbGrb
           if lbGrb begin
             set priv.pbImTheOneWhoStartedIt to TRUE
@@ -218,12 +218,12 @@ class cSystemDowner is a cArray
           repeat
             readln channel liChannel lsLine
             move (seqeof) to lbSeqEof
-            ifnot lbSeqEof begin
+            If (Not(lbSeqEof)) begin
               move (lsRval+lsLine+character(10)) to lsRval
             end
           until lbSeqEof
           send SEQ_CloseInput liChannel
-          if (pbANSI_State(oLogFile)) get ToOEM lsRval to lsRval
+          if (pbANSI_State(oLogFile)) Move (Utf8ToOEM(lsRval)) to lsRval
         end
 #IF LNG_DEFAULT=LNG_DANISH
         else move "L‘sefejl i logfil" to lsRval // Fejl ved l‘sning af log file
@@ -253,9 +253,9 @@ class cSystemDowner is a cArray
   procedure ApplicationAutoExit
     integer lbBool lhLogFile
     string lsFile
-    ifnot (priv.pbImTheOneWhoStartedIt(self)) begin
+    If (Not((priv.pbImTheOneWhoStartedIt(self)))) begin
       get bFileExists (psDownDisableFile(self)) to lbBool
-      ifnot lbBool begin // Is the downer system enabled?
+      If (Not(lbBool)) begin
         get bFileExists (psDownNowFile(self)) to lbBool
         if lbBool begin // Is the system marked for downing?
           if (piDownPhaseNumber(self)=0) begin
@@ -271,7 +271,7 @@ class cSystemDowner is a cArray
             end
             move 0 to NotExitingApplication // From objgroup.utl
             if (priv.pbAccessDeniedState(self)) send OnAppEntryDenied
-            system
+            Abort
           end
           else begin
             set piDownPhaseNumber to (piDownPhaseNumber(self)-1)
@@ -302,13 +302,14 @@ class cSystemDowner is a cArray
     move self to lhSelf
     get piCheckInterval to liTimeout
     move lhClientArea to self
+    //TODO dfTimer->cTimer (skipped): Uses the Timer_Message/Timer_object dispatch - rewrite OnTimer by hand.
     object oDownTimer is a DFTimer
       set Auto_Start_State to DFFALSE
       set Auto_Stop_State to DFFALSE
       set Timer_Message to msg_ApplicationAutoExit
       set Timer_Object to lhSelf
       set Timeout to liTimeout
-      set Timer_Active_State to TRUE
+      set pbEnabled to TRUE
     end_object
     move lhSelf to self
   end_procedure

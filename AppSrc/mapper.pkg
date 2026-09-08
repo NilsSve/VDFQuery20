@@ -2,6 +2,7 @@
 Use Mapper.nui   // Classes for (field) mapping
 Use GridUtil.utl // Grid and List utilities (not for dbGrid's or Table's)
 Use aps.pkg
+Use cCJGrid.pkg
 
 class cMapperListLeft is a aps.Grid
   procedure construct_object integer img#
@@ -173,10 +174,34 @@ object oMapperPanel is a aps.ModalPanel label "Map fields"
     send close_panel
   end_procedure
 
-  object oUnmappedGrid is a cMapperListLeft
+  object oUnmappedGrid is a cCJGrid
+      // TODO: oUnmappedGrid was a cMapperListLeft - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 140 0
     on_key kEnter send DoMap to (oMapperGridController(self))
-    set Horz_Scroll_Bar_Visible_State to false
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
 
   object oRadio is a aps.RadioContainer
@@ -208,8 +233,33 @@ object oMapperPanel is a aps.ModalPanel label "Map fields"
 
   set p_cur_row to (p_top_margin(self))
 
-  object oMapGrid is a cMapperListRight
+  object oMapGrid is a cCJGrid
+      // TODO: oMapGrid was a cMapperListRight - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 150 0
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
 
   object oMapperGridController is a cMapperGridController

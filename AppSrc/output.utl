@@ -1,24 +1,24 @@
 // Use Output.utl   // Sequential output to whatever
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use Aps.pkg
 #IFDEF USE$VPE
- Use VpeBase6 //JK: Now uses VPE 3.x
+ Use VpeBase6.pkg //JK: Now uses VPE 3.x
  Object oOutputVPE is a cVPE
    Set pOpenOptions to (VPE_NO_OPEN_BUTTON + VPE_NO_RULERS + VPE_GRIDBUTTON + VPE_NO_INFOBUTTON)
  End_Object
 #ELSE
- Use DFWinRpt
+ Use DFWinRpt.pkg
 #ENDIF
 
 
 Use Dates.utl    // Date manipulation for VDF
 Use Files.utl    // Utilities for handling file related stuff
 Use MsgBox.utl   // obs procedure
-Use Seq_Chnl     // Defines global sequential device management operations (DAC)
+Use Seq_Chnl.pkg     // Defines global sequential device management operations (DAC)
 Use Language.pkg // Default language setup
 Use API_Attr.nui // Functions for querying API attributes (No User Interface)
 Use Strings.nui  // String manipulation for VDF (No User Interface)
@@ -438,7 +438,7 @@ send output.zero_codes
 function output.replace_codes global string str# returns string
   integer code#
   string symb#
-  if "<" in str# begin
+  if (str# contains "<") begin
     for code# from 0 to output$max_code
       send output.get_code code#
       move (replaces(mid(output$symbollist,5,code#*5+1),str#,output$code)) to str#
@@ -449,7 +449,7 @@ end_function
 function output.remove_codes global string str# returns string
   integer code#
   string symb#
-  if "<" in str# begin
+  if (str# contains "<") begin
     for code# from 0 to output$max_code
       move (replaces(mid(output$symbollist,5,code#*5+1),str#,"")) to str#
     loop
@@ -550,7 +550,7 @@ class cBasicSequentialOutput is a cArray
   function iPageBreakNeeded integer lines# returns integer
     integer pageend#
     get pPageLength to pageend#
-    if pageend# eq 0 function_return 0
+    if (pageend# = 0) function_return 0
     function_return (lines#>(pageend#-pLineCount(self)-pFooter_height(self)))
   end_function
 
@@ -583,8 +583,8 @@ class cBasicSequentialOutput is a cArray
       set pChannel of (oChannelAdmin(self)) to ch2#
     end
     else begin
-      if UseSequentialChannel# if ch1# ge 0 send Seq_Release_Channel ch1#
-      if ch2# ge 0 send Seq_Release_Channel ch2#
+      if UseSequentialChannel# if (ch1# >= 0) send Seq_Release_Channel ch1#
+      if (ch2# >= 0) send Seq_Release_Channel ch2#
     end
     #IFDEF USE$VPE
      set pOriginalVPE_Object to oVPE#
@@ -613,7 +613,7 @@ class cBasicSequentialOutput is a cArray
         set pBytesWritten to pos#
       end
       get pDestination to Destination#
-      if Destination# eq DEST_SCREEN begin //screen
+      if (Destination# = DEST_SCREEN) begin //screen
          #IFDEF USE$VPE
           if ff# send vpe_PageBreak to oVPE#
          #ELSE
@@ -623,7 +623,7 @@ class cBasicSequentialOutput is a cArray
       else begin
         if UseSequentialChannel# begin
           if ff# begin
-            if Destination# eq DEST_HTML write channel ch# (replace("#",'<BR><BR><A NAME="EndOfSection#"></A>',string(pPageCount(self))))
+            if (Destination# = DEST_HTML) write channel ch# (replace("#",'<BR><BR><A NAME="EndOfSection#"></A>',string(pPageCount(self))))
             else write channel ch# (character(12))
           end
         end
@@ -677,7 +677,7 @@ class cBasicSequentialOutput is a cArray
       get pDestination to dest#
       set pInitDate to (dSysDate())
       set pInitTime to (sSysTime())
-      if dest# eq DEST_PRINTER begin // Printer
+      if (dest# = DEST_PRINTER) begin // Printer
          set pOmitFormFeed to true
          #IFDEF USE$VPE
           set pTitle of oVPE# to (pTitle(self))
@@ -686,7 +686,7 @@ class cBasicSequentialOutput is a cArray
          #ELSE
          #ENDIF
       end
-      if dest# eq DEST_SCREEN begin // Screen
+      if (dest# = DEST_SCREEN) begin // Screen
          set pOmitFormFeed to true
          #IFDEF USE$VPE
           set pTitle of oVPE# to (pTitle(self))
@@ -694,7 +694,7 @@ class cBasicSequentialOutput is a cArray
          #ELSE // WinPrint
          #ENDIF
       end
-      if dest# eq DEST_FILE begin // File
+      if (dest# = DEST_FILE) begin // File
         get pOutFileName to fn#
         move 2 to exists_action# // 0=cancel 1=append, 2=overwrite
         if (SEQ_FileExists(fn#)) begin
@@ -702,16 +702,16 @@ class cBasicSequentialOutput is a cArray
           // if exists_action# eq FILEEXISTS_PROMPT move (SEQ_FileExistsAction(fn#,1)) to exists_action#
         end
         if exists_action# begin
-          if exists_action# eq 1 append_output channel (pOutputChannel(self)) ("cr: 13 eol: 10 "+fn#) //append
-          if exists_action# eq 2 direct_output channel (pOutputChannel(self)) ("cr: 13 eol: 10 "+fn#) //overwrite
+          if (exists_action# = 1) append_output channel (pOutputChannel(self)) ("cr: 13 eol: 10 "+fn#) //append
+          if (exists_action# = 2) direct_output channel (pOutputChannel(self)) ("cr: 13 eol: 10 "+fn#) //overwrite
         end
         else move 0 to rval#
       end
-      if dest# eq DEST_EMAIL begin // EMAIL
+      if (dest# = DEST_EMAIL) begin // EMAIL
 
 //        get SEQ_UniqueFileName "mail" to fn#
         get SEQ_UniqueFileNamePathAndExt "" "mail" "txt" to fn#
-        if fn# ne "" begin
+        if (fn# <> "") begin
           set pScreenTmpFile to fn#
           if (API_OtherAttr_Value(OA_OS_SHORT_NAME)="WIN32CM") begin
             direct_output channel (pOutputChannel(self)) fn#
@@ -725,7 +725,7 @@ class cBasicSequentialOutput is a cArray
           move 0 to rval#
         end
       end
-      if dest# eq DEST_HTML begin // HTML
+      if (dest# = DEST_HTML) begin // HTML
       end
       set pPageCount    to 0
       set pBytesWritten to 0
@@ -799,12 +799,12 @@ class cBasicSequentialOutput is a cArray
         get pOutputChannel to ch#
         get_channel_position ch# to pos#
         set pBytesWritten to pos#
-        despool
+//        despool
         close_output channel ch#
       end
 
       get pDestination to dest#
-      if dest# eq DEST_PRINTER begin
+      if (dest# = DEST_PRINTER) begin
         send cmdline_stop
          #IFDEF USE$VPE
           send PrintDoc to oVPE#
@@ -812,7 +812,7 @@ class cBasicSequentialOutput is a cArray
 //        WinPrint, print doc
          #ENDIF
       end
-      if dest# eq DEST_EMAIL begin
+      if (dest# = DEST_EMAIL) begin
         //send obs "Haps, min fine ven"
         send report_wait_update "Sending e-mails..."
         get pScreenTmpFile to lsFileName
@@ -821,7 +821,7 @@ class cBasicSequentialOutput is a cArray
         erasefile lsFileName
       end
       send report_wait_off
-      if dest# eq DEST_SCREEN begin
+      if (dest# = DEST_SCREEN) begin
          #IFDEF USE$VPE
           send PreviewDoc to oVPE#
          #ELSE
@@ -852,16 +852,16 @@ class cBasicSequentialOutput is a cArray
     move (pPageCount(self)+1) to pagecount#
     move (replaces("<date---->",str#,string(date#))) to str#
     move (replaces("<time-->",str#,pInitTime(self))) to str# //time
-    if "<pg>" in str# begin // page number
+    if (str# contains "<pg>") begin // page number
       move pagecount# to page#
-      if pagecount# le 999 insert " " in page# at 1
-      pad page# to page# 4
+      if (pagecount# <= 999) Move (Insert(" ",page#,1)) to page#
+      Move (Pad(page#, 4)) to page#
       move (replaces("<pg>",str#,page#)) to str# //time
     end
-    if "<p>" in str# begin // page number
+    if (str# contains "<p>") begin // page number
       move pagecount# to page#
-      if pagecount# le 99 insert " " in page# at 1
-      if pagecount# le  9 insert " " in page# at 1
+      if (pagecount# <= 99) Move (Insert(" ",page#,1)) to page#
+      if (pagecount# <= 9) Move (Insert(" ",page#,1)) to page#
       move (replaces("<p>",str#,page#)) to str#
     end
     function_return str#
@@ -882,13 +882,13 @@ class cBasicSequentialOutput is a cArray
     send direct_xput to obj# 1 ("image: "+string(img#))
     repeat
       readln channel ch# str#
-      [~seqeof] begin
+      If (Not(seqeof)) begin
         if header_codes# send writeln_no_headers (replace_header_codes(self,str#))
         else send writeln str#
       end
-    [~seqeof] loop
+    Until (seqeof)
     send close_xput to obj#
-    indicate seqeof as seqeof#
+    Move (seqeof#) to seqeof
   end_procedure
 
   procedure output_image_aux integer img#
@@ -897,7 +897,7 @@ class cBasicSequentialOutput is a cArray
 
   procedure output_image integer img# integer check_space_tmp#
     integer check_space#
-    if num_arguments gt 1 move check_space_tmp# to check_space#
+    if (num_arguments > 1) move check_space_tmp# to check_space#
     else move 0 to check_space#
     if (iPageBreakNeeded(self,check_space#)) send page_eject.i 0
     send output_image_help img# 0
@@ -931,7 +931,7 @@ class cBasicSequentialOutput is a cArray
       if (iPageBreakNeeded(self,1)) send page_eject.i 0
 
       // if we are at the top of a new page print header and subheader:
-      if (pLineCount(self)) eq 0 begin
+      if ((pLineCount(self)) = 0) begin
 
         send message.i (pHeader_msg(self))
         if header_img# send output_image_aux header_img#
@@ -991,7 +991,7 @@ class cBasicSequentialOutput is a cArray
 //    if (destination#=DEST_PRINTER or destination#=DEST_SCREEN)  winprint, draw line
      #ENDIF
     else begin
-      if destination# eq DEST_HTML send writeln "<HR>" // Horizontal ruler
+      if (destination# = DEST_HTML) send writeln "<HR>" // Horizontal ruler
       else send writeln (repeat(" ",pWidth(self)))
     end
   end_procedure
@@ -1066,7 +1066,7 @@ end_object
 // ===========================================================================
 
 Use aps.pkg     // Auto Position and Sizing classes for Visual DataFlex 4.0
-use file_dlg // OpenDialog class
+use file_dlg.pkg // OpenDialog class
 register_abstract_field_type aft_AppLinkPath50 50 ascii_window
 
 object WordPadLinkSetup is a aps.ModalPanel label "WordPad kommunikation"
@@ -1089,7 +1089,7 @@ object WordPadLinkSetup is a aps.ModalPanel label "WordPad kommunikation"
     end_object
   end_object
   procedure activate
-    ifnot (active_state(self)) send retrieve_values
+    If (Not((active_state(self)))) send retrieve_values
     forward send activate
   end_procedure
   procedure retrieve_values
@@ -1129,7 +1129,7 @@ procedure output.display_file global string fn#
   string str# dir#
   get Seq_New_Channel to ch#
   direct_input channel ch# fn#
-  if [seqeof] send obs ("File not found ("+fn#+")")
+  if (seqeof) send obs ("File not found ("+fn#+")")
   else begin
     get SEQ_ExtractPathFromFileName fn# to dir#
     if (dir#="") move (SEQ_FindFileAlongDFPath(fn#)) to dir#
@@ -1142,13 +1142,13 @@ procedure output.display_file global string fn#
       repeat
         readln channel ch# str#
         move (seqeof) to fin#
-        ifnot fin# begin
+        If (Not(fin#)) begin
 
           increment liFileLine
 
           // *** PRN file search ***
           if liSearchPrnLine begin // If we're searching for a PRN line
-            ifnot liResultLine begin // If we didn't find it yet
+            If (Not(liResultLine)) begin
               if ("0123456789" contains left(str#,1)) begin
                 move (pos(">",str#)) to liPos
                 if (liPos>0 and liPos<8) begin

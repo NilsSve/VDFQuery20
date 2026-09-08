@@ -129,7 +129,7 @@ class cDBD_TableAccess is a cDynamicTableAccess
         move DFTRUE to lbSuccess
       end
       else send DeclareOpenError "Exclusive access could not be obtained (#)"
-      ifnot (DoOpenTables(self)) send DeclareOpenError "DBD tables could not be re-opened (#)"
+      If (Not((DoOpenTables(self)))) send DeclareOpenError "DBD tables could not be re-opened (#)"
     end
     function_return lbSuccess
   end_function
@@ -145,12 +145,12 @@ class cDBD_TableAccess is a cDynamicTableAccess
     vfind liFieldFile 2 LT
     if (found) begin
       get_field_value liFieldFile 1 to liFieldTableId // dbField.TBL_ID
-      indicate found as liFieldTableId eq liTableId
+      Move (liFieldTableId = liTableId) to found
     end
     get_field_value liFieldFile 2 to liPos // dbField.FLD_POS
     clear liFieldFile
     move (found) to lbFound
-    ifnot lbFound function_return 1
+    If (Not(lbFound)) function_return 1
     function_return (liPos+1)
   end_function
 
@@ -316,7 +316,7 @@ class cDBD_Updater is a cArray
     send OpenStat_RegisterFiles
     send OpenStat_CloseAllFiles
     get DoOpenTables of (phTableAccessObject(self)) to lbSuccess
-    ifnot lbSuccess send obs "DoOpenTables of dbd.nui failed to fulfil its purpose." "What happens from now on is anybodys guess..." "(nothing that can damage the database, I promise)"
+    If (Not(lbSuccess)) send obs "DoOpenTables of dbd.nui failed to fulfil its purpose." "What happens from now on is anybodys guess..." "(nothing that can damage the database, I promise)"
     else begin
       lock // First we mark everything as if it no longer exists:
         get piFile.i of (phTableAccessObject(self)) DBDTABLE_TABLE to liTableFile
@@ -412,7 +412,7 @@ end_class // cDBD_Updater
       set pbValidateOnParse of hoXML to True
       get LoadXMLDocument of hoXml to lbOK
 
-      ifnot lbOK begin
+      If (Not(lbOK)) begin
         send BasicParseErrorReport of hoXml
         send Destroy of hoXML
         procedure_return
@@ -637,7 +637,7 @@ end_class // cDBD_Updater
           until (not(lbIndexFound))
           send Destroy of hoIndex
 
-          ifnot lbAnythingOnRecord get RemoveNode of hoRoot hoTable to hoTable
+          If (Not(lbAnythingOnRecord)) get RemoveNode of hoRoot hoTable to hoTable
 
           send Destroy of hoTable
         end
@@ -648,5 +648,4 @@ end_class // cDBD_Updater
       send Destroy Of hoXML
     end_procedure
   end_object // dbDocBPOXML_Write
-
 

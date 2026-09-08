@@ -1,6 +1,6 @@
 // Use DDCreate.nui // Create generic DDO structures (using global FDX object)
 
-Use FieldInf     // Global field info objects and abstract field types
+Use FieldInf.pkg     // Global field info objects and abstract field types
 Use Set.utl      // cArray, cSet and cStack classes
 Use FdxGlObj.nui // Global FDX object (ghFDX)
 Use Spec0005.utl // Datadictionary object procedures ("DDUTIL_" prefix)
@@ -52,7 +52,7 @@ object DDC_PrivateObject is a cArray
 
             procedure DoOpenFile integer liFile
               integer lbAlias
-              ifnot (DBMS_IsOpenFile(liFile)) begin
+              If (Not((DBMS_IsOpenFile(liFile)))) begin
                 if (DBMS_OpenFile(liFile,DF_SHARE,0)) begin
                   get bOpenAlias.i liFile to lbAlias
                   if lbAlias set_attribute DF_FILE_MODE of liFile to DF_FILE_IS_ALIAS
@@ -129,7 +129,7 @@ object DDC_PrivateObject is a cArray
 
   function iCreateParentDDOStructure integer liFile returns integer
     integer lhRval lhChildDD
-    ifnot (bIsVisited(self,liFile)) begin
+    If (Not((bIsVisited(self,liFile)))) begin
 
       if (liFile=priv.phCutOffDDFile(self)) get priv.phCutOffDDHandle to lhRval
       else get iCreateDDO.i liFile to lhRval
@@ -202,7 +202,7 @@ object DDC_PrivateObject is a cArray
     integer liMax liItm lhDDO lhStack
     move (oStack(self)) to lhStack
 
-    ifnot (bIsOnStack.i(lhStack,lhDD)) begin
+    If (Not((bIsOnStack.i(lhStack,lhDD)))) begin
       send push.i to lhStack lhDD
 
       get data_set_client_count of lhDD to liMax
@@ -262,7 +262,7 @@ end_procedure
             procedure OpenFile.i integer liFile
               integer lbRegisterDdoClasses lbGarbage
               get pbRegisterDdoClasses to lbRegisterDdoClasses
-              ifnot (integer(value(self,liFile))) begin
+              If (Not((integer(value(self,liFile))))) begin
                 send DDC_OpenFile liFile
                 if (DBMS_IsOpenFile(liFile)) begin
                   if lbRegisterDdoClasses begin
@@ -285,4 +285,3 @@ procedure DDC_OpenFileInclParents global integer liFile integer lbRegisterDdoCla
   send OpenFile.i of lhDDC_OpenFileInclParents liFile lbRegisterDdoClasses
   send delete_data of lhDDC_OpenFileInclParents
 end_procedure
-

@@ -30,11 +30,11 @@ class cFdxSetOfTablesList is a aps.Grid
   end_procedure
 
   function iSpecialSortValueOnColumn.i integer column# returns integer
-    if column# eq 0 function_Return 1
+    if (column# = 0) function_Return 1
   end_function
 
   function sSortValue.ii integer column# integer itm# returns string
-    if column# eq 0 function_return (IntToStrR(value(self,itm#),4))
+    if (column# = 0) function_return (IntToStrR(value(self,itm#),4))
   end_function
 
   procedure sort_data.i integer column#
@@ -61,7 +61,7 @@ class cFdxSetOfTablesList is a aps.Grid
       get value item (base#+1) to field#
       get piSOT_Server to oSOF#
       get iFindItem.ii of oSOF# file# field# to row#
-      if row# ne -1 send delete_row to oSOF# row#
+      if (row# <> -1) send delete_row to oSOF# row#
       get Grid_CurrentRow self to row#
       send Grid_DeleteRow self row#
       send update_display_counter (iNumberOfFiles(self))
@@ -127,24 +127,24 @@ class cFdxSetOfFieldsList is a aps.Grid
   end_procedure
 
   function iSpecialSortValueOnColumn.i integer liColumn returns integer
-    if liColumn eq 1 function_Return 1
-    if liColumn eq 4 function_Return 1
-    if liColumn eq 5 function_Return 1
-    if liColumn eq 6 function_Return 1
+    if (liColumn = 1) function_Return 1
+    if (liColumn = 4) function_Return 1
+    if (liColumn = 5) function_Return 1
+    if (liColumn = 6) function_Return 1
   end_function
 
   function sSortValue.ii integer liColumn integer liItem returns string
     string lsValue lsSep
-    if liColumn eq 1 function_return (IntToStrR(value(self,liItem),4))
-    if liColumn eq 4 begin
+    if (liColumn = 1) function_return (IntToStrR(value(self,liItem),4))
+    if (liColumn = 4) begin
       get value item liItem to lsValue
       get CurrentDecimalSeparator to lsSep
-      replace "." in lsValue with lsSep
-      replace "," in lsValue with lsSep
+      Move (Replace(".", lsValue, lsSep)) to lsValue
+      Move (Replace(",", lsValue, lsSep)) to lsValue
       function_return (NumToStrR(lsValue,2,8))
     end
-    if liColumn eq 5 function_return (IntToStrR(value(self,liItem),5))
-    if liColumn eq 6 function_return (IntToStrR(value(self,liItem),2))
+    if (liColumn = 5) function_return (IntToStrR(value(self,liItem),5))
+    if (liColumn = 6) function_return (IntToStrR(value(self,liItem),2))
   end_function
 
   procedure sort_data.i integer liColumn
@@ -181,7 +181,7 @@ class cFdxSetOfFieldsList is a aps.Grid
       get value item (liBase+1) to liField
       get piSOF_Server to lhSOF
       get iFindItem.ii of lhSOF liFile liField to liRow
-      if liRow ne -1 send delete_row to lhSOF liRow
+      if (liRow <> -1) send delete_row to lhSOF liRow
       get Grid_CurrentRow self to liRow
       send Grid_DeleteRow self liRow
       send update_display_counter (iNumberOfFiles(self)) (iNumberOfFields(self))
@@ -206,7 +206,7 @@ class cFdxSetOfFieldsList is a aps.Grid
       move (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_TYPE,liFile,liField)) to liType
       send add_item msg_none (API_ShortFieldTypeName(liType))
       move (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_LENGTH,liFile,liField)) to liLen
-      if liType eq DF_BCD begin
+      if (liType = DF_BCD) begin
         move (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_PRECISION,liFile,liField)) to liDec
         send add_item msg_none (string(liLen-liDec)+"."+string(liDec))
       end
@@ -287,7 +287,7 @@ class cFdxSetOfIndicesList is a aps.Grid
       get value item (base#+1) to index#
       get piSOF_Server to oSOF#
       get iFindItem.ii of oSOF# file# index# to row#
-      if row# ne -1 send delete_row to oSOF# row#
+      if (row# <> -1) send delete_row to oSOF# row#
       get Grid_CurrentRow self to row#
       send Grid_DeleteRow self row#
       send update_display_counter (iNumberOfFiles(self)) (iNumberOfIndices(self))
@@ -312,7 +312,7 @@ class cFdxSetOfIndicesList is a aps.Grid
       move (FDX_IndexAsFieldNames(oFDX#,file#,index#,50)) to IdxAsStr#
       move (HowManyWords(IdxAsStr#,lf#)) to itm_max#
       for itm# from 1 to itm_max#
-        if itm# eq 1 send add_item msg_none (ExtractWord(IdxAsStr#,lf#,itm#))
+        if (itm# = 1) send add_item msg_none (ExtractWord(IdxAsStr#,lf#,itm#))
         else begin
           send add_item msg_none ""
           set aux_value item (item_count(self)-1) to file#
@@ -328,4 +328,3 @@ class cFdxSetOfIndicesList is a aps.Grid
   procedure update_display_counter integer files# integer Indices#
   end_procedure
 end_class // cFdxSetOfIndicesList
-

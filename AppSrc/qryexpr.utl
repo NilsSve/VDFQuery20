@@ -4,6 +4,7 @@ Use vMachine.utl // Virtual machine class (heart of DFScript)
 Use Strings.utl  // String manipulation for VDF
 Use FDX_Attr.nui // FDX compatible attribute functions
 Use FdxField.utl // FDX Field things
+Use cCJGrid.pkg
 
 #IF LNG_DEFAULT=LNG_DUTCH
  define t.QryExpr.Expression    for "Expressie"
@@ -704,31 +705,133 @@ object Query_EditCriteriaExpression is a aps.ModalPanel label t.QryExpr.Expressi
   object oLbl3 is a aps.TextBox label t.QryExpr.Functions //"Functions"
   end_object
   send aps_goto_max_row
-  object oTables is a QryExprTableList
+  object oTables is a cCJGrid
+      // TODO: oTables was a QryExprTableList - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 114 80
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Move someValue to TheData[iRow].sValue[iCol1]
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
-  object oFields is a QryExprFieldList
+  object oFields is a cCJGrid
+      // TODO: oFields was a QryExprFieldList - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 114 120
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
     procedure OnFieldSelect string lsName
       send Insert to (oEdit(self)) lsName
       send activate to (oEdit(self))
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Move someValue to TheData[iRow].sValue[iCol1]
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   procedure DoFillFields integer liFile
     send fill_list.i to (oFields(self)) liFile
   end_procedure
 
-  object oFunctions is a QryExprFunctions
+  object oFunctions is a cCJGrid
+      // TODO: oFunctions was a QryExprFunctions - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     set size to 114 245
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
     procedure InsertFunction
       string lsValue
       get value item (current_item(self)) to lsValue
       send Insert to (oEdit(self)) lsValue
       send Activate to (oEdit(self))
     end_procedure
+
     procedure mouse_up integer liItem integer liGrb
       if ((liItem-1)<item_count(self)) send InsertFunction
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Move someValue to TheData[iRow].sValue[iCol1]
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
 
   send aps_align_by_moving (oLbl1(self)) (oTables(self)) SL_ALIGN_LEFT

@@ -85,7 +85,7 @@ Use DfAllEnt.pkg // Standard DAW everything
 Use cTextEdit.pkg
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use Dftxtwin.pkg // dbedit
@@ -98,7 +98,7 @@ Use Macros.utl   // Various macros (DESKTOP_SECTION command)
 
 Use cDbRichEdit.pkg // RTF classes
 
-#Replace APS$BYEBYE                 0 // If 1 you can make a panel defined by APS
+Define APS$BYEBYE               for 0 // If 1 you can make a panel defined by APS
                                       // classes dump object sizes and locations
                                       // to the 'output window' when you press
                                       // ctrl+F7 in that panel. This is useful if
@@ -106,15 +106,15 @@ Use cDbRichEdit.pkg // RTF classes
                                       // packages and is willing to manually insert
                                       // size and location for all objects.
 
-#REPLACE APS$TEST                   0 // If 1 you may query the size and
+Define APS$TEST                 for 0 // If 1 you may query the size and
                                       // location of objects runtime.
-#REPLACE APS$KILL_GRID_PROMPT_VALUE 0 // If 1 get's rid of ">>" in grids
+Define APS$KILL_GRID_PROMPT_VALUE for 0 // If 1 get's rid of ">>" in grids
 
-#REPLACE APS$TABDIALOG_NAVIGATION   1 // If 1 it will be possible to navigate
+Define APS$TABDIALOG_NAVIGATION for 1 // If 1 it will be possible to navigate
                                       // between tab pages using ctrl+PgUp/PgDn.
                                       // This is in sync. with standard MS beha.
-#REPLACE APS$SPINBUTTON_ACC_KEYS    0 // Never mind. It does not work.
-#REPLACE APS$SPOOKY_WIDTH_CORR      1 // Add to field width if 4N0. Spooky indeed!
+Define APS$SPINBUTTON_ACC_KEYS  for 0 // Never mind. It does not work.
+Define APS$SPOOKY_WIDTH_CORR    for 1 // Add to field width if 4N0. Spooky indeed!
 
 #IF APS$TEST
   showln ""
@@ -168,12 +168,12 @@ define APS.ITEM_OPTION_CAPSLOCK for 19
 //> is capslocked.
 function aps.form_width.iii for cObject integer typ# integer mrg# integer caps# returns integer
   integer rval#
-  if typ# eq ASCII_WINDOW begin // Ascii:
+  if (typ# = ASCII_WINDOW) begin // Ascii:
     if caps# move (mrg#*8+5 max 20) to rval# // If capsl: 8 units per character.
     else move (mrg#*5+5 max 20) to rval#     // Otherwise 5. At least 20.
   end
   else begin
-    if typ# eq DATE_WINDOW move 47 to rval# // Dates are 47, period!
+    if (typ# = DATE_WINDOW) move 47 to rval# // Dates are 47, period!
     else begin
       move (mrg#*4+7) to rval# // Digits are easy. They always have the same width.
       #IF APS$SPOOKY_WIDTH_CORR
@@ -279,8 +279,8 @@ Global_Variable Integer _giApsByeByeIndent
 //> other APS objects must be nested inside one of these.
 class aps_panel_mx is a mixin
   procedure define_aps_panel_mx
-    property integer p_resize_in_progress private DFTRUE
-    property integer pMinimumSize         private 0
+    property integer p_resize_in_progress Private TRUE
+    property integer pMinimumSize         Private 0
     set p_auto_column to false
     #IF APS$BYEBYE
      on_key KEY_CTRL+KEY_F7 send _byebye_panel_show_size_and_locations
@@ -400,7 +400,7 @@ class aps_panel_mx is a mixin
 
   procedure onResize // Event sent when panel is displayed or resized
     integer old_rw# old_cl# new_rw# new_cl#
-    ifnot (aps_panel_mx.p_resize_in_progress(self)) begin
+    If (Not(aps_panel_mx.p_resize_in_progress(self))) begin
       set aps_panel_mx.p_resize_in_progress to true
       get size to old_cl#
       move (hi(old_cl#)) to old_rw#
@@ -410,8 +410,10 @@ class aps_panel_mx is a mixin
       move (hi(new_cl#)) to new_rw#
       move (low(new_cl#)) to new_cl#
       send aps_init
-      if new_rw# lt (hi(aps_panel_mx.pMinimumSize(self))) move (hi(aps_panel_mx.pMinimumSize(self))) to new_rw#
-      if new_cl# lt (low(aps_panel_mx.pMinimumSize(self))) move (low(aps_panel_mx.pMinimumSize(self))) to new_cl#
+      if (new_rw# < (hi(aps_panel_mx.pMinimumSize(self)))) ;
+        move (hi(aps_panel_mx.pMinimumSize(self))) to new_rw#
+      if (new_cl# < (low(aps_panel_mx.pMinimumSize(self)))) ;
+        move (low(aps_panel_mx.pMinimumSize(self))) to new_cl#
       send aps_onResize (new_rw#-old_rw#) (new_cl#-old_cl#)
       set aps_panel_mx.p_resize_in_progress to false
     end
@@ -460,8 +462,8 @@ class aps_container_mx is a mixin
     //> inserted when snapping to SL_UPPER_RIGHT_CORNER_EXTEND_COLUMN (urcec)
     property integer p_urcec_offset         3
 
-    property integer p_auto_column          private 1
-    property integer p_auto_column_just_set private 1
+    property integer p_auto_column          Private 1
+    property integer p_auto_column_just_set Private 1
 
     //> Should the container auto size?:
     property integer p_auto_size_container_state true
@@ -535,8 +537,10 @@ class aps_container_mx is a mixin
     move (oAPS_Stack(self)) to lhObj
     move (iPop(lhObj)) to p_max_column#
     move (iPop(lhObj)) to p_max_row#
-    if p_max_column# gt (p_max_column(self)) set p_max_column to p_max_column#
-    if p_max_row#    gt (p_max_row(self))    set p_max_row    to p_max_row#
+    if (p_max_column# > (p_max_column(self))) ;
+      set p_max_column to p_max_column#
+    if (p_max_row# > (p_max_row(self))) ;
+      set p_max_row to p_max_row#
   end_procedure
 
   procedure tab_column_goto integer tab#
@@ -548,15 +552,19 @@ class aps_container_mx is a mixin
 
   procedure make_row_space integer amount# // Move the cursor down
     integer tmp#
-    ifnot num_arguments move (p_row_space(self)) to tmp#
-    else move amount# to tmp#
+    If (Not(num_arguments)) ;
+      move (p_row_space(self)) to tmp#
+    else ;
+      move amount# to tmp#
     set p_cur_row to (tmp#+p_cur_row(self))
   end_procedure
 
   procedure make_column_space integer amount# // Advance cursor to the left
     integer tmp#
-    ifnot num_arguments move (p_column_space(self)) to tmp#
-    else move amount# to tmp#
+    If (Not(num_arguments)) ;
+      move (p_column_space(self)) to tmp#
+    else ;
+      move amount# to tmp#
     set p_cur_column to (tmp#+p_cur_column(self))
   end_procedure
 
@@ -680,17 +688,21 @@ class aps_container_mx is a mixin
     set delegation_mode of lhObj to NO_DELEGATE_OR_ERROR
 
     get p_snap_location of lhObj to snap_location#
-    if num_arguments gt 1 move dictate_snap# to snap_location#
-    ifnot snap_location# begin
+    if (num_arguments > 1) ;
+      move dictate_snap# to snap_location#
+    If (Not(snap_location#)) begin
       // If no snap_location has been defined we try to obtain one
       // from our container. If we still have no snap_location
       // we default to SL_RIGHT.
       get p_auto_column to snap_location#
       if snap_location# begin
-        ifnot (aps_container_mx.p_auto_column_just_set(self)) send new_field_row
-        else set aps_container_mx.p_auto_column_just_set to false
+        If (Not(aps_container_mx.p_auto_column_just_set(self))) ;
+	  send new_field_row
+        else ;
+	  set aps_container_mx.p_auto_column_just_set to false
       end
-      else move SL_RIGHT to snap_location#
+      else ;
+        move SL_RIGHT to snap_location#
     end
 
     get label_object of lhObj to label_obj#
@@ -704,14 +716,16 @@ class aps_container_mx is a mixin
     end
     else move 0 to vertical_offset#
 
-    if snap_location# gt 0 begin // Means that we should locate relative to tabulator
+    if (snap_location# > 0) begin // Means that we should locate relative to tabulator
       move (column_array(self)) to column_array#
       send tab_column_goto to column_array# snap_location#
       if label_size# begin
         move (ilabel_just.i(column_array#,snap_location#)) to label_just#
         set label_justification_mode of lhObj to label_just#
-        if label_just# eq jmode_left set label_offset of lhObj to 0 (ilabel_width.i(column_array#,snap_location#))
-        else                         set label_offset of lhObj to 0 0
+        if (label_just# = jmode_left) ;
+	  set label_offset of lhObj to 0 (ilabel_width.i(column_array#,snap_location#))
+        else ;
+	  set label_offset of lhObj to 0 0
       end
       // If snap_column and no label, we just go there (and we already have).
     end
@@ -734,7 +748,8 @@ class aps_container_mx is a mixin
             set label_offset of lhObj to 0 0
           end
         end
-        if snap_location# eq SL_RIGHT_SPACE set p_cur_column to (p_cur_column(self)+10)
+        if (snap_location# = SL_RIGHT_SPACE) ;
+	  set p_cur_column to (p_cur_column(self)+10)
         // If no label and no tab column, we don't do a thing!
       end
       else begin
@@ -742,34 +757,34 @@ class aps_container_mx is a mixin
           set p_cur_column to (low(location(last_object#))+low(size(last_object#))+extra_external_width(self,last_object#)+p_column_space(self))
           set p_cur_row    to (hi(location(last_object#))+vertical_offset#)
         end
-        if snap_location# eq SL_DOWN begin
+        if (snap_location# = SL_DOWN) begin
           set p_cur_column to (low(location(last_object#)))
-          ifnot (is_comboform(self,last_object#)) ;
+          If (Not(is_comboform(self,last_object#))) ;
             set p_cur_row  to (hi(location(last_object#))+hi(size(last_object#))+p_row_space(self)+vertical_offset#)
           else ;
             set p_cur_row  to (hi(location(last_object#))+13+p_row_space(self)+vertical_offset#)
         end
-        if snap_location# eq SL_UP begin
+        if (snap_location# = SL_UP) begin
           set p_cur_column to (low(location(last_object#)))
           set p_cur_row    to (hi(location(last_object#))-p_row_space(self)-hi(size(lhObj))-vertical_offset#)
         end
-        if snap_location# eq SL_LEFT begin
+        if (snap_location# = SL_LEFT) begin
           set p_cur_column to (low(location(last_object#))-p_column_space(self)-low(size(lhObj))-p_extra_external_width(lhObj))
           set p_cur_row    to (hi(location(last_object#))+vertical_offset#)
         end
-        if snap_location# eq SL_LOWER_RIGHT_CORNER_EXTEND_ROW begin
+        if (snap_location# = SL_LOWER_RIGHT_CORNER_EXTEND_ROW) begin
           set p_cur_column to (p_max_column(self)-low(size(lhObj)))
           set p_cur_row    to (p_max_row(self)+p_row_space(self)+vertical_offset#+p_lrcer_offset(self))
         end
-        if snap_location# eq SL_LOWER_RIGHT_CORNER begin
+        if (snap_location# = SL_LOWER_RIGHT_CORNER) begin
           set p_cur_column to (p_max_column(self)-low(size(lhObj)))
           set p_cur_row    to (p_max_row(self)-hi(size(lhObj))-vertical_offset#)
         end
-        if snap_location# eq SL_UPPER_RIGHT_CORNER_EXTEND_COLUMN begin
+        if (snap_location# = SL_UPPER_RIGHT_CORNER_EXTEND_COLUMN) begin
           set p_cur_column to (p_max_column(self)+p_column_space(self)+p_urcec_offset(self))
           set p_cur_row    to (p_top_margin(self)+vertical_offset#)
         end
-        if snap_location# eq SL_CURRENT_POS begin
+        if (snap_location# = SL_CURRENT_POS) begin
           //set p_cur_column to (p_max_column(self))
           //set p_cur_row    to (p_top_margin(self)+vertical_offset#)
         end
@@ -782,8 +797,9 @@ class aps_container_mx is a mixin
     integer extra_external_width# dm#
     get delegation_mode of lhObj to dm#
     set delegation_mode of lhObj to NO_DELEGATE_OR_ERROR
-    if num_arguments gt 1 begin
-      if num_arguments gt 2 set p_last_object to dictate_last_object#
+    if (num_arguments > 1) begin
+      if (num_arguments > 2) ;
+        set p_last_object to dictate_last_object#
       send aps_adjust_to_snap_location lhObj dictate_snap#
     end
     else send aps_adjust_to_snap_location lhObj
@@ -820,8 +836,10 @@ class aps_container_mx is a mixin
 
   procedure aps_resize integer lhObj integer delta_rw# integer delta_cl# integer tmp#
     integer old_rw# old_cl# register#
-    if num_arguments gt 3 move tmp# to register#
-    else move 1 to register#
+    if (num_arguments > 3) ;
+      move tmp# to register#
+    else ;
+      move 1 to register#
     get size of lhObj to old_cl#
     move (hi(old_cl#)) to old_rw#
     move (low(old_cl#)) to old_cl#
@@ -832,7 +850,8 @@ class aps_container_mx is a mixin
 
   procedure aps_relocate integer lhObj integer delta_rw# integer delta_cl# integer lbRegister
     integer old_rw# old_cl# register#
-    if num_arguments gt 3 move lbRegister to register#
+    if (num_arguments > 3) ;
+      move lbRegister to register#
     else move 1 to register#
     get location of lhObj to old_cl#
     move (hi(old_cl#)) to old_rw#
@@ -881,7 +900,7 @@ class aps_control_mx is a mixin
              //> Unfortunatly it is not possible to use the server function
              //> to get that at the time of creation. Therefore this property
              //> is used to store the server once manually found.
-    property integer p_server    private -1 // -1=not checked, 0=not found, >0=svr#
+    property integer p_server private -1 // -1=not checked, 0=not found, >0=svr#
              //
     property integer p_jmode_top_vert_offset 10
 
@@ -901,20 +920,20 @@ class aps_control_mx is a mixin
      // This might generate a few errors, that's ok...
      showln ("Object: "+name(lhObj)+":")
      move "   Location: #,#   Size: #,#   Form_margin: #   Form_datatype: #" to str#
-     replace "#" in str# with (hi(location(lhObj)))
-     replace "#" in str# with (low(location(lhObj)))
-     replace "#" in str# with (hi(size(lhObj)))
-     replace "#" in str# with (low(size(lhObj)))
-     replace "#" in str# with (form_margin(lhObj,current))
-     replace "#" in str# with (form_datatype(lhObj,current))
+     Move (Replace("#", str#, (hi(location(lhObj))))) to str#
+     Move (Replace("#", str#, (low(location(lhObj))))) to str#
+     Move (Replace("#", str#, (hi(size(lhObj))))) to str#
+     Move (Replace("#", str#, (low(size(lhObj))))) to str#
+     Move (Replace("#", str#, (form_margin(lhObj,current)))) to str#
+     Move (Replace("#", str#, (form_datatype(lhObj,current)))) to str#
      showln str#
      move "   Extra_External_Width: #   Extra_Internal_Width: #" to str#
-     replace "#" in str# with (p_Extra_External_Width(lhObj))
-     replace "#" in str# with (p_Extra_Internal_Width(lhObj))
+     Move (Replace("#", str#, (p_Extra_External_Width(lhObj)))) to str#
+     Move (Replace("#", str#, (p_Extra_Internal_Width(lhObj)))) to str#
      showln str#
      move "   Label_Row_Offset: #   Label_Col_Offset: #" to str#
-     replace "#" in str# with (Label_Row_Offset(lhObj))
-     replace "#" in str# with (Label_Col_Offset(lhObj))
+     Move (Replace("#", str#, (Label_Row_Offset(lhObj)))) to str#
+     Move (Replace("#", str#, (Label_Col_Offset(lhObj)))) to str#
      showln str#
    end_procedure
    procedure display_size_and_location_self
@@ -950,14 +969,17 @@ class aps_control_mx is a mixin
     Get delegation_mode to dm#
     set delegation_mode to NO_DELEGATE_OR_ERROR
     Get label to label#
-    if label# eq "" begin
+    if (label# = "") begin
       get data_file item 0 to file#
       get data_field item 0 to field#
       if (file# and field#) begin
         // If p_auto_label_state lt 0 we obtain the short version of the label
-        if (p_auto_label_state(self)) ge 0 get FieldInf_FieldLabel_Long file# field# to label#
-        else get FieldInf_FieldLabel_Short file# field# to label#
-        if label# ne "" set label to (label#+if(p_auto_label_add_colon_state(self),":",""))
+        if ((p_auto_label_state(self)) >= 0) ;
+	  get FieldInf_FieldLabel_Long file# field# to label#
+        else ;
+	  get FieldInf_FieldLabel_Short file# field# to label#
+        if (label# <> "") ;
+	  set label to (label#+if(p_auto_label_add_colon_state(self),":",""))
       end
     end
     set delegation_mode to dm#
@@ -969,10 +991,10 @@ class aps_control_mx is a mixin
   function aps_server returns integer
     integer PanelID# rval# lhObj dm#
     get aps_control_mx.p_server to rval#
-    if rval# eq -1 begin // If we have not looked for it yet
+    if (rval# = -1) begin // If we have not looked for it yet
       move self to lhObj
       get server of lhObj to rval#
-      ifnot rval# begin
+      If (Not(rval#)) begin
         get aps_PanelID to PanelID#
         repeat // This loop does a manual delegation
           get parent of lhObj to lhObj
@@ -996,18 +1018,19 @@ class aps_control_mx is a mixin
     integer caps# svr# file# field# lhObj
     if (p_dbControl(self)) begin
       get prototype_object to lhObj // ???Why no invalid message from this???
-      ifnot lhObj move self to lhObj
+      If (Not(lhObj)) ;
+        move self to lhObj
 
       get item_option of lhObj item itm# APS.ITEM_OPTION_CAPSLOCK to caps#
       // extended_deo_state is not set yet!
-      ifnot caps# begin
+      If (Not(caps#)) begin
         get aps_server to svr#
         if svr# begin
           get data_file of lhObj item itm# to file#
           get data_field of lhObj item itm# to field#
           if (file# and field#) begin
             get which_data_set of svr# file# to svr#
-            if (svr# and file# eq main_file(svr#) and Extended_DSO_State(svr#)) ;
+            if (svr# and file# = main_file(svr#) and Extended_DSO_State(svr#)) ;
               get Field_Option of svr# field# dd_capslock to caps#
           end
         end
@@ -1026,10 +1049,12 @@ class aps_control_mx is a mixin
     get form_datatype item 0 to type#
     get form_margin   item 0 to marg#
 
-    if type# eq ASCII_WINDOW get is_capslocked 0 to caps#
-    else move 0 to caps# // If not ascii_window it can't be capslocked!
+    if (type# = ASCII_WINDOW) ;
+      get is_capslocked 0 to caps#
+    else ;
+      move 0 to caps# // If not ascii_window it can't be capslocked!
 
-    ifnot (is_comboform(lhObj,lhObj)) Begin
+    If (Not(is_comboform(lhObj,lhObj))) Begin
         Move (p_form_height(lhObj)) to iSizeX
         Move (aps.form_width.iii(lhObj,type#,marg#,caps#)+extra_internal_width(lhObj,lhObj)) to iSizeY
 //       Set size to (p_form_height(lhObj)) (aps.form_width.iii(lhObj,type#,marg#,caps#)+extra_internal_width(lhObj,lhObj))
@@ -1045,7 +1070,7 @@ class aps_control_mx is a mixin
 
   procedure aps_copy_abstract integer abstract#
     integer file# field# dm# type# marg#
-    ifnot abstract# begin
+    If (Not(abstract#)) begin
       if (p_auto_abstract_state(self)) begin
         // If an explicit abstract is not specified, we try to obtain one
         // from the "global field info"-arrangement:
@@ -1058,7 +1083,7 @@ class aps_control_mx is a mixin
       end
     end
     if abstract# begin
-      if abstract# gt 0 begin
+      if (abstract# > 0) begin
         get gl_datatype 0 abstract# to type#
         get gl_margin   0 abstract# to marg#
         set form_datatype item 0 to type#
@@ -1115,14 +1140,16 @@ class aps_grid_mx is a mixin
      for itm# from 0 to max#
        get form_width item itm# to column_width#
        move "      Column #: width: #, form_margin: #, form_datatype: #, label extent: #" to str#
-       replace "#" in str# with (string(itm#))
-       replace "#" in str# with (string(column_width#))
-       replace "#" in str# with (string(form_margin(self,itm#)))
-       replace "#" in str# with (string(form_datatype(self,itm#)))
+       Move (Replace("#", str#, (string(itm#)))) to str#
+       Move (Replace("#", str#, (string(column_width#)))) to str#
+       Move (Replace("#", str#, (string(form_margin(self,itm#))))) to str#
+       Move (Replace("#", str#, (string(form_datatype(self,itm#))))) to str#
        get header_label item itm# to label#
-       if label# ne "" get text_extent label# to column_width#
-       else move 0 to column_width#
-       replace "#" in str# with (string(low(column_width#)))
+       if (label# <> "") ;
+         get text_extent label# to column_width#
+       else ;
+         move 0 to column_width#
+       Move (Replace("#", str#, (string(low(column_width#))))) to str#
        showln str#
      loop
    end_procedure
@@ -1154,17 +1181,18 @@ class aps_grid_mx is a mixin
     get prototype_object to p_obj#     // Get object id of prototype
     for itm# from 0 to max#
       get header_label item itm# to label#
-      if label# eq "" begin
+      if (label# = "") begin
         get data_file of p_obj# item itm# to file#
         get data_field of p_obj# item itm# to field#
         if (file# and field#) begin
           get FieldInf_FieldLabel_Short file# field# to label#
-          if label# ne "" set header_label item itm# to label#
+          if (label# <> "") ;
+	    set header_label item itm# to label#
         end
       end
     loop
-    if (p_extra_internal_width(self)) eq 0 ;
-      if max# eq 0 set p_extra_internal_width to 5
+    if ((p_extra_internal_width(self)) = 0) ;
+      if (max# = 0) set p_extra_internal_width to 5
     set p_auto_label_state to false // Disable standard auto_label
   end_procedure
 
@@ -1218,7 +1246,8 @@ class aps_grid_mx is a mixin
       set delegation_mode to NO_DELEGATE_OR_ERROR
       get prompt_button_value to pbv#
       get auto_create_prompt_button to auto_create_prompt_button#
-      if (auto_create_prompt_button#<>0 and pbv#<>'') length pbv# to len#
+      if (auto_create_prompt_button#<>0 and pbv#<>'') ;
+        Move (Length(pbv#)) to len#
       set delegation_mode to dm#
     end
 
@@ -1238,7 +1267,7 @@ class aps_grid_mx is a mixin
             move 1 to add_it#
           else begin
             get which_data_set of svr# file# to dd#
-            if (dd# and file# eq main_file(dd#) and Extended_DSO_State(dd#)) ;
+            if (dd# and file# = main_file(dd#) and Extended_DSO_State(dd#)) ;
               get field_prompt_object of dd# field# dd_capslock to add_it#
           end
           if add_it# move (label_value#*pbv#) to label_value#
@@ -1247,24 +1276,30 @@ class aps_grid_mx is a mixin
 
       move (value(oFixedWidths#,itm#)) to column_width#
 
-      ifnot column_width# begin
+      If (Not(column_width#)) begin
         get form_datatype item itm# to type#
         get form_margin   item itm# to marg#
 
-        if type# eq ascii_window get is_capslocked itm# to caps#
-        else move 0 to caps# // If not ascii_window it can't be capslocked!
+        if (type# = ascii_window) ;
+	  get is_capslocked itm# to caps#
+        else ;
+	  move 0 to caps# // If not ascii_window it can't be capslocked!
 
         get aps.form_width.iii type# marg# caps# to field_width#
-        if label_value# ne "" get text_extent label_value# to label_size#
-        else move 0 to label_size#
+        if (label_value# <> "") ;
+	  get text_extent label_value# to label_size#
+        else ;
+	  move 0 to label_size#
         move (low(label_size#)*aps.gui2mdu_width#+12.5) to label_width#
-        if itm# eq 0 move (label_width#+2) to label_width#
+        if (itm# = 0) ;
+	  move (label_width#+2) to label_width#
 
         move ((field_width# max label_width#) min max_column_width#) to column_width#
       end
       get aps_ColumnCorrection itm# to liColumnCorrection
       move (column_width#+liColumnCorrection) to column_width#
-      if column_width# lt 0 move 0 to column_width#
+      if (column_width# < 0) ;
+        move 0 to column_width#
       move (tbl_width#+column_width#) to tbl_width#
       set size to tbl_sz# (tbl_width#+5)
       set form_width item itm# to column_width#
@@ -1872,10 +1907,10 @@ Class aps.TabPage is a TabPage startmac APS.STARTMAC_LABEL
     Integer max_row# max_column#
     Get p_max_row    to max_row#
     Get p_max_column to max_column#
-    If max_row# gt (p_max_row_on_tabdialog(Self)) ;
-                              set p_max_row_on_tabdialog to max_row#
-    If max_column# gt (p_max_column_on_tabdialog(Self)) ;
-                              Set p_max_column_on_tabdialog to max_column#
+    If (max_row# > (p_max_row_on_tabdialog(Self))) ;
+      Set p_max_row_on_tabdialog to max_row#
+    If (max_column# > (p_max_column_on_tabdialog(Self))) ;
+      Set p_max_column_on_tabdialog to max_column#
     Forward Send End_Construct_Object
   End_Procedure
 End_Class
@@ -1898,10 +1933,10 @@ Class aps.dbTabPage is a dbTabPage startmac APS.STARTMAC_LABEL
     Integer max_row# max_column#
     Get p_max_row    to max_row#
     Get p_max_column to max_column#
-    If max_row# gt (p_max_row_on_tabdialog(Self)) ;
-                              set p_max_row_on_tabdialog to max_row#
-    If max_column# gt (p_max_column_on_tabdialog(Self)) ;
-                              set p_max_column_on_tabdialog to max_column#
+    If (max_row# > (p_max_row_on_tabdialog(Self))) ;
+      Set p_max_row_on_tabdialog to max_row#
+    If (max_column# > (p_max_column_on_tabdialog(Self))) ;
+      set p_max_column_on_tabdialog to max_column#
     Forward Send end_construct_object
   End_Procedure
 End_Class
@@ -2005,9 +2040,10 @@ class aps.dbForm is a dbForm startmac APS.STARTMAC_LABEL_SNAP
         get data_field item 0 to field#
         if (file# and field#) begin
           get which_data_set of svr# file# to svr#
-          if (svr# and file# eq main_file(svr#) and Extended_DSO_State(svr#)) begin
+          if (svr# and file# = main_file(svr#) and Extended_DSO_State(svr#)) begin
             get Field_Prompt_Object of svr# field# to prompt_object#
-            if prompt_object# set p_extra_internal_width to (p_extra_internal_width(self)+13) // Makes APS resize the object
+            if prompt_object# ;
+	      set p_extra_internal_width to (p_extra_internal_width(self)+13) // Makes APS resize the object
           end
         end
       end
@@ -2053,8 +2089,8 @@ class aps.dbComboForm is a dbComboForm startmac APS.STARTMAC_LABEL_SNAP
   end_procedure
   procedure set form_button integer itm# integer val#
     forward set form_button item itm# to val#
-    ifnot (p_extra_external_width(self)) ;
-              set p_extra_external_width to 10 // It always has a button
+    If (Not(p_extra_external_width(self))) ;
+      set p_extra_external_width to 10 // It always has a button
   end_procedure
   import_class_protocol aps_control_mx
   procedure end_construct_object
@@ -2153,7 +2189,7 @@ class aps.dbCheckBox is a dbCheckBox startmac APS.STARTMAC_LABEL_SNAP
   end_procedure
 end_class
 
-class aps.Edit is an Edit startmac APS.STARTMAC_LABEL_SNAP
+class aps.Edit is a cTextEdit startmac APS.STARTMAC_LABEL_SNAP
   procedure construct_object
     forward send construct_object
     send define_aps_control_mx
@@ -2167,7 +2203,7 @@ class aps.Edit is an Edit startmac APS.STARTMAC_LABEL_SNAP
   end_procedure
 end_class
 
-class aps.dbEdit is a dbEdit startmac APS.STARTMAC_LABEL_SNAP
+class aps.dbEdit is a cDbTextEdit startmac APS.STARTMAC_LABEL_SNAP
   procedure construct_object
     forward send construct_object
     send define_aps_control_mx
@@ -2441,8 +2477,10 @@ class aps.dbTabView is a dbTabView startmac APS.STARTMAC_LABEL
     integer max_row# max_column#
     get p_max_row    to max_row#
     get p_max_column to max_column#
-    if max_row# gt (p_max_row_on_tabdialog(self)) set p_max_row_on_tabdialog to max_row#
-    if max_column# gt (p_max_column_on_tabdialog(self)) set p_max_column_on_tabdialog to max_column#
+    if (max_row# > (p_max_row_on_tabdialog(self))) ;
+      set p_max_row_on_tabdialog to max_row#
+    if (max_column# > (p_max_column_on_tabdialog(self))) ;
+      set p_max_column_on_tabdialog to max_column#
     forward send end_construct_object
   end_procedure
 end_class
@@ -2457,7 +2495,8 @@ class aps.DataDictionary is a DataDictionary
   function status_help integer fld# returns string
     string rval#
     forward get status_help fld# to rval#
-    if rval# eq "" get gl_status_help (main_file(self)) fld# to rval#
+    if (rval# = "") ;
+      get gl_status_help (main_file(self)) fld# to rval#
     function_return rval#
   end_function
 end_class
@@ -2499,7 +2538,8 @@ desktop_section
       set value item item_count# to lhObj
       // If first object, we retrieve the obj_id of the container in which
       // the buttons are located:
-      ifnot item_count# set p_aps_container to (aps_parent(lhObj))
+      If (Not(item_count#)) ;
+        set p_aps_container to (aps_parent(lhObj))
     end_procedure
     procedure arrange_objects.iii integer snap_tmp# integer orientation_tmp# integer relative_to_tmp#
       integer relative_to# aps_cont# max# orientation# itm# lhObj dm# spc# org_spc#
@@ -2509,29 +2549,35 @@ desktop_section
       if max# begin // If there is any objects registered at all?
         get p_aps_container to aps_cont#
 
-        if num_arguments gt 0 move snap_tmp# to snap#
-        else move SL_LOWER_RIGHT_CORNER_EXTEND_ROW to snap#
-        if num_arguments gt 1 move orientation_tmp# to orientation#
-        else move SL_HORIZONTAL to orientation#
-        if num_arguments gt 2 move relative_to_tmp# to relative_to#
-        else get p_last_object of aps_cont# to relative_to#
+        if (num_arguments > 0) ;
+	  move snap_tmp# to snap#
+        else ;
+	  move SL_LOWER_RIGHT_CORNER_EXTEND_ROW to snap#
+        if (num_arguments > 1) ;
+	  move orientation_tmp# to orientation#
+        else ;
+	  move SL_HORIZONTAL to orientation#
+        if (num_arguments > 2) ;
+	  move relative_to_tmp# to relative_to#
+        else ;
+	  get p_last_object of aps_cont# to relative_to#
 
         move 0 to restore_spc#
-        if snap# eq SL_VERTICAL begin
+        if (snap# = SL_VERTICAL) begin
           move SL_UPPER_RIGHT_CORNER_EXTEND_COLUMN to snap#
           move SL_VERTICAL to orientation#
           get p_mb_space to spc#
-          if spc# ne -1 begin
+          if (spc# <> -1) begin
             get p_row_space of aps_cont# to org_spc#
             set p_row_space of aps_cont# to spc#
             move 1 to restore_spc#
           end
         end
-        if snap# eq SL_HORIZONTAL begin
+        if (snap# = SL_HORIZONTAL) begin
           move SL_LOWER_RIGHT_CORNER_EXTEND_ROW to snap#
           move SL_HORIZONTAL to orientation#
           get p_mb_space to spc#
-          if spc# ne -1 begin
+          if (spc# <> -1) begin
             get p_column_space of aps_cont# to org_spc#
             set p_column_space of aps_cont# to spc#
             move 2 to restore_spc#
@@ -2541,7 +2587,7 @@ desktop_section
         // Now we have to figure out in which order to locate the
         // objects (forwards or backwards).
 
-        if orientation# eq SL_HORIZONTAL begin
+        if (orientation# = SL_HORIZONTAL) begin
           if (snap#=SL_LEFT or snap#=SL_LOWER_RIGHT_CORNER_EXTEND_ROW or snap#=SL_LOWER_RIGHT_CORNER) begin
             move 1 to backwards#
             move SL_LEFT to trailing_snap#
@@ -2591,19 +2637,25 @@ desktop_section
       set p_mb_height to 0 // Reset temporary Multi_Button size
       set p_mb_width  to 0
       set p_mb_space  to -1
-      if restore_spc# eq 1 set p_row_space of aps_cont# to org_spc#
-      if restore_spc# eq 2 set p_column_space of aps_cont# to org_spc#
+      if (restore_spc# = 1) ;
+        set p_row_space of aps_cont# to org_spc#
+      if (restore_spc# = 2) ;
+        set p_column_space of aps_cont# to org_spc#
     end_procedure
   end_object
 end_desktop_section
 
 procedure aps_locate_multi_buttons global integer snap_tmp# integer orientation_tmp# integer relative_to_tmp#
-  if num_arguments gt 2 send arrange_objects.iii to (aps.multi_button_array(self)) snap_tmp# orientation_tmp# relative_to_tmp#
+  if (num_arguments > 2) ;
+    send arrange_objects.iii to (aps.multi_button_array(self)) snap_tmp# orientation_tmp# relative_to_tmp#
   else begin
-    if num_arguments gt 1 send arrange_objects.iii to (aps.multi_button_array(self)) snap_tmp# orientation_tmp#
+    if (num_arguments > 1) ;
+      send arrange_objects.iii to (aps.multi_button_array(self)) snap_tmp# orientation_tmp#
     else begin
-      if num_arguments gt 0 send arrange_objects.iii to (aps.multi_button_array(self)) snap_tmp#
-      else send arrange_objects.iii to (aps.multi_button_array(self))
+      if (num_arguments > 0) ;
+        send arrange_objects.iii to (aps.multi_button_array(self)) snap_tmp#
+      else ;
+        send arrange_objects.iii to (aps.multi_button_array(self))
     end
   end
 end_procedure
@@ -2637,13 +2689,13 @@ class aps.Multi_Button is a aps.Button
     integer lhObj parent# self# liAnchorValue
     set delegation_mode to DELEGATE_TO_PARENT
     get psExtraLabel to str#
-    if str# ne "" begin
+    if (str# <> "") begin
       get piExtraLabelID to lhObj
       move self to self#
 #IFDEF MSG_DoApplyAnchors // VDF 8
       get peAnchors to liAnchorValue
 #ENDIF
-      ifnot lhObj begin
+      If (Not(lhObj)) begin
         get parent to parent#
         move parent# to self
         object oExtraLabel is a aps.TextBox label str# snap SL_DOWN relative_to self#
@@ -2678,7 +2730,7 @@ function aps_read_bitmap_guisize global string bitmap# integer ch# returns integ
   integer guisize#
   string str#                  // The method used for reading the size
   direct_input channel ch# bitmap#   // of a bitmap has been stolen from
-  [~seqeof] begin                    // splash.pkg by Andrew S. Kaplan
+  If (Not(seqeof)) begin // splash.pkg by Andrew S. Kaplan
     set_channel_position ch# to 18
     read_block channel ch# str# 6
     move (             ascii(mid(str#,1,6))) to guisize#
@@ -2780,7 +2832,7 @@ class aps.ToolButton is a Container3D startmac APS.STARTMAC_SNAP
     move (oToolBar(self)) to tb#
     get p_horizontal_button_count to buttons_w#
     get item_count of tb# to count#
-    if buttons_w# gt count# begin
+    if (buttons_w# > count#) begin
       move count# to buttons_w#
       move 1 to buttons_h#
     end
@@ -2798,12 +2850,16 @@ class aps.ToolButton is a Container3D startmac APS.STARTMAC_SNAP
 
   // Redirect the following messages to embedded toolbar object:
   procedure set status_help string itm# string str#
-    if num_arguments gt 1 set status_help of (oToolBar(self)) item itm# to str#
-    else                  set status_help of (oToolBar(self)) to itm#
+    if (num_arguments > 1) ;
+      set status_help of (oToolBar(self)) item itm# to str#
+    else ;
+      set status_help of (oToolBar(self)) to itm#
   end_procedure
   procedure add_button integer bmp# integer msg# integer lhObj
-    if num_arguments gt 2 send add_button to (oToolBar(self)) bmp# msg# lhObj
-    else                  send add_button to (oToolBar(self)) bmp# msg#
+    if (num_arguments > 2) ;
+      send add_button to (oToolBar(self)) bmp# msg# lhObj
+    else ;
+      send add_button to (oToolBar(self)) bmp# msg#
   end_procedure
   procedure add_tooltip string tip#
     send add_tooltip to (oToolBar(self)) tip#
@@ -2832,7 +2888,8 @@ class aps.ComboFormAux is a aps.ComboForm
   Procedure Combo_Add_Item string lsValue integer liAuxValue
     integer liAux liItm
     forward send Combo_Add_Item lsValue
-    if num_arguments gt 1 move liAuxValue to liAux
+    if (num_arguments > 1) ;
+      move liAuxValue to liAux
     get Combo_Item_Count to liItm
     set aux_value item (liItm-1) to liAux
   End_Procedure
@@ -2875,9 +2932,9 @@ end_class // aps.ComboFormAux
 // The SetWindowPos external function and the constants below it are as
 // defined in the WinUser.pkg DAC package.
 External_Function ApsSetWindowPos "SetWindowPos" User32.dll Handle hWnd# Handle hWndAfter# Integer x# Integer y# Integer cx# Integer cy# Integer uFlags# Returns Integer
-#REPLACE APS.SWP_NOSIZE      1
-#REPLACE APS.SWP_NOMOVE      2
-#REPLACE APS.HWND_TOPMOST   -1
+Define APS.SWP_NOSIZE    for 1
+Define APS.SWP_NOMOVE    for 2
+Define APS.HWND_TOPMOST for -1
 
 class aps.TopMostModalPanel is a aps.ModalPanel
   Procedure Popup_Group

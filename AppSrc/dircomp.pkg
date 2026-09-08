@@ -44,14 +44,14 @@ object oDirCompCopyPanel is a aps.ModalPanel label "Copy newer files"
     if (piResult(self)) begin
       get current_radio of (oRad(self)) to iCurrentRad
       if (checked_state(oUpdateExistingOnly(self))) begin
-        if iCurrentRad eq 0 function_return CA_UPDATE_LEFT_DIR_EXISTING_ONLY
-        if iCurrentRad eq 1 function_return CA_UPDATE_RIGHT_DIR_EXISTING_ONLY
-        if iCurrentRad eq 2 function_return CA_UPDATE_BOTH_DIRS_EXISTING_ONLY
+        if (iCurrentRad = 0) function_return CA_UPDATE_LEFT_DIR_EXISTING_ONLY
+        if (iCurrentRad = 1) function_return CA_UPDATE_RIGHT_DIR_EXISTING_ONLY
+        if (iCurrentRad = 2) function_return CA_UPDATE_BOTH_DIRS_EXISTING_ONLY
       end
       else begin
-        if iCurrentRad eq 0 function_return CA_UPDATE_LEFT_DIR
-        if iCurrentRad eq 1 function_return CA_UPDATE_RIGHT_DIR
-        if iCurrentRad eq 2 function_return CA_UPDATE_BOTH_DIRS
+        if (iCurrentRad = 0) function_return CA_UPDATE_LEFT_DIR
+        if (iCurrentRad = 1) function_return CA_UPDATE_RIGHT_DIR
+        if (iCurrentRad = 2) function_return CA_UPDATE_BOTH_DIRS
       end
     end
     function_return CA_NO_COPYING
@@ -80,7 +80,7 @@ class cDirCompList is a aps.Grid
   end_procedure
 
   function iSpecialSortValueOnColumn.i integer liColumn returns integer
-    if liColumn gt 0 function_Return 1
+    if (liColumn > 0) function_Return 1
   end_function
 
   function sSortValue.ii integer liColumn integer liItem returns string
@@ -162,7 +162,7 @@ class cDirCompList is a aps.Grid
   procedure DoCopyAdvanced
     integer iAction
     get iPopup of (oDirCompCopyPanel(self)) to iAction
-    if iAction ne CA_NO_COPYING begin
+    if (iAction <> CA_NO_COPYING) begin
       send DoCopyFiles to (oDirectoryCompareArray(self)) iAction
       send fill_list.i 0
     end

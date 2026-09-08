@@ -82,7 +82,7 @@ class cFTS_WordSplitter is a cArray
                   get psLetters to lsNotDelimiters
                   move (lsNotDelimiters+"01234567890") to lsNotDelimiters
                   for liAscii from 33 to 255
-                    ifnot (character(liAscii)) in lsNotDelimiters move (lsDelimiters+character(liAscii)) to lsDelimiters
+                    If (Not(lsNotDelimiters contains (character(liAscii)))) move (lsDelimiters+character(liAscii)) to lsDelimiters
                   loop
                   set cFTS_WordSplitter.psDelimiters to lsDelimiters
                 end_procedure
@@ -100,7 +100,7 @@ class cFTS_WordSplitter is a cArray
                   integer lhSelf
                   forward send end_construct_object
                   send BuildDelimiters
-                  ifnot (pbDoNotRegisterWithParent(self)) begin
+                  If (Not((pbDoNotRegisterWithParent(self)))) begin
                     move self to lhSelf
                     set phWordsplitterObject to lhSelf // This is resolved in the encapsulating cFTS_System object
                   end
@@ -135,7 +135,7 @@ class cFTS_WordSplitter is a cArray
     string lsChar lsWord lsLetter lsNumbers lsDelimiters
 
     get cFTS_WordSplitter.phRedirectObj to lhSelf // If>0 the result of the splitting should be send elsewhere
-    ifnot lhSelf move self to lhSelf
+    If (Not(lhSelf)) move self to lhSelf
     set cFTS_WordSplitter.phRedirectObj to 0 // Make sure that the redirecting doesn't stick
 
     move (trim(lsText)) to lsText
@@ -152,9 +152,9 @@ class cFTS_WordSplitter is a cArray
     move "" to lsNumbers
 
     for liPos from 1 to liLen
-      mid lsText to lsChar 1 liPos
-      if lsChar in lsLetter begin
-        if liState eq PRIV_FTS_WORD move (lsWord+lsChar) to lsWord
+      Move (Mid(lsText, 1, liPos)) to lsChar
+      if (lsLetter contains lsChar) begin
+        if (liState = PRIV_FTS_WORD) move (lsWord+lsChar) to lsWord
         else begin
           if (liState=PRIV_FTS_NUMBER or liState=PRIV_FTS_DELIMITER or liState=PRIV_FTS_BELOW32) begin
             if (liState<>PRIV_FTS_BELOW32 or lbBelow32CountsAsWord<>0) begin
@@ -166,8 +166,8 @@ class cFTS_WordSplitter is a cArray
           move lsChar to lsWord
         end
       end
-      else if lsChar in lsNumbers begin
-        if liState eq PRIV_FTS_NUMBER move (lsWord+lsChar) to lsWord
+      else if (lsNumbers contains lsChar) begin
+        if (liState = PRIV_FTS_NUMBER) move (lsWord+lsChar) to lsWord
         else begin
           if (liState=PRIV_FTS_WORD or liState=PRIV_FTS_DELIMITER or liState=PRIV_FTS_BELOW32) begin
             if (liState<>PRIV_FTS_BELOW32 or lbBelow32CountsAsWord<>0) begin
@@ -180,15 +180,15 @@ class cFTS_WordSplitter is a cArray
         end
       end
       else if (lsChar=" ") begin
-        if lsWord ne "" begin
+        if (lsWord <> "") begin
           set psWord.i of lhSelf liRow to lsWord
           increment liRow
         end
         move PRIV_FTS_NOT_IN_ITEM to liState
         move ""to lsWord
       end
-      else if lsChar in lsDelimiters begin
-        if liState eq PRIV_FTS_DELIMITER move (lsWord+lsChar) to lsWord
+      else if (lsDelimiters contains lsChar) begin
+        if (liState = PRIV_FTS_DELIMITER) move (lsWord+lsChar) to lsWord
         else begin
           if (liState=PRIV_FTS_WORD or liState=PRIV_FTS_NUMBER or liState=PRIV_FTS_BELOW32) begin
             if (liState<>PRIV_FTS_BELOW32 or lbBelow32CountsAsWord<>0) begin
@@ -201,7 +201,7 @@ class cFTS_WordSplitter is a cArray
         end
       end
       else if (ascii(lsChar)<32) begin
-        if lsWord ne "" begin
+        if (lsWord <> "") begin
           set psWord.i of lhSelf liRow to lsWord
           increment liRow
         end
@@ -209,7 +209,7 @@ class cFTS_WordSplitter is a cArray
         move "" to lsWord
       end
     loop
-    if lsWord ne "" set psWord.i of lhSelf liRow to lsWord
+    if (lsWord <> "") set psWord.i of lhSelf liRow to lsWord
   end_procedure
 
 end_class // cFTS_WordSplitter

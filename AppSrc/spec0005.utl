@@ -1,5 +1,5 @@
 // Use Spec0005.utl // Datadictionary object procedures ("DDUTIL_" prefix)
-Use DataDict     // Standard VDF class
+Use DataDict.pkg     // Standard VDF class
 Use Fdx_Attr.utl // FDX compatible attribute functions
 Use FdxIndex.utl // Index analysing functions
 
@@ -29,7 +29,7 @@ procedure DDUTIL_DoPrimaryIndex global integer ddo# integer index#
     for iPos from 0 to (iMaxPos-1)
       move (mid(sFields,4,iPos*4+1)) to iField
       set key_field_state of ddo# iField to DFTRUE
-      if iField eq iMaxPos set field_options of ddo# iField to DD_AUTOFIND
+      if (iField = iMaxPos) set field_options of ddo# iField to DD_AUTOFIND
     loop
     set protect_key_state of ddo# to DFTRUE
   end
@@ -62,7 +62,7 @@ procedure DDUTIL_DoDefaultNextNumericUniqueID global integer ddo#
   get FDX_IndexFindPrimary 0 iFile to iIndex
   if iIndex begin
     get_attribute DF_INDEX_NUMBER_SEGMENTS of iFile iIndex to iMaxSeg
-    if iMaxSeg eq 1 begin
+    if (iMaxSeg = 1) begin
       get_attribute DF_INDEX_SEGMENT_FIELD of iFile iIndex 1 to iField
       get_field_value iFile 0 to iRec
       clear iFile

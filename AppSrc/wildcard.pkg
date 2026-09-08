@@ -4,6 +4,7 @@ Use Masks_DF.nui // DataFlex related file masks
 Use Spec0011.utl // Floating menues on the fly
 
 Use aps.pkg// Auto Positioning and Sizing classes for VDF
+Use cCJGrid.pkg
 class cSetOfMasksList is a aps.Grid
   procedure construct_object integer img#
     forward send construct_object img#
@@ -101,7 +102,32 @@ desktop_section
    on_key ksave_record send close_panel_ok
    on_key kcancel send close_panel
    property integer piResult 0
-   object oLst is a cSetOfMasksList
+   object oLst is a cCJGrid
+       // TODO: oLst was a cSetOfMasksList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+
+       Procedure LoadData
+           tDataSourceRow[] TheData TheDataEmpty
+           Integer iRow
+
+           Move 0 to iRow
+
+           // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+           //   Increment iRow
+
+           If (iRow <> 0) Begin
+               Send ReInitializeData TheData False
+               Send MoveToFirstRow
+           End
+           Else Begin
+               Send InitializeData TheDataEmpty
+           End
+       End_Procedure
+
+       Procedure Activating
+           Forward Send Activating
+           Send LoadData
+       End_Procedure
+
    end_object
 
    procedure DoAddOne

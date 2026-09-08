@@ -4,6 +4,7 @@ Use gridutil.utl
 Use spec0015.nui
 Use strings.nui
 Use dates.utl
+Use cCJGrid.pkg
 
 Object oImportDataDefaultValuesPanel is a ModalPanel
 
@@ -12,48 +13,61 @@ Object oImportDataDefaultValuesPanel is a ModalPanel
     Set Location to 12 17
     Set Label to "Column default values"
 
-    Object oGrid is a Grid
+    Object oGrid is a cCJGrid
         Set Location to 18 9
 
-        Set select_mode to MULTI_SELECT
+        Set pbMultipleSelection to True
     
         Set Size to 181 418
-        Set Line_Width to 5 0
-        Set Header_Label 0 to "Insert default value"
-        Set Form_Width 0 to 76
-        Set Header_Label 1 to "Column name"
-        Set Form_Width 1 to 77
-        Set Header_Label 2 to "Also if not blank"
-        Set Form_Width 2 to 71
-        Set Header_Label 3 to "Default value"
-        Set Form_Width 3 to 140
-        Set Header_Label 4 to "Type"
-        Set Form_Width 4 to 43
         Set peAnchors to anAll
-        Set peResizeColumn to rcSelectedColumn
         Set piResizeColumn to 3
-        
         On_Key Key_Ctrl+Key_D Send PopupCal
-        
+
+        Object oCol1 is a cCJGridColumn
+            Set piWidth to 76
+            Set psCaption to "Insert default value"
+        End_Object
+
+        Object oCol2 is a cCJGridColumn
+            Set piWidth to 77
+            Set psCaption to "Column name"
+        End_Object
+
+        Object oCol3 is a cCJGridColumn
+            Set piWidth to 71
+            Set psCaption to "Also if not blank"
+        End_Object
+
+        Object oCol4 is a cCJGridColumn
+            Set piWidth to 140
+            Set psCaption to "Default value"
+            Set pbEditable to False
+        End_Object
+
+        Object oCol5 is a cCJGridColumn
+            Set piWidth to 43
+            Set psCaption to "Type"
+        End_Object
+
         Procedure PopupCal
             Integer iBase
             Get Grid_BaseItem Self to iBase
             If (Aux_Value(Self,iBase+1)=DF_DATE) Begin
                 If (Grid_CurrentColumn(Self)=3) Begin
-                    Send Popup of (popup_calendar(Self))
+//                    Send Popup of (popup_calendar(Self))
                 End
             End
         End_Procedure
         
         Procedure MoveToValueArray Integer iTable Integer hDefaultValues
             Integer iRow iMax iBase
-            Send Delete_Data of hDefaultValues
+//            Send Delete_Data of hDefaultValues
             Get Grid_RowCount Self to iMax
             Decrement iMax
             For iRow from 0 to iMax
                 Get Grid_RowBaseItem Self iRow to iBase
                 If (Select_State(Self,iBase)) Begin
-                    Send AddRow of hDefaultValues (Aux_Value(Self,iBase)) (Select_State(Self,iBase+2)) (Value(Self,iBase+3))
+//                    Send AddRow of hDefaultValues (Aux_Value(Self,iBase)) (Select_State(Self,iBase+2)) (Value(Self,iBase+3))
                 End
             Loop
         End_Procedure
@@ -62,6 +76,7 @@ Object oImportDataDefaultValuesPanel is a ModalPanel
         Register_Function psValue.i Integer iRow Returns String
         
         Procedure FillList Integer iTable Integer hDefaultValues
+            // DFRefactor: NOT converted - this data loader is a setter or takes parameters, so it cannot become the parameterless LoadData. Port its Add_Item body into the generated LoadData by hand (or call the new row-based fill from here).
             Integer iField iMaxField iType iDefaultRow iBase iPrecision iLength
             String sName sTypeAndLen
             
@@ -131,16 +146,22 @@ Object oImportDataDefaultValuesPanel is a ModalPanel
         End_Procedure
 
         Procedure select_toggling Integer liItem Integer lbState
-            Integer liCurrentItem liColumn liBase liRow
-            Get Current_Item to liCurrentItem
+            Integer iRow liColumn liBase liRow
+            Integer iCol
+            Handle hoDataSource
+            tDataSourceRow[] TheData
+
+            Get phoDataSource to hoDataSource
+            Get SelectedRow of hoDataSource to iRow
+            Get DataSource of hoDataSource to TheData
             If (liItem=-99) Begin
-                Move liCurrentItem to liItem
+                Move iRow to liItem
             End
             If (Checkbox_Item_State(Self,liItem)) Begin
                 Get Grid_ItemColumn Self liItem to liColumn
-                Forward Send select_toggling liCurrentItem lbState
+                Forward Send select_toggling iRow lbState
                 If (liColumn=0) Begin
-                    Send SetShadowStateForBaseItem liItem
+//                    Send SetShadowStateForBaseItem liItem
 //                    Get Grid_ItemRow Self liBase to liRow
 //                    If (lbState=0) Begin
 //                        Send Grid_SetRowColor Self liRow clBtnFace
@@ -243,10 +264,16 @@ Object oImportDataDefaultValuesPanel is a ModalPanel
         
         Function ValidateCurrentItem Returns Boolean
             Boolean bRval
-            Integer iItem
+            Integer iRow
+            Integer iCol
+            Handle hoDataSource
+            tDataSourceRow[] TheData
+
             If (Item_Count(Self)<>0) Begin
-                Get Current_Item to iItem
-                Get ValidateItem iItem to bRval
+                Get phoDataSource to hoDataSource
+                Get SelectedRow of hoDataSource to iRow
+                Get DataSource of hoDataSource to TheData
+                Get ValidateItem iRow to bRval
                 If (not(bRval)) Begin
                     Error 244 "Illegal default value"
                 End
@@ -257,19 +284,20 @@ Object oImportDataDefaultValuesPanel is a ModalPanel
             Function_Return bRval
         End_Function
         
-        Procedure Item_Change Integer iFromItem Integer iToItem Returns Integer
-            Boolean bOk
-            Integer iReturnItem
-            Get ValidateItem iFromItem to bOk
-            If (bOk) Begin
-                Forward Get MSG_Item_Change iFromItem iToItem to iReturnItem
-            End
-            Else Begin
-                Move iFromItem to iReturnItem
-                Error 242 "Illegal default value"
-            End
-            Procedure_Return iReturnItem
-        End_Procedure
+        // TODO: Legacy grid method -- consider using OnRowChange (note: Item_Change fires on every cell move; OnRowChange only fires when the row changes).
+//        Procedure Item_Change Integer iFromItem Integer iToItem Returns Integer
+//            Boolean bOk
+//            Integer iReturnItem
+//            Get ValidateItem iFromItem to bOk
+//            If (bOk) Begin
+//                Forward Get MSG_Item_Change iFromItem iToItem to iReturnItem
+//            End
+//            Else Begin
+//                Move iFromItem to iReturnItem
+//                Error 242 "Illegal default value"
+//            End
+//            Procedure_Return iReturnItem
+//        End_Procedure
         
 //        Procedure Exiting Handle hoDestination Returns Integer
 //            Boolean bOk
@@ -289,6 +317,40 @@ Object oImportDataDefaultValuesPanel is a ModalPanel
 //            End
 //            Function_Return iRval
 //        End_Procedure
+
+        Procedure LoadData
+            tDataSourceRow[] TheData TheDataEmpty
+            Integer iRow iCol1 iCol2 iCol3 iCol4 iCol5
+
+            Get piColumnId of oCol1 to iCol1
+            Get piColumnId of oCol2 to iCol2
+            Get piColumnId of oCol3 to iCol3
+            Get piColumnId of oCol4 to iCol4
+            Get piColumnId of oCol5 to iCol5
+            Move 0 to iRow
+
+            // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+            //   Move someValue to TheData[iRow].sValue[iCol1]
+            //   Move someValue to TheData[iRow].sValue[iCol2]
+            //   Move someValue to TheData[iRow].sValue[iCol3]
+            //   Move someValue to TheData[iRow].sValue[iCol4]
+            //   Move someValue to TheData[iRow].sValue[iCol5]
+            //   Increment iRow
+
+            If (iRow <> 0) Begin
+                Send ReInitializeData TheData False
+                Send MoveToFirstRow
+            End
+            Else Begin
+                Send InitializeData TheDataEmpty
+            End
+        End_Procedure
+
+        Procedure Activating
+            Forward Send Activating
+            Send LoadData
+        End_Procedure
+
     End_Object
     
     Property Integer _piTable

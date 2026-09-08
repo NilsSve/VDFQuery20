@@ -56,7 +56,7 @@ Use Html.utl
       
         Function iGlobal_MainClient_Id Returns Integer
             Integer Self#
-            IfNot glMainClientId# Begin
+            If (Not(glMainClientId#)) Begin
                 Move Self to Self#
                 Move (Client_Id(Self#)) to glMainClientId#
             End
@@ -118,7 +118,7 @@ Class cVPE is an Array
     Get FLIST_CurrentFileListFolder to lsFolder // ???? Denne linie var fjernet ???? Genindsat aht. KGIS. Sture 20101217
     Get Files_AppendPath lsFolder "VpeSetup" to lsFolder
     If (SEQ_FileExists(lsFolder)=SEQIT_NONE) Begin
-      Get wvaWin32_CreateDirectory (ToAnsi(lsFolder)) to lbCreateError
+      Get wvaWin32_CreateDirectory (Utf8ToAnsi(lsFolder)) to lbCreateError
       If lbCreateError Function_Return "c:\vpe6.set"
       Get SEQ_DirectOutput (Files_AppendPath(lsFolder,"readme.txt")) to liChannel
       If (liChannel>=0) Begin
@@ -149,7 +149,7 @@ Class cVPE is an Array
 //    Move (VpeGetDevice(hDoc,lsDevice,250)) to liGrb
     Send Vpe_CloseDoc
     Move (CString(lsDevice)) to lsDevice
-    Move (ToOEM(lsDevice)) to lsDevice
+    Move (Utf8ToOem(lsDevice)) to lsDevice
     Function_Return lsDevice
 //    Integer iVoid
 //    String  sName
@@ -242,7 +242,7 @@ Class cVPE is an Array
     Handle hDoc
     Integer target# main_client#
     String bypass#
-    Move (ToANSI(title#)) to title#
+    Move (Utf8ToAnsi(title#)) to title#
 
 //    #IFDEF VPE_USE_EMBEDDED_PREVIEW
 //      Get iGlobal_MainClient_Id to main_client#
@@ -283,12 +283,12 @@ Class cVPE is an Array
     Real length# width#
     Integer target# main_client#
     String bypass#
-    if num_arguments gt 0 move tmpTitle# to title#
+    if (num_arguments > 0) move tmpTitle# to title#
     Else Get pTitle to title#
-    If num_arguments gt 1 Move tmpSetupFile# to SetupFile#
+    If (num_arguments > 1) Move tmpSetupFile# to SetupFile#
     Else Get sDefaultSetupFileName to SetupFile# // "c:\vpe3.set"
     If (SetupFile# = "") Get sDefaultSetupFileName  to SetupFile# // "c:\vpe3.set"
-    Move (ToANSI(title#)) to title#
+    Move (Utf8ToAnsi(title#)) to title#
     get pPageWidth  to Width#
     Get pPageLength to Length#
     if (width# = VPAPER_A4) begin
@@ -474,7 +474,7 @@ Class cVPE is an Array
     Handle hDoc
     Real rval#
     Get phDoc to hDoc
-    Move (ToANSI(str#)) to str#
+    Move (Utf8ToAnsi(str#)) to str#
     Move (VpeRenderWrite(hDoc,100,100,(100+width#),VFREE,str#)) to Vpe$ReturnGrb#
     // Vpe$ReturnGrb# now contains info on whether autobreak occured
     Move (VpeGet(hDoc,VRENDERHEIGHT)) to rval#
@@ -597,7 +597,7 @@ Class cVPE is an Array
   Procedure Write String str#
     Handle hDoc
     Get phDoc to hDoc
-    Move (ToANSI(str#)) to str#
+    Move (Utf8ToAnsi(str#)) to str#
     If (Trim(str#)="") Begin
         Move (Repeat(" ",Length(str#))) to str#
         If (Length(str#)=0) Begin
@@ -659,7 +659,7 @@ Class cVPE is an Array
     If (str#<>"") Begin
       // Showln x1# ":" y1# ":" x2# ":" y2# ":" str#
       Get phDoc to hDoc
-      Move (ToANSI(str#)) to str#
+      Move (Utf8ToAnsi(str#)) to str#
       Move (VpeWrite(hDoc,x1#,y1#,x2#,y2#,str#)) to Vpe$ReturnGrb#
     End
   End_Procedure
@@ -668,7 +668,7 @@ Class cVPE is an Array
     #IFSAME _VPEDLL_ VPEP3240.DLL VPEE3240.DLL
      Handle hDoc
      Get phDoc to hDoc
-     Move (ToANSI(str#)) to str#
+     Move (Utf8ToAnsi(str#)) to str#
      Move (VpeWriteRTF(hDoc,x1#,y1#,x2#,y2#,str#)) to Vpe$ReturnGrb#
     #ELSE
      Showln "RTF functions can not be used with this version of VPE!"
@@ -688,9 +688,9 @@ Class cVPE is an Array
   Procedure Vpe_HorizontalLineKeepPos Real tmpleft# Real tmpright#
     Real left# right#
     Handle hDoc
-    If num_arguments gt 0 Move tmpleft# to left#
+    If (num_arguments > 0) Move tmpleft# to left#
     Else Move VLEFTMARGIN to left#
-    If num_arguments gt 1 Move tmpright# to right#
+    If (num_arguments > 1) Move tmpright# to right#
     Else Move VRIGHTMARGIN to right#
     Get phDoc to hDoc
     Move (VpeStorePos(hDoc)) to Vpe$ReturnGrb#
@@ -701,9 +701,9 @@ Class cVPE is an Array
   Procedure WriteLine Real tmpleft# Real tmpright#
     Real left# right#
     Handle hDoc
-    If num_arguments gt 0 Move tmpleft# to left#
+    If (num_arguments > 0) Move tmpleft# to left#
     Else Move VLEFTMARGIN to left#
-    If num_arguments gt 1 Move tmpright# to right#
+    If (num_arguments > 1) Move tmpright# to right#
     Else Move VRIGHTMARGIN to right#
     Get phDoc to hDoc
     Move (VpeStorePos(hDoc)) to Vpe$ReturnGrb#
@@ -760,21 +760,21 @@ Class cVPE is an Array
   Procedure Vpe_Print_Print Real x1# Real y1# String str#
     Handle hDoc
     Get phDoc to hDoc
-    Move (ToANSI(str#)) to str#
+    Move (Utf8ToAnsi(str#)) to str#
     Move (VpePrint(hDoc,x1#,y1#,str#)) to Vpe$ReturnGrb#
   End_Procedure
 
   Procedure Vpe_PrintBox Real x1# Real y1# String str#
     Handle hDoc
     Get phDoc to hDoc
-    Move (ToANSI(str#)) to str#
+    Move (Utf8ToAnsi(str#)) to str#
     Move (VpePrintBox(hDoc,x1#,y1#,str#)) to Vpe$ReturnGrb#
   End_Procedure
 
   Procedure Vpe_WriteBox Real x1# Real y1# Real x2# Real y2# String str#
     Handle hDoc
     Get phDoc to hDoc
-    Move (ToANSI(str#)) to str#
+    Move (Utf8ToAnsi(str#)) to str#
     Move (VpeWriteBox(hDoc,x1#,y1#,x2#,y2#,str#)) to Vpe$ReturnGrb#
   End_Procedure
 
@@ -823,7 +823,7 @@ Class cVPE is an Array
     Get phDoc to hDoc
     If (trim(Str#) = "") Move " " to str#
 //    Get VPE_OemToChar str# to str#
-    Move (ToANSI(str#)) to str#
+    Move (Utf8ToAnsi(str#)) to str#
     Move (VpeBarcode(hDoc,x1#,y1#,x2#,y2#,code_type,str#,"" )) to Vpe$ReturnGrb#
   End_Procedure
 
@@ -939,9 +939,9 @@ Class cVPE is an Array
   Function Vpe_GetDevPaperBinName Integer iIndex Returns String
     Handle hDoc#
     Integer iVal
-    Address p2BinName
+    Pointer p2BinName
     String sBinName
-    ZeroString 65 to sBinName
+    Move (ZeroString(65)) to sBinName
 //    GetAddress of sBinName to p2BinName
     Move (AddressOf(sBinName)) to p2BinName
     Get phDoc to hDoc#

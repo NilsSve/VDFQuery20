@@ -177,14 +177,14 @@
 //**********************************************************************
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
-Use UI
+Use UI.pkg
 Use Macros.utl   // Various macros (DESKTOP_SECTION)
 Use Set.utl      // cArray, cSet and cStack classes
 Use Base.nui
-#REPLACE OBJGROUP$TEST 0 // If 1 you can check that objects are destroyed
+Define OBJGROUP$TEST for 0 // If 1 you can check that objects are destroyed
                          // when deferred_request_destroy_object is called
 desktop_section
   integer NotExitingApplication
@@ -332,8 +332,24 @@ end_procedure
 Use Windows.pkg // Standard DAC packages
 Use winuser.nui //
 
+#IFDEF IS$WIN64
+External_Function SetTimer0 "SetTimer" User32.DLL ;
+    Handle hWnd ;
+    ULongPtr idTimer ;
+    Integer idTimeout ;
+    Pointer tmprc ;
+    Returns ULongPtr
+#ELSE
 External_Function SetTimer0 "SetTimer" User32.DLL Integer hWnd Integer idTimer Integer idTimeout Pointer tmprc Returns Integer
+#ENDIF
+#IFDEF IS$WIN64
+External_Function KillTimer0 "KillTimer" User32.DLL ;
+    Handle hWnd ;
+    ULongPtr idTimer ;
+    Returns Integer
+#ELSE
 External_Function KillTimer0 "KillTimer" User32.DLL Integer hWnd Integer idTimer Returns Integer
+#ENDIF
 External_Function GetLastError0 "GetLastError" Kernel32.DLL Returns DWORD
 
 Integer giTimerManager#
@@ -347,7 +363,7 @@ Class TimersArray0 is an Array
         Decrement iMax
         For iItem from 1 to iMax
             Get Integer_Value item iItem to iValue
-            If iValue EQ iObj Function_Return iItem
+            If (iValue = iObj) Function_Return iItem
         Loop
         Function_Return -1
     End_Function
@@ -355,9 +371,10 @@ Class TimersArray0 is an Array
     Procedure Add_Object Integer iObj Returns Integer
         integer iItem
         Get Find_Object iObj to iItem
-        If iItem LT 0 Begin
+        If (iItem < 0) Begin
             Get Find_Object 0 to iItem
-            If iItem LT 0 Get Item_Count to iItem
+            If (iItem < 0) ;
+	      Get Item_Count to iItem
         End
         Set Array_Value item iItem to iObj
         Procedure_Return iItem
@@ -366,7 +383,8 @@ Class TimersArray0 is an Array
     Procedure Remove_Object Integer iObj
         integer iItem
         Get Find_Object iObj to iItem
-        If iItem GT 0 Set Array_Value item iItem to 0
+        If (iItem > 0) ;
+	  Set Array_Value item iItem to 0
     End_Procedure
     Procedure Destroy_Object
         Delegate Send Kill_All_Timers
@@ -391,7 +409,7 @@ Class DFTimerManager0 is a DFControl
         Dword   nResult
         Handle  hWnd
         Get Window_Handle to hWnd
-        If Not hWnd Begin
+        If (Not(hWnd)) Begin
             Error 999 "DFTimerManager doesn't have Window_Handle!"
             Procedure_Return
         End
@@ -401,16 +419,17 @@ Class DFTimerManager0 is a DFControl
             Get MSG_Add_Object of iSet iObj to iTimerID
             Get Timeout of iObj to iTimeout
             Move (SetTimer0(hWnd, iTimerID, iTimeout, 0)) to iResult
-            If Not iResult Begin
+            If (Not(iResult)) Begin
                 Error 999 "Can't create timer. Too many?"
                 Procedure_Return
             End
         End
         Else Begin
             Get Find_Object of iSet iObj to iTimerID
-            If iTimerID EQ -1 Procedure_Return
+            If (iTimerID = -1) ;
+	      Procedure_Return
             Move (KillTimer0(hWnd, iTimerID)) to iResult
-            If Not iResult Begin
+            If (Not(iResult)) Begin
                 Move (GetLastError0()) to nResult
                 Error 999 ("Can't kill timer! Windows error" * string(nResult) - "!")
                 Procedure_Return
@@ -422,7 +441,7 @@ Class DFTimerManager0 is a DFControl
     Function Timer_Active_State Integer iObj Returns Integer
         integer iResult
         Get Find_Object of (TimersArray0(self)) iObj to iResult
-        Function_Return (iResult NE 0)
+        Function_Return (iResult <> 0)
     End_Function
 
     Procedure Kill_All_Timers
@@ -430,7 +449,7 @@ Class DFTimerManager0 is a DFControl
         Handle  hWnd
 
         Get Window_Handle to hWnd
-        If Not hWnd Begin
+        If (Not(hWnd)) Begin
             Error 999 "DFTimerManager doesn't have Window_Handle!"
             Procedure_Return
         End
@@ -450,7 +469,7 @@ Class DFTimerManager0 is a DFControl
     Procedure OnTimer Integer wParam Integer lParam
         integer iObj
         Get Integer_Value of (TimersArray0(self)) item wParam to iObj
-        If Not iObj Begin
+        If (Not(iObj)) Begin
             Error 999 "OnTimer: Timer event without object!"
             Procedure_Return
         End
@@ -622,7 +641,7 @@ END_DEFINE_OBJECT_GROUP
 Procedure Deferred_Request_Destroy_Object for cObject
   integer self# Client_ID#
   move self to self#
-  ifnot giTimerManager# begin //
+  If (Not(giTimerManager#)) begin
     move (Client_ID(self#)) to Client_ID#
     if Client_ID# begin
       #IF OBJGROUP$TEST
@@ -638,14 +657,15 @@ End_Procedure
 Procedure Deferred_Message for cObject integer msg# integer obj#
   integer self# Client_ID#
   move self to self#
-  ifnot giTimerManager# begin //
+  If (Not(giTimerManager#)) begin
     move (Client_ID(self#)) to Client_ID#
     if Client_ID# begin
       CREATE_OBJECT_GROUP OG_DeferredTimer PARENT Client_ID#
     end
     else error 666 "ClientArea not found!"
   end
-  if num_arguments gt 1 send send_message to (oDestructionTimer(giTimerManager#)) msg# obj#
-  else send send_message to (oDestructionTimer(giTimerManager#)) msg# self#
+  if (num_arguments > 1) ;
+    send send_message to (oDestructionTimer(giTimerManager#)) msg# obj#
+  else ;
+    send send_message to (oDestructionTimer(giTimerManager#)) msg# self#
 End_Procedure
-

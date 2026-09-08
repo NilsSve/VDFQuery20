@@ -109,22 +109,22 @@ class dynamo_message_dealer is a cStack
     string lsArg1 lsArg2 lsArg3 lsArg4 lsArg5
     get item_count to liMax
     move 0 to liBase
-    while liBase lt liMax
+    while (liBase < liMax)
       get value item liBase to lhMsg
       get value item (liBase+1) to liNumArg
 
-      if liNumArg gt 1 get value item (liBase+2) to lsArg1
-      if liNumArg gt 2 get value item (liBase+3) to lsArg2
-      if liNumArg gt 3 get value item (liBase+4) to lsArg3
-      if liNumArg gt 4 get value item (liBase+5) to lsArg4
-      if liNumArg gt 5 get value item (liBase+6) to lsArg5
+      if (liNumArg > 1) get value item (liBase+2) to lsArg1
+      if (liNumArg > 2) get value item (liBase+3) to lsArg2
+      if (liNumArg > 3) get value item (liBase+4) to lsArg3
+      if (liNumArg > 4) get value item (liBase+5) to lsArg4
+      if (liNumArg > 5) get value item (liBase+6) to lsArg5
 
-      if liNumArg eq 6 send lhMsg to lhObj lsArg1 lsArg2 lsArg3 lsArg4 lsArg5
-      if liNumArg eq 5 send lhMsg to lhObj lsArg1 lsArg2 lsArg3 lsArg4
-      if liNumArg eq 4 send lhMsg to lhObj lsArg1 lsArg2 lsArg3
-      if liNumArg eq 3 send lhMsg to lhObj lsArg1 lsArg2
-      if liNumArg eq 2 send lhMsg to lhObj lsArg1
-      if liNumArg eq 1 send lhMsg to lhObj
+      if (liNumArg = 6) send lhMsg to lhObj lsArg1 lsArg2 lsArg3 lsArg4 lsArg5
+      if (liNumArg = 5) send lhMsg to lhObj lsArg1 lsArg2 lsArg3 lsArg4
+      if (liNumArg = 4) send lhMsg to lhObj lsArg1 lsArg2 lsArg3
+      if (liNumArg = 3) send lhMsg to lhObj lsArg1 lsArg2
+      if (liNumArg = 2) send lhMsg to lhObj lsArg1
+      if (liNumArg = 1) send lhMsg to lhObj
 
       move (liBase+liNumArg+1) to liBase
     end
@@ -200,8 +200,8 @@ class aps_ObjectDynamo is a cStack
     // This object marks the data aware classes that contains
     // prototype entry objects:
     object prototype_entry_based_array is a cArray
-      set value item class.dbList to DFTRUE
-      set value item class.dbGrid to DFTRUE
+      set value item class.dbList to TRUE
+      set value item class.dbGrid to TRUE
     end_object
 
     // If values are pushed upon this array they will be set as
@@ -328,7 +328,8 @@ class aps_ObjectDynamo is a cStack
     get prototype_entry_based class# to prototype_entry_based#
 
     get item_count of lhDataConnect to max#
-    if max# gt 40 move 40 to max# // Maximum 20 columns!
+    if (max# > 40) ;
+      move 40 to max# // Maximum 20 columns!
     move 0 to itm#
     if prototype_entry_based# begin // If dbList or dbGrid
       #PUSH !Zb
@@ -379,10 +380,11 @@ class aps_ObjectDynamo is a cStack
 
     end
     else begin // Not prototype_entry:
-      while (itm#*2) lt max#
+      while ((itm#*2) < max#)
         get value of lhDataConnect item (itm#*2) to data_file#
         get value of lhDataConnect item (itm#*2+1) to data_field#
-        if max# eq 0 send bind_data to object# data_file# data_field#
+        if (max# = 0) ;
+	  send bind_data to object# data_file# data_field#
         else begin // This branch probably never gets called!
           set data_file of object# item itm# to data_file#
           set data_field of object# item itm# to data_field#
@@ -470,25 +472,25 @@ class aps_ObjectDynamo is a cStack
   procedure add_top_message integer msg# string arg1# string arg2# string arg3# string arg4# string arg5#
     integer top_code_messages#
     move (top_code_messages(self)) to top_code_messages#
-                          send push.i to top_code_messages# msg#
-                          send push.i to top_code_messages# num_arguments
-    if num_arguments gt 1 send push.s to top_code_messages# arg1#
-    if num_arguments gt 2 send push.s to top_code_messages# arg2#
-    if num_arguments gt 3 send push.s to top_code_messages# arg3#
-    if num_arguments gt 4 send push.s to top_code_messages# arg4#
-    if num_arguments gt 5 send push.s to top_code_messages# arg5#
+                           send push.i to top_code_messages# msg#
+                           send push.i to top_code_messages# num_arguments
+    if (num_arguments > 1) send push.s to top_code_messages# arg1#
+    if (num_arguments > 2) send push.s to top_code_messages# arg2#
+    if (num_arguments > 3) send push.s to top_code_messages# arg3#
+    if (num_arguments > 4) send push.s to top_code_messages# arg4#
+    if (num_arguments > 5) send push.s to top_code_messages# arg5#
   end_procedure
 
   procedure add_bottom_message integer msg# string arg1# string arg2# string arg3# string arg4# string arg5#
     integer bottom_code_messages#
     move (bottom_code_messages(self)) to bottom_code_messages#
-                          send push.i to bottom_code_messages# msg#
-                          send push.i to bottom_code_messages# num_arguments
-    if num_arguments gt 1 send push.s to bottom_code_messages# arg1#
-    if num_arguments gt 2 send push.s to bottom_code_messages# arg2#
-    if num_arguments gt 3 send push.s to bottom_code_messages# arg3#
-    if num_arguments gt 4 send push.s to bottom_code_messages# arg4#
-    if num_arguments gt 5 send push.s to bottom_code_messages# arg5#
+                           send push.i to bottom_code_messages# msg#
+                           send push.i to bottom_code_messages# num_arguments
+    if (num_arguments > 1) send push.s to bottom_code_messages# arg1#
+    if (num_arguments > 2) send push.s to bottom_code_messages# arg2#
+    if (num_arguments > 3) send push.s to bottom_code_messages# arg3#
+    if (num_arguments > 4) send push.s to bottom_code_messages# arg4#
+    if (num_arguments > 5) send push.s to bottom_code_messages# arg5#
   end_procedure
 
   // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -514,4 +516,3 @@ class aps_ObjectDynamo is a cStack
   end_function
 
 end_class
-

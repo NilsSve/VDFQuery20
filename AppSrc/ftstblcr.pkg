@@ -1,7 +1,7 @@
 // Use FTSTblCr.pkg // Free text search - Create FTS tables
 
 Use FTSData.nui // cFTS_TableAccess class.
-Use TblCreate   // cTableCreator class
+Use TblCreate.pkg   // cTableCreator class
 
 object oFTS_TableDefinitions is a cArray
   property integer piArticleIdWidth 0 // NUMERIC 6.0

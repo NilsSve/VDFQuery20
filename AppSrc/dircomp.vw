@@ -76,8 +76,33 @@ object oDirComp_Vw is a aps.View label "Compare directory contents (based on fil
     set justification_mode to JMODE_LEFT
   end_object
   send aps_goto_max_row
-  object oLst is a cDirCompList
+  object oLst is a cCJGrid
+      // TODO: oLst was a cDirCompList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 150 0
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   set location of (oTxtLeft(self)) to (hi(location(oTxtLeft(self)))) (aps_grid_column_start(self,oLst(self),1))
   set location of (oTxtRight(self)) to (hi(location(oTxtRight(self))))  (aps_grid_column_start(self,oLst(self),3))
@@ -126,8 +151,8 @@ object oDirComp_Vw is a aps.View label "Compare directory contents (based on fil
     string sPath1 sPath2
     get value of (oDir1(self)) to sPath1
     get value of (oDir2(self)) to sPath2
-    if (SEQ_FileExists(sPath1)) eq SEQIT_DIRECTORY begin
-      if (SEQ_FileExists(sPath2)) eq SEQIT_DIRECTORY begin
+    if ((SEQ_FileExists(sPath1)) = SEQIT_DIRECTORY) begin
+      if ((SEQ_FileExists(sPath2)) = SEQIT_DIRECTORY) begin
         if (lowercase(sPath1)<>lowercase(sPath2)) begin
           send cursor_wait to (cursor_control(self))
           set value of (oTxtLeft(self)) to (" "+SEQ_TranslatePathToAbsolute(sPath1))

@@ -26,7 +26,7 @@ end_function // FDX_IndexAsFields
 //> index does not exist DFFALSE is returned.
 function FDX_IndexUnique global integer oFDX# integer file# integer index# returns integer
   string str#
-  if index# eq 0 function_return 1
+  if (index# = 0) function_return 1
   get FDX_IndexAsFields oFDX# file# index# to str#
   function_return (integer(right(str#,4)))
 end_function
@@ -42,7 +42,7 @@ function FDX_IndexAsFieldNames global integer oFDX# integer file# integer index#
   string rval# lf# fname# substring# test#
 
   get FDX_AttrValue_INDEX oFDX# DF_INDEX_TYPE file# index# to liType
-  ifnot width# move 1000 to width#
+  If (Not(width#)) move 1000 to width#
   move (character(10)) to lf#
   get FDX_AttrValue_INDEX oFDX# DF_INDEX_NUMBER_SEGMENTS file# index# to max_seg#
 
@@ -56,27 +56,27 @@ function FDX_IndexAsFieldNames global integer oFDX# integer file# integer index#
     get FDX_AttrValue_IDXSEG oFDX# DF_INDEX_SEGMENT_DIRECTION file# index# segment# to dir#
     get FDX_AttrValue_IDXSEG oFDX# DF_INDEX_SEGMENT_CASE      file# index# segment# to case#
 
-    if dir# eq DF_DESCENDING move ("-"+fname#) to fname#
-    if case# eq DF_CASE_IGNORED move (uppercase(fname#)) to fname#
+    if (dir# = DF_DESCENDING) move ("-"+fname#) to fname#
+    if (case# = DF_CASE_IGNORED) move (uppercase(fname#)) to fname#
     else move (lowercase(fname#)) to fname#
 
-    if segment# ne max_seg# move (fname#+",") to fname# // If not the last segment append a comma to the name
+    if (segment# <> max_seg#) move (fname#+",") to fname# // If not the last segment append a comma to the name
     move (substring#+fname#) to test#
 
     if (length(test#)>width# and substring#<>"") begin
       // If we go in here the length of the substring is too long and
       // we will have to insert a lf character.
-      if rval# eq "" move substring# to rval#
+      if (rval# = "") move substring# to rval#
       else move (rval#+lf#+substring#) to rval#
       move fname# to substring#
     end
     else begin // It's not too wide
-      if substring# eq "" move fname# to substring#
+      if (substring# = "") move fname# to substring#
       else move (substring#+fname#) to substring#
     end
   loop
 
-  if rval# eq "" move substring# to rval#
+  if (rval# = "") move substring# to rval#
   else move (rval#+lf#+substring#) to rval#
   function_return rval#
 end_function // FDX_IndexAsFieldNames
@@ -90,8 +90,8 @@ function FDX_IndexFindPrimary global integer oFDX# integer file# returns integer
   move 0 to fin#
   move 0 to rval#
   repeat
-    if index# gt 15 move 1 to fin#
-    ifnot fin# begin
+    if (index# > 15) move 1 to fin#
+    If (Not(fin#)) begin
       get FDX_AttrValue_INDEX oFDX# DF_INDEX_NUMBER_SEGMENTS file# index# to max_seg#
       for segment# from 1 to max_seg#
         get FDX_AttrValue_IDXSEG oFDX# DF_INDEX_SEGMENT_FIELD file# index# segment# to field#
@@ -112,8 +112,8 @@ function FDX_IndexFindAny global integer lhFDX integer liFile integer liIndex in
   move 0 to liRval
   increment liIndex
   repeat
-    if liIndex gt 15 move 1 to lbFin
-    ifnot lbFin begin
+    if (liIndex > 15) move 1 to lbFin
+    If (Not(lbFin)) begin
       get FDX_AttrValue_INDEX lhFDX DF_INDEX_NUMBER_SEGMENTS liFile liIndex to liSegments
 
       if liSegments begin // If index exists
@@ -148,7 +148,7 @@ Function FDX_IndexFindUnique Global Integer oFDX# Integer file# String avail_fie
   
   For index# from (start_idx#+1) to 15
     Get FDX_IndexAsFields oFDX# file# index# to idx_fields#
-    If idx_fields# ne "" Begin
+    If (idx_fields# <> "") Begin
 //      Move avail_fields# to check_fields#
       Get FDX_FieldsTranslateOverlaps oFDX# file# idx_fields# to idx_fields#
       Get FDX_FieldsRemoveDublettes idx_fields# to idx_fields#
@@ -156,7 +156,7 @@ Function FDX_IndexFindUnique Global Integer oFDX# Integer file# String avail_fie
         Move (mid(avail_fields#,4,segment#-1*4+1)) to field#
         Move (replace(field#,idx_fields#,"")) to idx_fields#
       Loop
-      If idx_fields# eq "" Function_Return index#
+      If (idx_fields# = "") Function_Return index#
     End
   Loop
   Function_Return 0
@@ -192,14 +192,14 @@ function FDX_IndexFindMatching global integer oFDX# integer file# string fields#
   move (length(fields#)/4) to max#
   for index# from (start_idx#+1) to 15
     get FDX_IndexAsFields oFDX# file# index# to idx_fields#
-    if idx_fields# ne "" begin
+    if (idx_fields# <> "") begin
       get FDX_FieldsTranslateOverlaps oFDX# file# idx_fields# to idx_fields#
       move 1 to good#
       for segment# from 1 to max#
         if good# begin
           move (mid(fields#,4,segment#-1*4+1)) to field1#
           move (mid(idx_fields#,4,segment#-1*4+1)) to field2#
-          if field1# ne field2# move 0 to good#
+          if (field1# <> field2#) move 0 to good#
         end
       loop
       if good# function_return index#
@@ -221,8 +221,8 @@ function FDX_FieldNotInIndex global integer oFDX# integer liFile integer liIndex
   move (FDX_AttrValue_FILE(oFDX#,DF_FILE_NUMBER_FIELDS,liFile)) to liMax
   for liField from 1 to liMax
     // Only check to see if field is part of the overlap if it is not itself an overlap field:
-    if (integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,liFile,liField))) ne DF_OVERLAP begin
-      ifnot (IsIntegerPresent(lsFields,liField)) function_return liField
+    if ((integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,liFile,liField))) <> DF_OVERLAP) begin
+      If (Not((IsIntegerPresent(lsFields,liField)))) function_return liField
     end
   loop
   function_return 0
@@ -242,7 +242,7 @@ function FDX_MostSignificantFieldsInIndexNotRelating global integer oFDX# intege
     move (mid(lsFields,4,liPos*4+1)) to liField
 
     if liStillRelating begin
-      ifnot (integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_RELATED_FILE,liFile,liField))) begin
+      If (Not((integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_RELATED_FILE,liFile,liField))))) begin
         get FDX_FieldsOverlappingField oFDX# liFile liField to lsOverlaps
         move (length(lsFields)+3/4) to liMaxOverlap
         move 0 to liAnyRelatingOverlaps
@@ -250,10 +250,10 @@ function FDX_MostSignificantFieldsInIndexNotRelating global integer oFDX# intege
           move (mid(lsOverlaps,4,liOverlapPos*4+1)) to liOverlapField
           if (integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_RELATED_FILE,liFile,liOverlapField))) move 1 to liAnyRelatingOverlaps
         loop
-        ifnot liAnyRelatingOverlaps move 0 to liStillRelating
+        If (Not(liAnyRelatingOverlaps)) move 0 to liStillRelating
       end
     end
-    ifnot liStillRelating move (lsRval+pad(liField,4)) to lsRval
+    If (Not(liStillRelating)) move (lsRval+pad(liField,4)) to lsRval
   loop
   function_return lsRval
 end_function
@@ -340,6 +340,5 @@ function FDX_SetOfIndicesTableConstrained global integer lhFDX integer liChildTa
   get FDX_SetOfIndicesFieldConstrained lhFDX liChildTable to lsRelatingFields
   function_return lsValue
 end_function
-
 
 

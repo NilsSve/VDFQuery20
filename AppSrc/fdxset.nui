@@ -17,13 +17,13 @@ enumeration_list
 end_enumeration_list
 
 function sFdxSet_CompText global integer comp# returns string
-  if comp# eq FDXSET_NONE function_return ""
-  if comp# eq FDXSET_LT   function_return "LT"
-  if comp# eq FDXSET_LE   function_return "LE"
-  if comp# eq FDXSET_EQ   function_return "EQ"
-  if comp# eq FDXSET_GE   function_return "GE"
-  if comp# eq FDXSET_GT   function_return "GT"
-  if comp# eq FDXSET_NE   function_return "NE"
+  if (comp# = FDXSET_NONE) function_return ""
+  if (comp# = FDXSET_LT) function_return "LT"
+  if (comp# = FDXSET_LE) function_return "LE"
+  if (comp# = FDXSET_EQ) function_return "EQ"
+  if (comp# = FDXSET_GE) function_return "GE"
+  if (comp# = FDXSET_GT) function_return "GT"
+  if (comp# = FDXSET_NE) function_return "NE"
 end_function
 
 //> Call back all legal comparison modes when attribute is attr#
@@ -36,7 +36,7 @@ procedure FdxSet_Comp_CallBack global integer attr# integer msg# integer obj#
   else begin
     if (API_AttrType(attr#)=ATTRTYPE_IDXSEG) send msg# to obj# FDXSET_EQ (sFdxSet_CompText(FDXSET_EQ))
     else begin
-      if (API_AttrValueType(attr#)) eq DF_BCD begin
+      if ((API_AttrValueType(attr#)) = DF_BCD) begin
         for comp# from 1 to (FDXSET_END-1)
           send msg# to obj# comp# (sFdxSet_CompText(comp#))
         loop
@@ -83,7 +83,7 @@ class cFdxSet is a cArray
     function_return -1
   end_function
   function iAddItem integer file# integer item# returns integer
-    if (iFindItem.ii(self,file#,item#)) eq -1 begin
+    if ((iFindItem.ii(self,file#,item#)) = -1) begin
       send AddItem file# item#
       function_return 1
     end
@@ -117,25 +117,25 @@ class cFdxSet is a cArray
   function iValidate.iiss integer type# integer comp# ;
                       string scurrentvalue# string stestvalue# returns integer
     number ncurrentvalue# ntestvalue#
-    if type# eq DF_BCD begin
+    if (type# = DF_BCD) begin
       move scurrentvalue# to ncurrentvalue#
       move stestvalue#    to ntestvalue#
-      if comp# eq FDXSET_LT function_return (ncurrentvalue#<ntestvalue#)
-      if comp# eq FDXSET_LE function_return (ncurrentvalue#<=ntestvalue#)
-      if comp# eq FDXSET_EQ function_return (ncurrentvalue#=ntestvalue#)
-      if comp# eq FDXSET_GE function_return (ncurrentvalue#>=ntestvalue#)
-      if comp# eq FDXSET_GT function_return (ncurrentvalue#>ntestvalue#)
-      if comp# eq FDXSET_NE function_return (ncurrentvalue#<>ntestvalue#)
+      if (comp# = FDXSET_LT) function_return (ncurrentvalue#<ntestvalue#)
+      if (comp# = FDXSET_LE) function_return (ncurrentvalue#<=ntestvalue#)
+      if (comp# = FDXSET_EQ) function_return (ncurrentvalue#=ntestvalue#)
+      if (comp# = FDXSET_GE) function_return (ncurrentvalue#>=ntestvalue#)
+      if (comp# = FDXSET_GT) function_return (ncurrentvalue#>ntestvalue#)
+      if (comp# = FDXSET_NE) function_return (ncurrentvalue#<>ntestvalue#)
     end
     else begin // Then it's DF_ASCII
-      uppercase scurrentvalue#
-      uppercase stestvalue#
-      if comp# eq FDXSET_LT function_return (scurrentvalue#<stestvalue#)
-      if comp# eq FDXSET_LE function_return (scurrentvalue#<=stestvalue#)
-      if comp# eq FDXSET_EQ function_return (vdfq_WildCardMatch(scurrentvalue#))
-      if comp# eq FDXSET_GE function_return (scurrentvalue#>=stestvalue#)
-      if comp# eq FDXSET_GT function_return (scurrentvalue#>stestvalue#)
-      if comp# eq FDXSET_NE function_return (scurrentvalue#<>stestvalue#)
+      Move (Uppercase(scurrentvalue#)) to scurrentvalue#
+      Move (Uppercase(stestvalue#)) to stestvalue#
+      if (comp# = FDXSET_LT) function_return (scurrentvalue#<stestvalue#)
+      if (comp# = FDXSET_LE) function_return (scurrentvalue#<=stestvalue#)
+      if (comp# = FDXSET_EQ) function_return (vdfq_WildCardMatch(scurrentvalue#))
+      if (comp# = FDXSET_GE) function_return (scurrentvalue#>=stestvalue#)
+      if (comp# = FDXSET_GT) function_return (scurrentvalue#>stestvalue#)
+      if (comp# = FDXSET_NE) function_return (scurrentvalue#<>stestvalue#)
     end
     function_return 1
   end_function
@@ -188,7 +188,7 @@ class cFdxSet is a cArray
     for row# from 0 to (max#-1)
       get piFile.i row# to file#
       get piItem.i row# to item#
-      if (iFindItem.ii(oFdxSetOfItems,file#,item#)) ne -1 send private.add_to_help_array file# item#
+      if ((iFindItem.ii(oFdxSetOfItems,file#,item#)) <> -1) send private.add_to_help_array file# item#
     loop
     send private.CopyDownFromHelpArray
   end_procedure
@@ -197,7 +197,7 @@ class cFdxSet is a cArray
     get row_count of oFdxSetOfItems to max#
     for row# from 0 to (max#-1)
       get iFindItem.ii (piFile.i(oFdxSetOfItems,row#)) (piItem.i(oFdxSetOfItems,row#)) to found_row#
-      if found_row# ne -1 send delete_row found_row#
+      if (found_row# <> -1) send delete_row found_row#
     loop
   end_procedure
   procedure DoRemoveFile.i integer liFile
@@ -240,7 +240,7 @@ class cFdxSetOfTables is a cFdxSet
     repeat
       get iNextFileThatCanOpen of oFDX# file# to file#
       if (file# and iValidate_Item.ii(self,file#,0)) send AddItem file# 0
-    until file# eq 0
+    until (file# = 0)
   end_procedure
   procedure make_set_of_files integer obj#
     integer max# row# file#
@@ -288,7 +288,7 @@ class cFdxSetOfFields is a cFdxSet
           if (iValidate_Item.ii(self,file#,item#)) send AddItem file# item#
         loop
       end
-    until file# eq 0
+    until (file# = 0)
   end_procedure
 
   function private.iFindFieldWithOffset.ii integer file# integer offset# returns integer
@@ -296,7 +296,7 @@ class cFdxSetOfFields is a cFdxSet
     get piFDX_Server to oFDX#
     move (FDX_AttrValue_FILE(oFDX#,DF_FILE_NUMBER_FIELDS,file#)) to max_item#
     for item# from 1 to max_item#
-      if (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_OFFSET,file#,item#)) eq offset# function_return item#
+      if ((FDX_AttrValue_FIELD(oFDX#,DF_FIELD_OFFSET,file#,item#)) = offset#) function_return item#
     loop
     //function_return 0
   end_function
@@ -313,11 +313,11 @@ class cFdxSetOfFields is a cFdxSet
       move (FDX_AttrValue_FILE(oFDX#,DF_FILE_NUMBER_FIELDS,File#)) to max_item#
       for item# from 1 to max_item#
         move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_RELATED_FILE,file#,item#)) to Rel_File#
-        if Rel_File# eq Parent_File# begin
+        if (Rel_File# = Parent_File#) begin
           move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_RELATED_FIELD,file#,item#)) to Rel_Field#
-          if Rel_Field# eq Parent_Field# send private.Traverse_Related_Help file# item#
+          if (Rel_Field# = Parent_Field#) send private.Traverse_Related_Help file# item#
           else begin
-            if (integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,file#,item#))) eq DF_OVERLAP begin
+            if ((integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,file#,item#))) = DF_OVERLAP) begin
               // Does it overlap our RootField?
               if (integer(FDX_AttrValue_SPECIAL1(oFDX#,DF_FIELD_OVERLAP,Rel_File#,Rel_Field#,Parent_Field#))) begin
 
@@ -349,7 +349,7 @@ class cFdxSetOfFields is a cFdxSet
     get piFDX_Server to oFDX#
     // Just in case we need it:
     move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_OFFSET,file#,Rootitem#)) to RootField_Offset#
-    if (iFindItem.ii(self,file#,Rootitem#)) eq -1 begin
+    if ((iFindItem.ii(self,file#,Rootitem#)) = -1) begin
       send AddItem file# Rootitem#
       move self to self#
       move (FDX_AttrValue_FILE(oFDX#,DF_FILE_NUMBER_FIELDS,File#)) to max_item#
@@ -358,12 +358,12 @@ class cFdxSetOfFields is a cFdxSet
         move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_RELATED_FILE,file#,item#)) to rel_file#
         if rel_file# begin // OK! We relate
           move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_RELATED_FIELD,file#,item#)) to rel_item#
-          if item# eq Rootitem# begin // Is it the field, we are specifically querying?
+          if (item# = Rootitem#) begin // Is it the field, we are specifically querying?
             send private.Traverse_Related_Help rel_file# rel_item#
           end
           else begin
             // Is it an overlap? Otherwise we are not interested.
-            if (integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,file#,item#))) eq DF_OVERLAP begin
+            if ((integer(FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE,file#,item#))) = DF_OVERLAP) begin
               // Does it overlap our RootField?
               if (integer(FDX_AttrValue_SPECIAL1(oFDX#,DF_FIELD_OVERLAP,file#,Rootitem#,item#))) begin
                 // OK! We know that they overlap. Now we have to figure out
@@ -419,11 +419,11 @@ class cFdxSetOfIndices is a cFdxSet
       get API_AttrType attr# to attrtype#
       get psTestValue to stestvalue#
       get API_AttrValueType attr# to type#
-      if attrtype# eq ATTRTYPE_INDEX begin
+      if (attrtype# = ATTRTYPE_INDEX) begin
         get FDX_AttrValue_INDEX oFDX# attr# file# index# to scurrentvalue#
         function_return (iValidate.iiss(self,type#,comp#,scurrentvalue#,stestvalue#))
       end
-      if attrtype# eq ATTRTYPE_IDXSEG begin
+      if (attrtype# = ATTRTYPE_IDXSEG) begin
         // If we get to this point we can be sure that the comperator is EQ
         get FDX_AttrValue_INDEX oFDX# DF_INDEX_NUMBER_SEGMENTS file# index# to max_seg#
         for seg# from 1 to max_seg#
@@ -451,7 +451,7 @@ class cFdxSetOfIndices is a cFdxSet
           if segments# if (iValidate_Item.ii(self,file#,Index#)) send AddItem file# Index#
         loop
       end
-    until file# eq 0
+    until (file# = 0)
   end_procedure
 
   procedure make_set_of_files integer obj#

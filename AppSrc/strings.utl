@@ -20,7 +20,7 @@ function Text_EditObjectValue global integer lhEdit returns string
      move (replaces(character(10),lsLine,"")) to lsLine
      move (replaces(character(13),lsLine,"")) to lsLine
      move (lsRval+lsLine) to lsRval
-     if liItm ne (liMax-1) move (lsRval+character(10)) to lsRval
+     if (liItm <> (liMax-1)) move (lsRval+character(10)) to lsRval
    loop
    if lbActive begin // Tsk tsk...
      set format_size of lhEdit to (hi(liFormatSize)) (low(liFormatSize))
@@ -39,14 +39,13 @@ procedure Text_SetEditObjectValue global integer lhEdit string lsValue
    move (length(lsValue)) to liLen
    for liPos from 1 to liLen
      move (mid(lsValue,1,liPos)) to lsChar
-     if lsChar eq lsTen begin
+     if (lsChar = lsTen) begin
        set value of lhEdit item liItm to lsLine
        increment liItm
        move "" to lsLine
      end
      else move (lsLine+lsChar) to lsLine
    loop
-   if lsLine ne "" set value of lhEdit item liItm to lsLine
+   if (lsLine <> "") set value of lhEdit item liItm to lsLine
 end_procedure
-
 

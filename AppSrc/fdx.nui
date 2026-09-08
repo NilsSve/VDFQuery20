@@ -34,8 +34,8 @@ class cFdxMonitoredAttributes is a cArray
   end_item_property_list cFdxMonitoredAttributes
   procedure add_attribute integer liAttr
     set piMonitored.i liAttr to 1
-    if liAttr lt (piLowIndex(self))  set piLowIndex to liAttr
-    if liAttr gt (piHighIndex(self)) set piHighIndex to liAttr
+    if (liAttr < (piLowIndex(self))) set piLowIndex to liAttr
+    if (liAttr > (piHighIndex(self))) set piHighIndex to liAttr
   end_procedure
   procedure CalcAttrIndices // Sent by end_construct_object
     integer liAttr liMin liMax liIndex
@@ -137,25 +137,25 @@ class cFdxFileRelations is a cArray
   //>
   procedure aux_callback.iiiii integer liMsg integer liObj integer liSelectType integer liSelectToFile integer liSelectToField
     integer liMax liRow liOK
-    ifnot (piArray_Filled(self)) send fill_array
+    If (Not((piArray_Filled(self)))) send fill_array
     get row_count to liMax
     for liRow from 0 to (liMax-1)
       move 1 to liOK
-      if liSelectType if (piType.i(self,liRow)) ne liSelectType move 0 to liOK
-      if liOK if (piFileTo.i(self,liRow))  ne liSelectToFile move 0 to liOK
-      if liOK if (piFieldTo.i(self,liRow)) ne liSelectToField move 0 to liOK
+      if liSelectType if ((piType.i(self,liRow)) <> liSelectType) move 0 to liOK
+      if liOK if ((piFileTo.i(self,liRow)) <> liSelectToFile) move 0 to liOK
+      if liOK if ((piFieldTo.i(self,liRow)) <> liSelectToField) move 0 to liOK
       if liOK send liMsg to liObj (piType.i(self,liRow)) (piFileFrom.i(self,liRow)) (piFieldFrom.i(self,liRow)) (piFileTo.i(self,liRow)) (piFieldTo.i(self,liRow))
     loop
   end_procedure
   procedure callback.iiiii integer liMsg integer liObj integer liSelectType integer liSelectFrom integer liSelectTo
     integer liMax liRow liOK
-    ifnot (piArray_Filled(self)) send fill_array
+    If (Not((piArray_Filled(self)))) send fill_array
     get row_count to liMax
     for liRow from 0 to (liMax-1)
       move 1 to liOK
-      if liSelectType if (piType.i(self,liRow)) ne liSelectType move 0 to liOK
-      if (liOK and liSelectFrom) if (piFileFrom.i(self,liRow)) ne liSelectFrom move 0 to liOK
-      if (liOK and liSelectTo) if (piFileTo.i(self,liRow)) ne liSelectTo move 0 to liOK
+      if liSelectType if ((piType.i(self,liRow)) <> liSelectType) move 0 to liOK
+      if ((liOK and liSelectFrom) and (piFileFrom.i(self,liRow)) <> liSelectFrom) move 0 to liOK
+      if ((liOK and liSelectTo) and (piFileTo.i(self,liRow)) <> liSelectTo) move 0 to liOK
       if liOK send liMsg to liObj (piType.i(self,liRow)) (piFileFrom.i(self,liRow)) (piFieldFrom.i(self,liRow)) (piFileTo.i(self,liRow)) (piFieldTo.i(self,liRow))
     loop
   end_procedure
@@ -198,7 +198,7 @@ class cFdxFileRelations is a cArray
   procedure ParentFilesHelp integer liType integer liFile integer liFld integer liRFile integer liRFld
     string lsStr
     get psTmpString to lsStr
-    ifnot (IsIntegerPresent(lsStr,liRFile)) begin
+    If (Not((IsIntegerPresent(lsStr,liRFile)))) begin
       move (AddIntegerToString(lsStr,liRFile)) to lsStr
       set psTmpString to lsStr
       send callback.iiiii msg_ParentFilesHelp self FDX_RELORIG_ALL liRFile 0
@@ -212,7 +212,7 @@ class cFdxFileRelations is a cArray
   procedure ChildFilesHelp integer liType integer liFile integer liFld integer liRFile integer liRFld
     string lsStr
     get psTmpString to lsStr
-    ifnot (IsIntegerPresent(lsStr,liFile)) begin
+    If (Not((IsIntegerPresent(lsStr,liFile)))) begin
       move (AddIntegerToString(lsStr,liFile)) to lsStr
       set psTmpString to lsStr
       send callback.iiiii msg_ChildFilesHelp self FDX_RELORIG_ALL 0 liFile
@@ -281,7 +281,7 @@ class cFdxFileDef_DataAndConfigurationFilesHelp is a cArray
         repeat
           readln channel liChannel lsLine
           move (seqeof) to lbSeqEof
-          ifnot lbSeqEof set value item (item_count(self)) to lsLine
+          If (Not(lbSeqEof)) set value item (item_count(self)) to lsLine
         until lbSeqEof
         send SEQ_CloseInput liChannel
       end
@@ -381,7 +381,7 @@ class cFdxFileDef is a cArray
   end_procedure
   function iCanOpen.i integer liFile returns integer
     integer liDelegate liRval
-    if liFile eq (piMainFile(self)) function_return 1
+    if (liFile = (piMainFile(self))) function_return 1
     get iFdxIsEncapsulated to liDelegate
     if liDelegate delegate get iCanOpen.i liFile to liRval
     else move 0 to liRval
@@ -513,7 +513,7 @@ class cFdxFileDef is a cArray
       if liMax begin // If there's an index at all
         set piType.i       of liIndexAttrObj liIndex to (API_AttrValue_INDEX(DF_INDEX_TYPE,liFile,liIndex))
         set piSegments.i   of liIndexAttrObj liIndex to liMax
-        ifnot liRestruct set piBuffers.i of liIndexAttrObj liIndex to (API_AttrValue_INDEX(DF_INDEX_NUMBER_BUFFERS,liFile,liIndex))
+        If (Not(liRestruct)) set piBuffers.i of liIndexAttrObj liIndex to (API_AttrValue_INDEX(DF_INDEX_NUMBER_BUFFERS,liFile,liIndex))
         set piKey_Length.i of liIndexAttrObj liIndex to (API_AttrValue_INDEX(DF_INDEX_KEY_LENGTH,liFile,liIndex))
         set piLevels.i     of liIndexAttrObj liIndex to (API_AttrValue_INDEX(DF_INDEX_LEVELS,liFile,liIndex))
         move "" to lsFields
@@ -540,14 +540,14 @@ class cFdxFileDef is a cArray
     send Read_Field_Attr liFile
     send Read_Index_Attr liFile
     get AttrValue_FILE DF_FILE_DRIVER liFile to lsDriver
-    if lsDriver eq "DATAFLEX" move ".DAT" to lsExt
+    if (lsDriver = "DATAFLEX") move ".DAT" to lsExt
     else move ".INT" to lsExt
     get AttrValue_FILE DF_FILE_PHYSICAL_NAME liFile to lsPhysFileName
-    ifnot "." in (SEQ_RemovePathFromFileName(lsPhysFileName)) move (lsPhysFileName+lsExt) to lsPhysFileName
+    If (Not((SEQ_RemovePathFromFileName(lsPhysFileName)) contains ".")) move (lsPhysFileName+lsExt) to lsPhysFileName
 
 //  send Read_AuxillaryFiles to (oDatAndConf(self)) (StringLeftBut(lsPhysFileName,4))
 
-    if (SEQ_ExtractPathFromFileName(lsPhysFileName)) eq "" begin
+    if ((SEQ_ExtractPathFromFileName(lsPhysFileName)) = "") begin
       move (SEQ_FindFileAlongDFPath(lsPhysFileName)) to lsPath
       move (SEQ_ComposeAbsoluteFileName(lsPath,lsPhysFileName)) to lsPhysFileName
     end
@@ -568,36 +568,36 @@ class cFdxFileDef is a cArray
     function_return t.fdx.attr_not_avail
   end_function
   function sAttrValueField.ii integer liAttr integer liField returns string
-    if liAttr eq DF_FIELD_NAME          function_return (psName.i(self,liField))
-    if liAttr eq DF_FIELD_NUMBER        function_return (piNumber.i(self,liField))
-    if liAttr eq DF_FIELD_OLD_NUMBER    function_return (piOldNumber.i(self,liField))
-    if liAttr eq DF_FIELD_TYPE          function_return (piType.i(self,liField))
-    if liAttr eq DF_FIELD_LENGTH        function_return (piLen.i(self,liField))
-    if liAttr eq DF_FIELD_NATIVE_LENGTH function_return (piNative_Len.i(self,liField))
-    if liAttr eq DF_FIELD_PRECISION     function_return (piPrec.i(self,liField))
-    if liAttr eq DF_FIELD_RELATED_FILE  function_return (piRfile.i(self,liField))
-    if liAttr eq DF_FIELD_RELATED_FIELD function_return (piRfld.i(self,liField))
-    if liAttr eq DF_FIELD_INDEX         function_return (piIdx.i(self,liField))
-    if liAttr eq DF_FIELD_OFFSET        function_return (piOffset.i(self,liField))
+    if (liAttr = DF_FIELD_NAME) function_return (psName.i(self,liField))
+    if (liAttr = DF_FIELD_NUMBER) function_return (piNumber.i(self,liField))
+    if (liAttr = DF_FIELD_OLD_NUMBER) function_return (piOldNumber.i(self,liField))
+    if (liAttr = DF_FIELD_TYPE) function_return (piType.i(self,liField))
+    if (liAttr = DF_FIELD_LENGTH) function_return (piLen.i(self,liField))
+    if (liAttr = DF_FIELD_NATIVE_LENGTH) function_return (piNative_Len.i(self,liField))
+    if (liAttr = DF_FIELD_PRECISION) function_return (piPrec.i(self,liField))
+    if (liAttr = DF_FIELD_RELATED_FILE) function_return (piRfile.i(self,liField))
+    if (liAttr = DF_FIELD_RELATED_FIELD) function_return (piRfld.i(self,liField))
+    if (liAttr = DF_FIELD_INDEX) function_return (piIdx.i(self,liField))
+    if (liAttr = DF_FIELD_OFFSET) function_return (piOffset.i(self,liField))
     function_return t.fdx.attr_not_avail
   end_function
   function sAttrValueIndex.ii integer liAttr integer liIndex returns string
     integer liObj
     move (oIndexAttr(self)) to liObj
-    if liAttr eq DF_INDEX_NUMBER_SEGMENTS function_return (piSegments.i(liObj,liIndex))
-    if liAttr eq DF_INDEX_NUMBER_BUFFERS  function_return (piBuffers.i(liObj,liIndex))
-    if liAttr eq DF_INDEX_TYPE            function_return (piType.i(liObj,liIndex))
-    if liAttr eq DF_INDEX_LEVELS          function_return (piLevels.i(liObj,liIndex))
-    if liAttr eq DF_INDEX_KEY_LENGTH      function_return (piKey_Length.i(liObj,liIndex))
+    if (liAttr = DF_INDEX_NUMBER_SEGMENTS) function_return (piSegments.i(liObj,liIndex))
+    if (liAttr = DF_INDEX_NUMBER_BUFFERS) function_return (piBuffers.i(liObj,liIndex))
+    if (liAttr = DF_INDEX_TYPE) function_return (piType.i(liObj,liIndex))
+    if (liAttr = DF_INDEX_LEVELS) function_return (piLevels.i(liObj,liIndex))
+    if (liAttr = DF_INDEX_KEY_LENGTH) function_return (piKey_Length.i(liObj,liIndex))
     function_return t.fdx.attr_not_avail
   end_function
   function sAttrValueIndexSegment.iii integer liAttr integer liIndex integer liSegment returns string
     integer liObj
     string lsStr
     move (oIndexAttr(self)) to liObj
-    if liAttr eq DF_INDEX_SEGMENT_FIELD     move (psFields.i(liObj,liIndex)) to lsStr
-    if liAttr eq DF_INDEX_SEGMENT_CASE      move (psUppercase.i(liObj,liIndex)) to lsStr
-    if liAttr eq DF_INDEX_SEGMENT_DIRECTION move (psDirection.i(liObj,liIndex)) to lsStr
+    if (liAttr = DF_INDEX_SEGMENT_FIELD) move (psFields.i(liObj,liIndex)) to lsStr
+    if (liAttr = DF_INDEX_SEGMENT_CASE) move (psUppercase.i(liObj,liIndex)) to lsStr
+    if (liAttr = DF_INDEX_SEGMENT_DIRECTION) move (psDirection.i(liObj,liIndex)) to lsStr
     function_return (mid(lsStr,4,liSegment-1*4+1))
   end_function
   function sAttrValueSpecial1.iii integer liAttr integer liField1 integer liField2 returns string
@@ -616,7 +616,7 @@ class cFdxFileDef is a cArray
   function AttrValue_FILE integer liAttr integer liFile returns string
     integer liDelegate
     string lsRval
-    if liFile eq (piMainFile(self)) function_return (sAttrValueFile.i(self,liAttr))
+    if (liFile = (piMainFile(self))) function_return (sAttrValueFile.i(self,liAttr))
     get iFdxIsEncapsulated to liDelegate
     if liDelegate delegate get AttrValue_FILE liAttr liFile to lsRval
     else move "Not available" to lsRval
@@ -642,9 +642,9 @@ class cFdxFileDef is a cArray
     if liDelegate delegate get AttrValue_FILELIST liAttr liFile to lsRval
     else begin
       move t.fdx.attr_not_avail to lsRval
-      if liAttr eq DF_FILE_ROOT_NAME    move ("FILE"+string(liFile)) to lsRval
-      if liAttr eq DF_FILE_LOGICAL_NAME move ("DFFILE"+string(liFile)) to lsRval
-      if liAttr eq DF_FILE_DISPLAY_NAME move ("File"+string(liFile)) to lsRval
+      if (liAttr = DF_FILE_ROOT_NAME) move ("FILE"+string(liFile)) to lsRval
+      if (liAttr = DF_FILE_LOGICAL_NAME) move ("DFFILE"+string(liFile)) to lsRval
+      if (liAttr = DF_FILE_DISPLAY_NAME) move ("File"+string(liFile)) to lsRval
       move (rtrim(lsRval)) to lsRval
     end
     function_return lsRval
@@ -653,29 +653,29 @@ class cFdxFileDef is a cArray
   function AttrValue_FIELD integer liAttr integer liFile integer liField returns string
     integer liDelegate
     string lsRval
-    if liFile eq (piMainFile(self)) function_return (sAttrValueField.ii(self,liAttr,liField))
+    if (liFile = (piMainFile(self))) function_return (sAttrValueField.ii(self,liAttr,liField))
     get iFdxIsEncapsulated to liDelegate
     if liDelegate delegate get AttrValue_FIELD liAttr liFile liField to lsRval
     else begin
       move "Not available" to lsRval
-      if liAttr eq DF_FIELD_NAME move ("FIELD"+string(liField)) to lsRval
+      if (liAttr = DF_FIELD_NAME) move ("FIELD"+string(liField)) to lsRval
     end
     function_return lsRval
   end_function
 
   procedure set AttrValue_FIELD integer liAttr integer liFile integer liField string lsValue
     if (liFile=piMainFile(self)) begin
-      if liAttr eq DF_FIELD_NAME          set psName.i       liField to lsValue
-      if liAttr eq DF_FIELD_NUMBER        set piNumber.i     liField to lsValue
-      if liAttr eq DF_FIELD_OLD_NUMBER    set piOldNumber.i  liField to lsValue
-      if liAttr eq DF_FIELD_TYPE          set piType.i       liField to lsValue
-      if liAttr eq DF_FIELD_LENGTH        set piLen.i        liField to lsValue
-      if liAttr eq DF_FIELD_NATIVE_LENGTH set piNative_Len.i liField to lsValue
-      if liAttr eq DF_FIELD_PRECISION     set piPrec.i       liField to lsValue
-      if liAttr eq DF_FIELD_RELATED_FILE  set piRfile.i      liField to lsValue
-      if liAttr eq DF_FIELD_RELATED_FIELD set piRfld.i       liField to lsValue
-      if liAttr eq DF_FIELD_INDEX         set piIdx.i        liField to lsValue
-      if liAttr eq DF_FIELD_OFFSET        set piOffset.i     liField to lsValue
+      if (liAttr = DF_FIELD_NAME) set psName.i liField to lsValue
+      if (liAttr = DF_FIELD_NUMBER) set piNumber.i liField to lsValue
+      if (liAttr = DF_FIELD_OLD_NUMBER) set piOldNumber.i liField to lsValue
+      if (liAttr = DF_FIELD_TYPE) set piType.i liField to lsValue
+      if (liAttr = DF_FIELD_LENGTH) set piLen.i liField to lsValue
+      if (liAttr = DF_FIELD_NATIVE_LENGTH) set piNative_Len.i liField to lsValue
+      if (liAttr = DF_FIELD_PRECISION) set piPrec.i liField to lsValue
+      if (liAttr = DF_FIELD_RELATED_FILE) set piRfile.i liField to lsValue
+      if (liAttr = DF_FIELD_RELATED_FIELD) set piRfld.i liField to lsValue
+      if (liAttr = DF_FIELD_INDEX) set piIdx.i liField to lsValue
+      if (liAttr = DF_FIELD_OFFSET) set piOffset.i liField to lsValue
     end
     else error 666 "Illegal file number"
   end_procedure
@@ -683,7 +683,7 @@ class cFdxFileDef is a cArray
   function AttrValue_INDEX integer liAttr integer liFile integer liIndex returns string
     integer liDelegate
     string lsRval
-    if liFile eq (piMainFile(self)) function_return (sAttrValueIndex.ii(self,liAttr,liIndex))
+    if (liFile = (piMainFile(self))) function_return (sAttrValueIndex.ii(self,liAttr,liIndex))
     get iFdxIsEncapsulated to liDelegate
     if liDelegate delegate get AttrValue_INDEX liAttr liFile liIndex to lsRval
     else move "Not available" to lsRval
@@ -694,11 +694,11 @@ class cFdxFileDef is a cArray
     integer liObj
     if (liFile=piMainFile(self)) begin
       move (oIndexAttr(self)) to liObj
-      if liAttr eq DF_INDEX_NUMBER_SEGMENTS set piSegments.i   of liObj liIndex to lsValue
-      if liAttr eq DF_INDEX_NUMBER_BUFFERS  set piBuffers.i    of liObj liIndex to lsValue
-      if liAttr eq DF_INDEX_TYPE            set piType.i       of liObj liIndex to lsValue
-      if liAttr eq DF_INDEX_LEVELS          set piLevels.i     of liObj liIndex to lsValue
-      if liAttr eq DF_INDEX_KEY_LENGTH      set piKey_Length.i of liObj liIndex to lsValue
+      if (liAttr = DF_INDEX_NUMBER_SEGMENTS) set piSegments.i of liObj liIndex to lsValue
+      if (liAttr = DF_INDEX_NUMBER_BUFFERS) set piBuffers.i of liObj liIndex to lsValue
+      if (liAttr = DF_INDEX_TYPE) set piType.i of liObj liIndex to lsValue
+      if (liAttr = DF_INDEX_LEVELS) set piLevels.i of liObj liIndex to lsValue
+      if (liAttr = DF_INDEX_KEY_LENGTH) set piKey_Length.i of liObj liIndex to lsValue
     end
     else error 666 "Illegal file number"
   end_procedure
@@ -706,7 +706,7 @@ class cFdxFileDef is a cArray
   function AttrValue_IDXSEG integer liAttr integer liFile integer liIndex integer liSegment returns string
     integer liDelegate
     string lsRval
-    if liFile eq (piMainFile(self)) function_return (sAttrValueIndexSegment.iii(self,liAttr,liIndex,liSegment))
+    if (liFile = (piMainFile(self))) function_return (sAttrValueIndexSegment.iii(self,liAttr,liIndex,liSegment))
     get iFdxIsEncapsulated to liDelegate
     if liDelegate delegate get AttrValue_IDXSEG liAttr liFile liIndex liSegment to lsRval
     else move "Not available" to lsRval
@@ -718,15 +718,15 @@ class cFdxFileDef is a cArray
     string lsStr
     if (liFile=piMainFile(self)) begin
       move (oIndexAttr(self)) to liObj
-      if liAttr eq DF_INDEX_SEGMENT_FIELD     get psFields.i    of liObj liIndex to lsStr
-      if liAttr eq DF_INDEX_SEGMENT_CASE      get psUppercase.i of liObj liIndex to lsStr
-      if liAttr eq DF_INDEX_SEGMENT_DIRECTION get psDirection.i of liObj liIndex to lsStr
+      if (liAttr = DF_INDEX_SEGMENT_FIELD) get psFields.i of liObj liIndex to lsStr
+      if (liAttr = DF_INDEX_SEGMENT_CASE) get psUppercase.i of liObj liIndex to lsStr
+      if (liAttr = DF_INDEX_SEGMENT_DIRECTION) get psDirection.i of liObj liIndex to lsStr
 
       move (overstrike(pad(trim(lsValue),4),lsStr,liSegment-1*4+1)) to lsStr
 
-      if liAttr eq DF_INDEX_SEGMENT_FIELD     set psFields.i    of liObj liIndex to lsStr
-      if liAttr eq DF_INDEX_SEGMENT_CASE      set psUppercase.i of liObj liIndex to lsStr
-      if liAttr eq DF_INDEX_SEGMENT_DIRECTION set psDirection.i of liObj liIndex to lsStr
+      if (liAttr = DF_INDEX_SEGMENT_FIELD) set psFields.i of liObj liIndex to lsStr
+      if (liAttr = DF_INDEX_SEGMENT_CASE) set psUppercase.i of liObj liIndex to lsStr
+      if (liAttr = DF_INDEX_SEGMENT_DIRECTION) set psDirection.i of liObj liIndex to lsStr
     end
     else error 666 "Illegal file number"
   end_procedure
@@ -734,18 +734,18 @@ class cFdxFileDef is a cArray
   function AttrValue_SPECIAL1 integer liAttr integer liFile integer liField1 integer liField2 returns string
     integer liDelegate
     string lsRval
-    if liFile eq (piMainFile(self)) function_return (sAttrValueSpecial1.iii(self,liAttr,liField1,liField2))
+    if (liFile = (piMainFile(self))) function_return (sAttrValueSpecial1.iii(self,liAttr,liField1,liField2))
     get iFdxIsEncapsulated to liDelegate
     if liDelegate delegate get AttrValue_SPECIAL1 liAttr liFile liField1 liField2 to lsRval
     else move "Not available" to lsRval
     function_return lsRval
   end_function
   function sDatPath.i integer liFile returns string
-    if liFile eq (piMainFile(self)) function_return (psDatPath(self))
+    if (liFile = (piMainFile(self))) function_return (psDatPath(self))
     function_return ""
   end_function
   function nTimeStamp.i integer liFile returns number
-    if liFile eq (piMainFile(self)) function_return (pnTimeStamp(self))
+    if (liFile = (piMainFile(self))) function_return (pnTimeStamp(self))
     function_return 0
   end_function
 
@@ -798,8 +798,8 @@ class cFdx is a cArray
   end_procedure
 
   function sOriginAsText returns string
-    if (piDataOrigin(self)) eq FDX_EMPTY function_return "Empty"
-    if (piDataOrigin(self)) eq FDX_REAL_WORLD function_return "Current"
+    if ((piDataOrigin(self)) = FDX_EMPTY) function_return "Empty"
+    if ((piDataOrigin(self)) = FDX_REAL_WORLD) function_return "Current"
     function_return (SEQ_RemovePathFromFileName(psFileName(self)))
   end_function
 
@@ -820,7 +820,7 @@ class cFdx is a cArray
     integer liMin liMax liSelf liMonAttrObj liAttr
     move (oMonitoredGlobalAttributes(self)) to liMonAttrObj
     move self to liSelf
-    if liAttrType eq ATTRTYPE_GLOBAL begin
+    if (liAttrType = ATTRTYPE_GLOBAL) begin
       get piLowIndex of liMonAttrObj to liMin
       get piHighIndex of liMonAttrObj to liMax
       for liAttr from liMin to liMax
@@ -910,7 +910,7 @@ class cFdx is a cArray
     set psDFName.i      liFile to (DBMS_DFName(liFile))
     set psDisplayName.i liFile to (DBMS_DisplayName(liFile))
     get_attribute DF_FILE_OPENED of liFile to liWasOpen
-    ifnot liWasOpen move (DBMS_OpenFile(liFile,DF_SHARE,0)) to liOpen
+    If (Not(liWasOpen)) move (DBMS_OpenFile(liFile,DF_SHARE,0)) to liOpen
     else move 1 to liOpen
     if liOpen begin
       get iCreate_FileDef_Object to liObj
@@ -940,9 +940,9 @@ class cFdx is a cArray
     repeat
       get_attribute DF_FILE_NEXT_USED of liFile to liFile
       if liFile begin
-        if lsRootName eq (uppercase(API_AttrValue_FILELIST(DF_FILE_ROOT_NAME,liFile))) send Read_File_Definition_Again liFile
+        if (lsRootName = (uppercase(API_AttrValue_FILELIST(DF_FILE_ROOT_NAME,liFile)))) send Read_File_Definition_Again liFile
       end
-    until liFile eq 0
+    until (liFile = 0)
   end_procedure
 
   procedure Read_Current_Filelist integer liReadMode // FDX_ALL_OPEN FDX_ALL_FILES FDX_FROM_SET
@@ -956,19 +956,19 @@ class cFdx is a cArray
     set psTitle    to ""
     send Read_Global_Attributes
     send Read_Other_Attributes
-    if liReadMode eq FDX_ALL_OPEN begin
+    if (liReadMode = FDX_ALL_OPEN) begin
       move 0 to liFile
       repeat
         get_attribute DF_FILE_NEXT_OPENED of liFile to liFile
         if liFile send Read_File_Definition liFile
-      until liFile eq 0
+      until (liFile = 0)
     end
-    if liReadMode eq FDX_ALL_FILES begin
+    if (liReadMode = FDX_ALL_FILES) begin
       move 0 to liFile
       repeat
         get_attribute DF_FILE_NEXT_USED of liFile to liFile
         if liFile send Read_File_Definition liFile
-      until liFile eq 0
+      until (liFile = 0)
     end
     send Read_Driver_Information // We wait until here because at this point drivers have been loaded in order to open the files that were included
     set piDataOrigin to FDX_REAL_WORLD
@@ -1013,7 +1013,7 @@ class cFdx is a cArray
     send Wait_SetText2 ""
     move (SEQ_ReadLn(liChannel)) to lsTemp
     set piReadResult to 0
-    if lsTemp eq (psVersion(self)) begin
+    if (lsTemp = (psVersion(self))) begin
       send reset
       set piReadMode to (SEQ_ReadLn(liChannel))
       set psIdTag    to (SEQ_ReadLn(liChannel))
@@ -1024,7 +1024,7 @@ class cFdx is a cArray
       move 0 to liSeqEof
       repeat
         readln channel liChannel lsTemp
-        if lsTemp eq "END.OF.FILELIST.CFG" move 1 to liSeqEof
+        if (lsTemp = "END.OF.FILELIST.CFG") move 1 to liSeqEof
         else begin
           move lsTemp to liFile
           readln lsRootName
@@ -1032,7 +1032,7 @@ class cFdx is a cArray
           readln lsDisplayName
         end
         if (seqeof) move 1 to liSeqEof
-        ifnot liSeqEof begin
+        If (Not(liSeqEof)) begin
           set psRootName.i    liFile to lsRootName
           set psDFName.i      liFile to lsDFName
           set psDisplayName.i liFile to lsDisplayName
@@ -1082,7 +1082,7 @@ class cFdx is a cArray
     get row_count to liMax
     for liFile from 1 to (liMax-1)
       move (psRootName.i(self,liFile)) to lsRootName
-      if lsRootName ne "" begin
+      if (lsRootName <> "") begin
         writeln channel liChannel (string(liFile))
         writeln (psRootName.i(self,liFile))
         writeln (psDFName.i(self,liFile))
@@ -1110,7 +1110,7 @@ class cFdx is a cArray
     get row_count to liMax
     for liFile from 1 to (liMax-1)
       move (psRootName.i(self,liFile)) to lsRootName
-      if lsRootName ne "" send liMsg to liObj liFile lsRootName (psDFName.i(self,liFile)) (psDisplayName.i(self,liFile)) (aux_value(self,liFile))
+      if (lsRootName <> "") send liMsg to liObj liFile lsRootName (psDFName.i(self,liFile)) (psDisplayName.i(self,liFile)) (aux_value(self,liFile))
     loop
   end_procedure
   //> Call back for one specified file
@@ -1138,14 +1138,14 @@ class cFdx is a cArray
   function AttrValue_FILELIST integer liAttr integer liFile returns string
     string lsStr
     move "" to lsStr
-    if liAttr eq DF_FILE_ROOT_NAME    move (psRootName.i(self,liFile)) to lsStr
-    if liAttr eq DF_FILE_LOGICAL_NAME move (psDFName.i(self,liFile)) to lsStr
-    if liAttr eq DF_FILE_DISPLAY_NAME move (psDisplayName.i(self,liFile)) to lsStr
+    if (liAttr = DF_FILE_ROOT_NAME) move (psRootName.i(self,liFile)) to lsStr
+    if (liAttr = DF_FILE_LOGICAL_NAME) move (psDFName.i(self,liFile)) to lsStr
+    if (liAttr = DF_FILE_DISPLAY_NAME) move (psDisplayName.i(self,liFile)) to lsStr
     move (rtrim(lsStr)) to lsStr
-    if lsStr ne "" function_return lsStr
-    if liAttr eq DF_FILE_ROOT_NAME    function_return ("FILE"+string(liFile))
-    if liAttr eq DF_FILE_LOGICAL_NAME function_return ("DFFILE"+string(liFile))
-    if liAttr eq DF_FILE_DISPLAY_NAME function_return ("File"+string(liFile))
+    if (lsStr <> "") function_return lsStr
+    if (liAttr = DF_FILE_ROOT_NAME) function_return ("FILE"+string(liFile))
+    if (liAttr = DF_FILE_LOGICAL_NAME) function_return ("DFFILE"+string(liFile))
+    if (liAttr = DF_FILE_DISPLAY_NAME) function_return ("File"+string(liFile))
     function_return t.fdx.attr_not_avail
   end_function
   function AttrValue_IsEmpty integer liFile returns integer
@@ -1163,7 +1163,7 @@ class cFdx is a cArray
     integer liObj
     get piFileDefObject.i liFile to liObj
     if liObj function_return (sAttrValueField.ii(liObj,liAttr,liField))
-    if liAttr eq DF_FIELD_NAME function_return ("FIELD"+string(liField))
+    if (liAttr = DF_FIELD_NAME) function_return ("FIELD"+string(liField))
     function_return t.fdx.attr_not_avail
   end_function
   function AttrValue_INDEX integer liAttr integer liFile integer liIndex returns string
@@ -1197,18 +1197,18 @@ class cFdx is a cArray
     function_return 0
   end_function
   function AttrValue_FLSTNAV integer liAttr integer liFile returns string
-    if liAttr eq DF_FILE_NEXT_OPENED function_return t.fdx.attr_not_avail
-    if liAttr eq DF_FILE_NEXT_USED begin
+    if (liAttr = DF_FILE_NEXT_OPENED) function_return t.fdx.attr_not_avail
+    if (liAttr = DF_FILE_NEXT_USED) begin
       repeat
         increment liFile
-        if (psRootName.i(self,liFile)) ne "" function_return liFile
+        if ((psRootName.i(self,liFile)) <> "") function_return liFile
       until (liFile>FILELIST_MAX_ENTRY)
       function_return 0
     end
-    if liAttr eq DF_FILE_NEXT_EMPTY begin
+    if (liAttr = DF_FILE_NEXT_EMPTY) begin
       repeat
         increment liFile
-        if (psRootName.i(self,liFile)) eq "" function_return liFile
+        if ((psRootName.i(self,liFile)) = "") function_return liFile
       until (liFile>FILELIST_MAX_ENTRY)
       function_return 0
     end
@@ -1249,7 +1249,7 @@ class cFdx is a cArray
         get AttrValue_FILELIST DF_FILE_ROOT_NAME liFile to lsTestRoot
         move (uppercase(lsTestRoot)) to lsTestRoot
         if liRootOfRoot get DBMS_StripPathAndDriver lsTestRoot to lsTestRoot
-        if lsTestRoot eq lsRootName function_return liFile
+        if (lsTestRoot = lsRootName) function_return liFile
       end
     until (not(liFile))
     //function_return 0
@@ -1266,7 +1266,7 @@ class cFdx is a cArray
       if liFile begin
         get AttrValue_FILELIST DF_FILE_LOGICAL_NAME liFile to lsTestLogicalName
         move (uppercase(lsTestLogicalName)) to lsTestLogicalName
-        if lsTestLogicalName eq lsLogicalName function_return liFile
+        if (lsTestLogicalName = lsLogicalName) function_return liFile
       end
     until (not(liFile))
     //function_return 0
@@ -1285,7 +1285,7 @@ class cFdx is a cArray
     repeat
       get iFindRootName.sii lsRootName liFile 0 to liFile
       if (liFile<>0 and liFile<>liExcludeFile) move (AddIntegerToString(lsRval,liFile)) to lsRval
-    until liFile eq 0
+    until (liFile = 0)
     function_return lsRval
   end_function
 end_class // cFDX

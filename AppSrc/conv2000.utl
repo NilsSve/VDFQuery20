@@ -46,7 +46,7 @@ class cConv2000 is a cSetOfTables
     move (FDX_AttrValue_FILE(0,DF_FILE_NUMBER_FIELDS,20)) to iMax
     for iField from 1 to iMax
       move (FDX_AttrValue_FIELD(0,DF_FIELD_TYPE,20,iField)) to iType
-      if iType eq DF_DATE set value of hoDateFields item (item_count(hoDateFields)) to iField
+      if (iType = DF_DATE) set value of hoDateFields item (item_count(hoDateFields)) to iField
     loop
   end_procedure
 
@@ -67,7 +67,7 @@ class cConv2000 is a cSetOfTables
     string sRootName
 
     GET_DATE_ATTRIBUTE Date4_State to lbDate4State
-    SET_DATE_ATTRIBUTE Date4_State to DFFALSE
+    // SET_DATE_ATTRIBUTE Date4_State to DFFALSE // no longer needed
 
     move (oDateFields(self)) to hoDateFields
     move (oDateFieldValues(self)) to hoDateFieldValues
@@ -81,10 +81,10 @@ class cConv2000 is a cSetOfTables
 
     get piUnlockRecordCount to iUnlockCount
 
-    if iUnlockCount eq -1 move (DBMS_OpenFileAs(sRootName,iFile,DF_EXCLUSIVE,0)) to iOpen
+    if (iUnlockCount = -1) move (DBMS_OpenFileAs(sRootName,iFile,DF_EXCLUSIVE,0)) to iOpen
     else move (DBMS_OpenFileAs(sRootName,iFile,DF_SHARE,0)) to iOpen
 
-    if iOpen ne DBMS_DRIVER_ERROR begin
+    if (iOpen <> DBMS_DRIVER_ERROR) begin
       get FDX_AttrValue_FILE 0 DF_FILE_RECORDS_USED iFile to iMaxRec
 
       send priv.DoFindDateFields
@@ -92,7 +92,7 @@ class cConv2000 is a cSetOfTables
       if iMax begin // If there's any date fields at all
         send UpdateWait1 to iCallbackObj sRootName
         decrement iMax
-        if iUnlockCount le 0 begin
+        if (iUnlockCount <= 0) begin
           clear 20
           if (iUnlockCount=0 or iUnlockCount=-1) lock // 'One transaction' or 'exclusive'
 
@@ -114,17 +114,17 @@ class cConv2000 is a cSetOfTables
                 else set value of hoDateFieldValues item iItm to (date(iDate))
               loop
               if iNeedsConverting begin
-                if iUnlockCount eq -2 reread iFile
+                if (iUnlockCount = -2) reread iFile
                 for iItm from 0 to iMax
                   get value of hoDateFields item iItm to iField
                   set_field_value iFile iField to (value(hoDateFieldValues,iItm))
                 loop
                 saverecord iFile
                 increment iRecordUpdateCount
-                if iUnlockCount eq -2 unlock
+                if (iUnlockCount = -2) unlock
               end
               increment iRecordCount
-              if (iRecordCount/50*50) eq iRecordCount send UpdateWait2 to iCallbackObj (string(iRecordCount)+"/"+string(iMaxRec))
+              if ((iRecordCount/50*50) = iRecordCount) send UpdateWait2 to iCallbackObj (string(iRecordCount)+"/"+string(iMaxRec))
             end
           until (not(iFound))
           if (iUnlockCount=0 or iUnlockCount=-1) unlock
@@ -138,7 +138,7 @@ class cConv2000 is a cSetOfTables
     else set piStatus.i iRow to Y2K_COULD_NOT_OPEN
     set piAux1.i iRow to iMaxRec
     set piAux2.i iRow to iDateConvCount
-    SET_DATE_ATTRIBUTE Date4_State to lbDate4State
+    // SET_DATE_ATTRIBUTE Date4_State to lbDate4State // no longer needed
   end_procedure
 
   procedure DoConv

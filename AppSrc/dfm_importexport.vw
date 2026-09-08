@@ -34,6 +34,7 @@ object oDFM_ImportExport_Confirm is a aps.ModalPanel label "Dump/LoadData - Conf
     set piTextSourceImage to DFM.ImportExportConfirmDescription.N
   end_object
   send aps_goto_max_row
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oGrid is a aps.Grid
     set peAnchors to (anTop+anLeft+anRight+anBottom)
     set peResizeColumn to rcAll
@@ -54,7 +55,7 @@ object oDFM_ImportExport_Confirm is a aps.ModalPanel label "Dump/LoadData - Conf
       integer liRval liColumns
       get Grid_Columns self to liColumns
       forward get msg_item_change liItm1 liItm2 to liRval
-      if (liItm1/liColumns) ne (liItm2/liColumns) send row_change (liItm1/liColumns) (liItm2/liColumns)
+      if ((liItm1/liColumns) <> (liItm2/liColumns)) send row_change (liItm1/liColumns) (liItm2/liColumns)
       procedure_return liRval
     end_procedure
 
@@ -72,7 +73,7 @@ object oDFM_ImportExport_Confirm is a aps.ModalPanel label "Dump/LoadData - Conf
           get bMappingSpecified.i of lhArr liRow to lbMappingSpecified
           if lbExport move "Ready" to lsStatus
           else begin
-            ifnot (pbImportFileFound.i(lhArr,liRow)) move "No file" to lsStatus
+            If (Not((pbImportFileFound.i(lhArr,liRow)))) move "No file" to lsStatus
             else if (pbDefinitionMatch.i(lhArr,liRow)) move "Ready" to lsStatus
             else begin
               if lbMappingSpecified move "Ready" to lsStatus
@@ -126,7 +127,7 @@ object oDFM_ImportExport_Confirm is a aps.ModalPanel label "Dump/LoadData - Conf
           if lbImport begin
             if lbExport move "Ready" to lsStatus
             else begin
-              ifnot (pbImportFileFound.i(lhArr,liRow)) begin
+              If (Not((pbImportFileFound.i(lhArr,liRow)))) begin
                 move "No file" to lsStatus
                 set pbNoShowStoppers to false
               end
@@ -284,7 +285,7 @@ object oDFM_ImportExport_View is a aps.View label "Dump/Load Data"
         if (lbImport and not(lbExport)) get SEQ_ValidateFolder lsFolder VALIDFOLDER_CREATE_FALSE 0 to liError
         if lbExport get SEQ_ValidateFolder lsFolder VALIDFOLDER_CREATE_PROMPT 0 to liError
 
-        ifnot liError begin
+        If (Not(liError)) begin
           get object_id of DFM_IE_ControlBlock to lhControl
           set pbExport of lhControl to lbExport
           set pbErase  of lhControl to lbErase
@@ -341,7 +342,7 @@ object oDFM_ImportExport_View is a aps.View label "Dump/Load Data"
     integer lhControl
     if (DFMatrix_RealData_Check()) begin
       get object_id of DFM_IE_ControlBlock to lhControl
-      ifnot (active_state(self)) begin
+      If (Not((active_state(self)))) begin
         set checked_state of oExportCb to (pbExport(lhControl))
         set checked_state of oEraseCb  to (pbErase(lhControl))
         set checked_state of oImportCb to (pbImport(lhControl))
@@ -354,4 +355,3 @@ object oDFM_ImportExport_View is a aps.View label "Dump/Load Data"
   end_procedure
 end_object // oDFM_ImportExport_View
 //send popup of oDFM_ImportExport_View
-

@@ -7,7 +7,7 @@
 Use VdfBase.pkg
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  #WARNING -1 // Suspend warnings
+  // #WARNING -1 // Suspend warnings
 #ENDIF
 
 Use aps.pkg        // Auto Position and Sizing classes for Visual DataFlex
@@ -138,9 +138,9 @@ object TestDate_Client is an aps.ModalPanel label "Test date routines"
         date date#
         get value of (frm(grp1(self))) item 0 to date#
         get current_radio to itm#
-        if itm# eq 0 set_attribute df_date_format to DF_DATE_USA
-        if itm# eq 1 set_attribute df_date_format to DF_DATE_EUROPEAN
-        if itm# eq 2 set_attribute df_date_format to DF_DATE_MILITARY
+        if (itm# = 0) set_attribute df_date_format to DF_DATE_USA
+        if (itm# = 1) set_attribute df_date_format to DF_DATE_EUROPEAN
+        if (itm# = 2) set_attribute df_date_format to DF_DATE_MILITARY
         set value of (frm(grp1(self))) item 0 to date#
       end_procedure
       procedure notify_select_state integer to# integer from#
@@ -150,9 +150,9 @@ object TestDate_Client is an aps.ModalPanel label "Test date routines"
       procedure initialize
         integer date_format#
         get_attribute df_date_format to date_format#
-        if date_format# eq DF_DATE_USA      set current_radio to 0
-        if date_format# eq DF_DATE_EUROPEAN set current_radio to 1
-        if date_format# eq DF_DATE_MILITARY set current_radio to 2
+        if (date_format# = DF_DATE_USA) set current_radio to 0
+        if (date_format# = DF_DATE_EUROPEAN) set current_radio to 1
+        if (date_format# = DF_DATE_MILITARY) set current_radio to 2
       end_procedure
       send initialize
     end_object
@@ -162,7 +162,7 @@ object TestDate_Client is an aps.ModalPanel label "Test date routines"
         procedure change_date4_state
           integer st#
           get select_state item 0 to st#
-          set_date_attribute date4_state to st#
+          // set_date_attribute date4_state to st# // no longer needed
         end_procedure
         procedure onchange
           send change_date4_state

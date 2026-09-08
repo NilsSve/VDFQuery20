@@ -93,7 +93,7 @@
 //     may be converted to the type indicated in parenthesis.
 
 
-use ui
+use ui.pkg
 
 enumeration_list
   define FOCUS_OK            // Bool     Did this work at all?
@@ -119,7 +119,7 @@ function Focus_Find_Scoped_Parent global integer obj# returns integer
   integer st#
   repeat
     get scope_state of obj# to st#
-    ifnot st# get parent of obj# to obj#
+    If (Not(st#)) get parent of obj# to obj#
   until (st# or obj#=desktop)
   function_return obj#
 end_function
@@ -127,7 +127,7 @@ end_function
 procedure Focus_Analyze_DEO global integer deo# integer itm#
   integer st# file# fld# dd# tmp# scoped_parent#
   send delete_data to FocusInf_Array#
-  if deo# gt desktop begin
+  if (deo# > desktop) begin
     set value of FocusInf_Array# item FOCUS_OK to dfTrue
     set value of FocusInf_Array# item FOCUS_DEO_ID to deo#
     move (Focus_Find_Scoped_Parent(deo#)) to scoped_parent#
@@ -162,7 +162,7 @@ end_procedure
 procedure Focus_Analyze_Focus global
   integer focus# itm# st#
   get focus of desktop to focus#
-  if focus# gt desktop begin
+  if (focus# > desktop) begin
     get delegation_mode of focus# to st#
     set delegation_mode of focus# to NO_DELEGATE_OR_ERROR
     get current_item of focus# to itm#

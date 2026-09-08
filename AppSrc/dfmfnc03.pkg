@@ -5,6 +5,7 @@ Use Strings.nui  // String manipulation for VDF
 Use GridUtil.utl // Grid and List utilities
 
 Use wvaW32fh.pkg // Wil's windows routines
+Use cCJGrid.pkg
 
 /DfmFnc03 // Max 60 characters *************************
 Clicking the 'Search files' button will detect index files
@@ -41,9 +42,9 @@ object oFindStrayIndexFiles_Arr is a cArray
     string fn# path# source# target#
     move (root#+".K"+string(idx#)) to fn#
     get SEQ_FindFileAlongDFPath fn# to path#
-    if path# ne "" begin // Meaning we found it!
-      if (right(path#,1)) eq (sysconf(SYSCONF_DIR_SEPARATOR)) move (StringLeftBut(path#,1)) to path#
-      if (lowercase(path#)) ne (lowercase(home#)) begin
+    if (path# <> "") begin // Meaning we found it!
+      if ((right(path#,1)) = (sysconf(SYSCONF_DIR_SEPARATOR))) move (StringLeftBut(path#,1)) to path#
+      if ((lowercase(path#)) <> (lowercase(home#))) begin
         move (SEQ_ComposeAbsoluteFileName(path#,fn#)) to source#
         move (SEQ_ComposeAbsoluteFileName(home#,fn#)) to target#
         move (SEQ_FileExists(target#)) to exists#
@@ -58,7 +59,7 @@ object oFindStrayIndexFiles_Arr is a cArray
     move (fdx.object_id(0)) to oFDX#
     if oFDX# begin
       move (sDatPath.i(oFDX#,file#)) to root#
-      if (right(lowercase(root#),4)) eq ".dat" begin
+      if ((right(lowercase(root#),4)) = ".dat") begin
         move (StringLeftBut(root#,4)) to root#
         move (SEQ_ExtractPathFromFileName(root#)) to home#
         move (SEQ_RemovePathFromFileName(root#)) to root#
@@ -78,7 +79,7 @@ object oFindStrayIndexFiles_Arr is a cArray
     string source# target#
     get row_count to max#
     for row# from 0 to (max#-1)
-      if (piType.i(self,row#)) eq 0 begin
+      if ((piType.i(self,row#)) = 0) begin
         get piTargetFileAlreadyExists.i row# to exists#
         get piOverWrite.i               row# to overwrite#
         if (not(exists#) or overwrite#) begin
@@ -115,8 +116,8 @@ class cFindStrayIndexFiles_Grid is a aps.Grid
     on_key key_ctrl+key_r send sort_data
   end_procedure
   function sTypeText.i integer type# returns string
-    if type# eq 0 function_return "MOV"
-    if type# eq 1 function_return "ERR"
+    if (type# = 0) function_return "MOV"
+    if (type# = 1) function_return "ERR"
     function_return "?"
   end_function
   procedure sort_data.i integer column#
@@ -149,15 +150,40 @@ object oFindStrayIndexFiles_Vw is a aps.ModalPanel label "Find stray index files
   set Border_Style to BORDER_THICK   // Make panel resizeable
   set pMinimumSize to 50 130 // Resize to no less than this!
   on_key kcancel send close_panel
-  object oLst is a cFindStrayIndexFiles_Grid
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFindStrayIndexFiles_Grid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 150 0
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   procedure Search_Files
     send cursor_wait to (cursor_control(self))
     send Search_Files to (oFindStrayIndexFiles_Arr(self))
     send fill_list to (oLst(self))
     send cursor_ready to (cursor_control(self))
-    ifnot (item_count(oLst(self))) send obs "No index files are astray"
+    If (Not((item_count(oLst(self))))) send obs "No index files are astray"
   end_procedure
   procedure Move_Files
     send cursor_wait to (cursor_control(self))

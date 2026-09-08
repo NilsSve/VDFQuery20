@@ -37,7 +37,7 @@
 // If property delegate_object is 0 the get_attribute command is used.
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 // The format of the commands below is the following:
@@ -312,13 +312,13 @@ class cIndexAnalyzer is an array
     string rval#
     get pMainFile to file#
     get attr_field_type file# fld# to type#
-    if type# eq DF_OVERLAP begin
+    if (type# = DF_OVERLAP) begin
       move "" to rval#
       get attr_file_number_fields file# to max#
       for field# from 1 to max#
-        if field# ne fld# begin
+        if (field# <> fld#) begin
           get attr_field_type file# field# to type#
-          if type# ne DF_OVERLAP begin
+          if (type# <> DF_OVERLAP) begin
             get attr_field_overlap file# fld# field# to overlaps#
             if overlaps# move (rval#+pad(string(field#),4)) to rval#
           end
@@ -379,14 +379,14 @@ class cIndexAnalyzer is an array
     get value item idx# to str#
     move (length(str#)/4) to max#
     for segment# from 0 to (max#-1)
-      if fld# eq (integer(mid(str#,4,segment#*4+1))) function_return (segment#+1)
+      if (fld# = (integer(mid(str#,4,segment#*4+1)))) function_return (segment#+1)
     loop
   end_function
 
   function idx_best_index returns integer
     integer idx#
     get idx_next_unique_index 0 to idx#
-    ifnot idx# get idx_next_nonunique_index 0 to idx#
+    If (Not(idx#)) get idx_next_nonunique_index 0 to idx#
     function_return idx#
   end_function
 
@@ -399,14 +399,14 @@ class cIndexAnalyzer is an array
       if (length(str#)) begin
         move (left(str#,4)) to fld#
         get attr_field_type file# fld# to type#
-        if type# eq df_overlap begin // Translate if overlap
+        if (type# = df_overlap) begin // Translate if overlap
           get field_translate_overlap fld# to str#
           move (left(str#,4)) to fld#
           get attr_field_type file# fld# to type#
         end
-        if type# eq df_ascii begin // Examine the first segment
+        if (type# = df_ascii) begin // Examine the first segment
           get attr_field_length file# fld# to len#
-          if len# ge (p_min_len_descr_field(self)) function_return idx#
+          if (len# >= (p_min_len_descr_field(self))) function_return idx#
         end
       end
     loop
@@ -418,7 +418,7 @@ class cIndexAnalyzer is an array
     get attr_file_number_fields file# to max#
     for fld# from (fld#+1) to max#
       get attr_field_index file# fld# to idx#
-      ifnot idx# begin
+      If (Not(idx#)) begin
         get attr_field_type file# fld# to type#
         if (type#<>df_overlap and type#<>df_text and type#<>df_binary) function_return fld#
       end
@@ -432,11 +432,11 @@ class cIndexAnalyzer is an array
     get p_min_len_descr_field to min_len#
     for fld# from (fld#+1) to max#
       get attr_field_type file# fld# to type#
-      if type# eq df_ascii begin
+      if (type# = df_ascii) begin
         get attr_field_length file# fld# to len#
         if (len#>=min_len#) begin
           get attr_field_index file# fld# to idx#
-          ifnot idx# function_return fld#
+          If (Not(idx#)) function_return fld#
         end
       end
     loop
@@ -471,7 +471,7 @@ class cIndexAnalyzer is an array
         move (left(idx_definition(self,idx#),len#)) to ms_fields#
         move 1 to ok#
         for segment# from 0 to (max#-1)
-          ifnot (mid(fields#,4,segment#*4+1)) in ms_fields# move 0 to ok#
+          If (Not(ms_fields# contains (mid(fields#,4,segment#*4+1)))) move 0 to ok#
         loop
         if ok# function_return idx#
       end
@@ -502,7 +502,7 @@ class cIndexAnalyzer is an array
     move (length(str#)/4) to max#
     for segment# from 0 to (max#-1)
       move (mid(str#,4,segment#*4+1)) to fld#
-      ifnot fld# in rval# move (rval#+fld#) to rval#
+      If (Not(rval# contains fld#)) move (rval#+fld#) to rval#
     loop
     function_return rval#
   end_function
@@ -538,12 +538,12 @@ class cIndexAnalyzer is an array
     integer file# fld# segment# max#
     get pMainFile to file#
     get value item idx# to str#
-    if str# ne "" begin
+    if (str# <> "") begin
       if remove_rec# get field_remove_recnum str#      to str#
       if ovl#        get field_translate_overlaps str# to str#
       move (length(str#)/4) to max#
       for segment# from 0 to (max#-1)
-        if segment# ne 0 move (rval#+", ") to rval#
+        if (segment# <> 0) move (rval#+", ") to rval#
         move (mid(str#,4,segment#*4+1)) to fld#
         //get_attribute DF_FIELD_NAME of file# fld# to fname#
         get attr_field_name file# fld# to fname#
@@ -565,15 +565,15 @@ class cIndexAnalyzer is an array
       get_field_value file# fld# to fval#
       function_return fval#
     end
-    if str# ne "" begin
+    if (str# <> "") begin
       if remove_rec# get field_remove_recnum str#      to str#
       if ovl#        get field_translate_overlaps str# to str#
       move (length(str#)/4) to max#
       for segment# from 0 to (max#-1)
-        if segment# ne 0 move (rval#+", ") to rval#
+        if (segment# <> 0) move (rval#+", ") to rval#
         move (mid(str#,4,segment#*4+1)) to fld#
         get_field_value file# fld# to fval#
-        trim fval# to fval#
+        Move (Trim(fval#)) to fval#
         move (rval#+fval#) to rval#
       loop
     end
@@ -595,13 +595,13 @@ class cIndexAnalyzer is an array
 
     get idx_next_description_index 0 to descr_idx#
     if descr_idx# begin
-      if descr_idx# eq best_idx# ;
+      if (descr_idx# = best_idx#) ;
          get idx_next_description_index descr_idx# to descr_idx#
     end
 
-    ifnot descr_idx# begin
+    If (Not(descr_idx#)) begin
       get idx_next_description_field_not_index 0 to descr_fld#
-      ifnot descr_idx# get idx_next_field_not_index 0 to descr_fld#
+      If (Not(descr_idx#)) get idx_next_field_not_index 0 to descr_fld#
     end
 
     get idx_next_index 0 to second_best_idx#

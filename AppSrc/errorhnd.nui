@@ -1,7 +1,7 @@
 // Use ErrorHnd.nui // cErrorHandlerRedirector class and oErrorHandlerQuiet object (No User Interface)
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes
 
-use dfError
+use dfError.pkg
 define ErrorHnd$NES for 1 // NES = New Error System
 
 use Version.nui
@@ -146,4 +146,3 @@ end_function
   define ErrorLogTable.data_file       for !1.data_file
   define ErrorLogTable.data_field      for !1.data_field
 #ENDCOMMAND
-

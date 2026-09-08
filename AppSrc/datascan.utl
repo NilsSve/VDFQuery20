@@ -34,7 +34,7 @@ Use Strings.nui  // String manipulation for VDF
 Use Dates.nui    // Date manipulation for VDF and DF3.2
 Use QryExpr.utl  // Expression handling for queries
 
-#REPLACE DATASCAN$TEST        0
+Define DATASCAN$TEST      for 0
 
 #COMMAND DATASCAN$SHOWLN
  #IF DATASCAN$TEST
@@ -42,31 +42,31 @@ Use QryExpr.utl  // Expression handling for queries
  #ENDIF
 #ENDCOMMAND
 
-#REPLACE RS_NO_RELATE         0
-#REPLACE RS_GENERIC_RELATE    1
-#REPLACE RS_CUSTOM_RELATE     2
+Define RS_NO_RELATE       for 0
+Define RS_GENERIC_RELATE  for 1
+Define RS_CUSTOM_RELATE   for 2
 
-#REPLACE SC_COMP_LT           1
-#REPLACE SC_COMP_LE           2
-#REPLACE SC_COMP_EQ           3
-#REPLACE SC_COMP_GE           4
-#REPLACE SC_COMP_GT           5
-#REPLACE SC_COMP_NE           6
-#REPLACE SC_COMP_BETWEEN      7
-#REPLACE SC_COMP_CBETWEEN     8
-#REPLACE SC_COMP_IN           9
-#REPLACE SC_COMP_CIN         10
-#REPLACE SC_COMP_CONTAINS    11
-#REPLACE SC_COMP_CCONTAINS   12
-#REPLACE SC_COMP_NOT_BLANK   13
-#REPLACE SC_COMP_BLANK       14
-#REPLACE SC_COMP_OR_LIST     15 // or-list
+Define SC_COMP_LT         for 1
+Define SC_COMP_LE         for 2
+Define SC_COMP_EQ         for 3
+Define SC_COMP_GE         for 4
+Define SC_COMP_GT         for 5
+Define SC_COMP_NE         for 6
+Define SC_COMP_BETWEEN    for 7
+Define SC_COMP_CBETWEEN   for 8
+Define SC_COMP_IN         for 9
+Define SC_COMP_CIN       for 10
+Define SC_COMP_CONTAINS  for 11
+Define SC_COMP_CCONTAINS for 12
+Define SC_COMP_NOT_BLANK for 13
+Define SC_COMP_BLANK     for 14
+Define SC_COMP_OR_LIST   for 15 // or-list
 
-#REPLACE SC_TYPE_FUNCTION     1
-#REPLACE SC_TYPE_BOOLEAN_EXPR 2
-#REPLACE SC_TYPE_ASCII        3
-#REPLACE SC_TYPE_DATE         4
-#REPLACE SC_TYPE_NUMERIC      5
+Define SC_TYPE_FUNCTION   for 1
+Define SC_TYPE_BOOLEAN_EXPR for 2
+Define SC_TYPE_ASCII      for 3
+Define SC_TYPE_DATE       for 4
+Define SC_TYPE_NUMERIC    for 5
 
 // Function iTranslate_DFTYPE translates from DF attributes to
 // selection criteria types.
@@ -185,7 +185,7 @@ Class cBasicDataScanner is a cArray
 
     // If relates needs to be performed before the iSelect function we must
     // prevent it from happening after as well:
-    ifnot Custom_Sort_State# begin
+    If (Not(Custom_Sort_State#)) begin
       if Custom_Relate_Select# move 0 to Custom_Relate#
       if Generic_Relate_Select# move 0 to Generic_Relate#
     end
@@ -208,17 +208,17 @@ Class cBasicDataScanner is a cArray
     move 0 to fin#
     send initialize
     send scan_starts
-    ifnot IsSystemFile# begin
+    If (Not(IsSystemFile#)) begin
       send jump_in
       if lhDDO send request_read to lhDDO FIRST_RECORD file# ord#
       else vfind file# ord# ge // Find first
     end
-    else indicate found TRUE
+    Move (TRUE) to found
     repeat
-      if (pInterrupted(self)) indicate found FALSE
+      If (pInterrupted(self)) Move (FALSE) to found
       move (found) to found#
       if found# move (not(ijump_out(self))) to found#
-      ifnot found# move 1 to fin#
+      If (Not(found#)) move 1 to fin#
       else begin
         increment pScanCount#
         set pScanCount to pScanCount#
@@ -238,7 +238,7 @@ Class cBasicDataScanner is a cArray
           set pRecordCount to pRecordCount#
         end
         else send record_not_selected
-        if IsSystemFile# indicate found FALSE
+        If (IsSystemFile#) Move (FALSE) to found
         else begin
           if lhDDO send request_read to lhDDO GT file# ord#
           else vfind file# ord# gt // Find next
@@ -246,7 +246,7 @@ Class cBasicDataScanner is a cArray
       end
     until fin#
     if Custom_Sort_State# begin
-      ifnot (pInterrupted(self)) begin
+      If (Not((pInterrupted(self)))) begin
         send sort_items to Custom_Sort_Array# (pCustom_Sort_Dir(self))
         get item_count of Custom_Sort_Array# to max#
         for itm# from 0 to (max#-1)
@@ -441,32 +441,32 @@ Class cSelectionCriteriaArray is a cArray
     string  str1# str2# str_val#
     get item_count to max#
     move 0 to itm#
-    while itm# lt max#
+    while (itm# < max#)
       get value item itm# to composite#
       increment itm#
       move (composite#/16384/16384) to sc_type#
-      if sc_type# eq SC_TYPE_BOOLEAN_EXPR begin
+      if (sc_type# = SC_TYPE_BOOLEAN_EXPR) begin
         get value item itm# to ok# // Overload (expression id)
         get sEvalExpression of (Query_ExprEvaluator(self)) ok# to ok#
-        ifnot ok# function_return 0
+        If (Not(ok#)) function_return 0
         increment itm#
       end
       else begin
-        if sc_type# eq SC_TYPE_FUNCTION begin
+        if (sc_type# = SC_TYPE_FUNCTION) begin
           // In this section variable file# and fld# are treated as obj# and msg#
           move (composite# iand 16383) to file#
           move (composite# iand (16383*16384)) to fld#
           get fld# of file# to ok#
-          ifnot ok# function_return 0
+          If (Not(ok#)) function_return 0
         end
         else begin //
           move (composite# iand 1023) to fld#
           move ((composite# iand (4095*1024))/1024) to file#
           move ((composite# iand (63*4096*1024))/4096/1024) to comp#
 
-          if comp# eq SC_COMP_OR_LIST get value item itm# to lhOrList // or-list
+          if (comp# = SC_COMP_OR_LIST) get value item itm# to lhOrList // or-list
 
-          if sc_type# eq SC_TYPE_ASCII begin
+          if (sc_type# = SC_TYPE_ASCII) begin
             get value item itm# to str1#
             increment itm#
             if (comp#=SC_COMP_BETWEEN or comp#=SC_COMP_CBETWEEN) begin
@@ -475,30 +475,30 @@ Class cSelectionCriteriaArray is a cArray
             end
             //get_field_value file# fld# to str_val#
             move (FieldInf_FieldValue(file#,fld#)) to str_val#
-            if comp# eq SC_COMP_LT        move (str_val#<str1#) to ok#
-            if comp# eq SC_COMP_LE        move (str_val#<=str1#) to ok#
-            if comp# eq SC_COMP_EQ        move (str_val#=str1#) to ok#
-            if comp# eq SC_COMP_GE        move (str_val#>=str1#) to ok#
-            if comp# eq SC_COMP_GT        move (str_val#>str1#) to ok#
-            if comp# eq SC_COMP_NE        move (str_val#<>str1#) to ok#
-            if comp# eq SC_COMP_BETWEEN   move (str_val#>=str1# and str_val#<=str2#) to ok#
-            if comp# eq SC_COMP_IN        begin
-              if str1# in str_val# move 1 to ok#
+            if (comp# = SC_COMP_LT) move (str_val#<str1#) to ok#
+            if (comp# = SC_COMP_LE) move (str_val#<=str1#) to ok#
+            if (comp# = SC_COMP_EQ) move (str_val#=str1#) to ok#
+            if (comp# = SC_COMP_GE) move (str_val#>=str1#) to ok#
+            if (comp# = SC_COMP_GT) move (str_val#>str1#) to ok#
+            if (comp# = SC_COMP_NE) move (str_val#<>str1#) to ok#
+            if (comp# = SC_COMP_BETWEEN) move (str_val#>=str1# and str_val#<=str2#) to ok#
+            if (comp# = SC_COMP_IN) begin
+              if (str_val# contains str1#) move 1 to ok#
               else move 0 to ok#
             end
-            if comp# eq SC_COMP_CONTAINS  move (str_val# contains str1#) to ok#
-            if comp# eq SC_COMP_CBETWEEN  move (str_val#<str1# or str_val#>str2#) to ok#
-            if comp# eq SC_COMP_CIN       begin
+            if (comp# = SC_COMP_CONTAINS) move (str_val# contains str1#) to ok#
+            if (comp# = SC_COMP_CBETWEEN) move (str_val#<str1# or str_val#>str2#) to ok#
+            if (comp# = SC_COMP_CIN) begin
 //            move (not(str1# contains str_val#)) to ok#
-              if str1# in str_val# move 0 to ok#
+              if (str_val# contains str1#) move 0 to ok#
               else move 1 to ok#
             end
-            if comp# eq SC_COMP_CCONTAINS move (not(str_val# contains str1#)) to ok#
-            if comp# eq SC_COMP_NOT_BLANK move (trim(str_val#)<>"") to ok#
-            if comp# eq SC_COMP_BLANK     move (trim(str_val#)="") to ok#
-            if comp# eq SC_COMP_OR_LIST   get bEvalOrListString file# fld# lhOrList str_val# to ok# // or-list
+            if (comp# = SC_COMP_CCONTAINS) move (not(str_val# contains str1#)) to ok#
+            if (comp# = SC_COMP_NOT_BLANK) move (trim(str_val#)<>"") to ok#
+            if (comp# = SC_COMP_BLANK) move (trim(str_val#)="") to ok#
+            if (comp# = SC_COMP_OR_LIST) get bEvalOrListString file# fld# lhOrList str_val# to ok# // or-list
           end
-          If sc_type# eq SC_TYPE_DATE Begin
+          If (sc_type# = SC_TYPE_DATE) Begin
             If (comp#<>SC_COMP_OR_LIST) Begin
                 Get value item itm# to dat1#
             End
@@ -509,17 +509,17 @@ Class cSelectionCriteriaArray is a cArray
             end
             //get_field_value file# fld# to dat_val#
             move (FieldInf_FieldValue(file#,fld#)) to dat_val#
-            if comp# eq SC_COMP_LT       move (dat_val#<dat1#) to ok#
-            if comp# eq SC_COMP_LE       move (dat_val#<=dat1#) to ok#
-            if comp# eq SC_COMP_EQ       move (dat_val#=dat1#) to ok#
-            if comp# eq SC_COMP_GE       move (dat_val#>=dat1#) to ok#
-            if comp# eq SC_COMP_GT       move (dat_val#>dat1#) to ok#
-            if comp# eq SC_COMP_NE       move (dat_val#<>dat1#) to ok#
-            if comp# eq SC_COMP_BETWEEN  move (dat_val#>=dat1# and dat_val#<=dat2#) to ok#
-            if comp# eq SC_COMP_CBETWEEN move (dat_val#<dat1# or dat_val#>dat2#) to ok#
-            if comp# eq SC_COMP_OR_LIST  get bEvalOrListDate file# fld# lhOrList dat_val# to ok# // or-list
+            if (comp# = SC_COMP_LT) move (dat_val#<dat1#) to ok#
+            if (comp# = SC_COMP_LE) move (dat_val#<=dat1#) to ok#
+            if (comp# = SC_COMP_EQ) move (dat_val#=dat1#) to ok#
+            if (comp# = SC_COMP_GE) move (dat_val#>=dat1#) to ok#
+            if (comp# = SC_COMP_GT) move (dat_val#>dat1#) to ok#
+            if (comp# = SC_COMP_NE) move (dat_val#<>dat1#) to ok#
+            if (comp# = SC_COMP_BETWEEN) move (dat_val#>=dat1# and dat_val#<=dat2#) to ok#
+            if (comp# = SC_COMP_CBETWEEN) move (dat_val#<dat1# or dat_val#>dat2#) to ok#
+            if (comp# = SC_COMP_OR_LIST) get bEvalOrListDate file# fld# lhOrList dat_val# to ok# // or-list
           end
-          if sc_type# eq SC_TYPE_NUMERIC begin
+          if (sc_type# = SC_TYPE_NUMERIC) begin
             If (comp#<>SC_COMP_OR_LIST) Begin
                 Get value item itm# to num1#
             End
@@ -530,17 +530,17 @@ Class cSelectionCriteriaArray is a cArray
             end
             //get_field_value file# fld# to num_val#
             move (FieldInf_FieldValue(file#,fld#)) to num_val#
-            if comp# eq SC_COMP_LT       move (num_val#<num1#) to ok#
-            if comp# eq SC_COMP_LE       move (num_val#<=num1#) to ok#
-            if comp# eq SC_COMP_EQ       move (num_val#=num1#) to ok#
-            if comp# eq SC_COMP_GE       move (num_val#>=num1#) to ok#
-            if comp# eq SC_COMP_GT       move (num_val#>num1#) to ok#
-            if comp# eq SC_COMP_NE       move (num_val#<>num1#) to ok#
-            if comp# eq SC_COMP_BETWEEN  move (num_val#>=num1# and num_val#<=num2#) to ok#
-            if comp# eq SC_COMP_CBETWEEN move (num_val#<num1# or num_val#>num2#) to ok#
-            if comp# eq SC_COMP_OR_LIST  get bEvalOrListNumber file# fld# lhOrList num_val# to ok# // or-list
+            if (comp# = SC_COMP_LT) move (num_val#<num1#) to ok#
+            if (comp# = SC_COMP_LE) move (num_val#<=num1#) to ok#
+            if (comp# = SC_COMP_EQ) move (num_val#=num1#) to ok#
+            if (comp# = SC_COMP_GE) move (num_val#>=num1#) to ok#
+            if (comp# = SC_COMP_GT) move (num_val#>num1#) to ok#
+            if (comp# = SC_COMP_NE) move (num_val#<>num1#) to ok#
+            if (comp# = SC_COMP_BETWEEN) move (num_val#>=num1# and num_val#<=num2#) to ok#
+            if (comp# = SC_COMP_CBETWEEN) move (num_val#<num1# or num_val#>num2#) to ok#
+            if (comp# = SC_COMP_OR_LIST) get bEvalOrListNumber file# fld# lhOrList num_val# to ok# // or-list
           end
-          ifnot ok# function_return 0
+          If (Not(ok#)) function_return 0
         end
       end
     end
@@ -558,170 +558,170 @@ Class cSelectionCriteriaArray is a cArray
     move 0 to AnyJumpOut#
     get item_count to max#
     move 0 to itm#
-    while itm# lt (max#-1)
+    while (itm# < (max#-1))
       get value item itm# to composite#
       increment itm#
       move (composite#/16384/16384) to sc_type#
-      if sc_type# eq SC_TYPE_BOOLEAN_EXPR increment itm#
+      if (sc_type# = SC_TYPE_BOOLEAN_EXPR) increment itm#
       else begin
-        if sc_type# ne SC_TYPE_FUNCTION begin
+        if (sc_type# <> SC_TYPE_FUNCTION) begin
           move (composite# iand 1023) to fld#
           move ((composite# iand (4095*1024))/1024) to file#
           move ((composite# iand (63*4096*1024))/4096/1024) to comp#
           move (file#=testfile# and fld#=testfld# and comp#<>SC_COMP_OR_LIST) to hit#
           if hit# begin
             move sc_type# to TestType#
-            if sc_type# eq SC_TYPE_ASCII begin
+            if (sc_type# = SC_TYPE_ASCII) begin
               get value item itm# to str1#
               increment itm#
-              if comp# eq SC_COMP_BETWEEN begin
+              if (comp# = SC_COMP_BETWEEN) begin
                 get value item itm# to str2#
                 increment itm#
               end
-              if comp# eq SC_COMP_LT begin
-                ifnot AnyJumpOut# move str1# to JumpOutStr#
-                else if str1# lt JumpOutStr# move str1# to JumpOutStr#
+              if (comp# = SC_COMP_LT) begin
+                If (Not(AnyJumpOut#)) move str1# to JumpOutStr#
+                else if (str1# < JumpOutStr#) move str1# to JumpOutStr#
                 move 1 to AnyJumpOut#
                 move SC_COMP_LT to JumpOutComp#
               end
-              if comp# eq SC_COMP_LE begin
-                ifnot AnyJumpOut# move str1# to JumpOutStr#
-                else if str1# lt JumpOutStr# move str1# to JumpOutStr#
+              if (comp# = SC_COMP_LE) begin
+                If (Not(AnyJumpOut#)) move str1# to JumpOutStr#
+                else if (str1# < JumpOutStr#) move str1# to JumpOutStr#
                 move 1 to AnyJumpOut#
                 move SC_COMP_LE to JumpOutComp#
               end
-              if comp# eq SC_COMP_EQ begin
-                ifnot AnyJumpOut# move str1# to JumpOutStr#
-                else if str1# lt JumpOutStr# move str1# to JumpOutStr#
-                ifnot AnyJumpIn# move str1# to JumpInStr#
-                else if str1# gt JumpInStr# move str1# to JumpInStr#
+              if (comp# = SC_COMP_EQ) begin
+                If (Not(AnyJumpOut#)) move str1# to JumpOutStr#
+                else if (str1# < JumpOutStr#) move str1# to JumpOutStr#
+                If (Not(AnyJumpIn#)) move str1# to JumpInStr#
+                else if (str1# > JumpInStr#) move str1# to JumpInStr#
                 move 1 to AnyJumpOut#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GE to JumpInComp#
                 move SC_COMP_LE to JumpOutComp#
               end
-              if comp# eq SC_COMP_GE begin
-                ifnot AnyJumpIn# move str1# to JumpInStr#
-                else if str1# gt JumpInStr# move str1# to JumpInStr#
+              if (comp# = SC_COMP_GE) begin
+                If (Not(AnyJumpIn#)) move str1# to JumpInStr#
+                else if (str1# > JumpInStr#) move str1# to JumpInStr#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GE to JumpInComp#
               end
-              if comp# eq SC_COMP_GT begin
-                ifnot AnyJumpIn# move str1# to JumpInStr#
-                else if str1# gt JumpInStr# move str1# to JumpInStr#
+              if (comp# = SC_COMP_GT) begin
+                If (Not(AnyJumpIn#)) move str1# to JumpInStr#
+                else if (str1# > JumpInStr#) move str1# to JumpInStr#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GT to JumpInComp#
               end
-              if comp# eq SC_COMP_BETWEEN begin
-                ifnot AnyJumpIn# move str1# to JumpInStr#
-                else if str1# gt JumpInStr# move str1# to JumpInStr#
-                ifnot AnyJumpOut# move str2# to JumpOutStr#
-                else if str2# lt JumpOutStr# move str2# to JumpOutStr#
+              if (comp# = SC_COMP_BETWEEN) begin
+                If (Not(AnyJumpIn#)) move str1# to JumpInStr#
+                else if (str1# > JumpInStr#) move str1# to JumpInStr#
+                If (Not(AnyJumpOut#)) move str2# to JumpOutStr#
+                else if (str2# < JumpOutStr#) move str2# to JumpOutStr#
                 move 1 to AnyJumpOut#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GE to JumpInComp#
                 move SC_COMP_LE to JumpOutComp#
               end
             end // SC_TYPE_ASCII
-            if sc_type# eq SC_TYPE_DATE begin
+            if (sc_type# = SC_TYPE_DATE) begin
               if (item_count(self)>itm#) get value item itm# to Dat1#
               else move 06/05/1962 to Dat1# // Let's just assume that you haven't a single data item on my birth date.
               increment itm#
-              if comp# eq SC_COMP_BETWEEN begin
+              if (comp# = SC_COMP_BETWEEN) begin
                 get value item itm# to Dat2#
                 increment itm#
               end
-              if comp# eq SC_COMP_LT begin
-                ifnot AnyJumpOut# move Dat1# to JumpOutDat#
-                else if Dat1# lt JumpOutDat# move Dat1# to JumpOutDat#
+              if (comp# = SC_COMP_LT) begin
+                If (Not(AnyJumpOut#)) move Dat1# to JumpOutDat#
+                else if (Dat1# < JumpOutDat#) move Dat1# to JumpOutDat#
                 move 1 to AnyJumpOut#
                 move SC_COMP_LT to JumpOutComp#
               end
-              if comp# eq SC_COMP_LE begin
-                ifnot AnyJumpOut# move Dat1# to JumpOutDat#
-                else if Dat1# lt JumpOutDat# move Dat1# to JumpOutDat#
+              if (comp# = SC_COMP_LE) begin
+                If (Not(AnyJumpOut#)) move Dat1# to JumpOutDat#
+                else if (Dat1# < JumpOutDat#) move Dat1# to JumpOutDat#
                 move 1 to AnyJumpOut#
                 move SC_COMP_LE to JumpOutComp#
               end
-              if comp# eq SC_COMP_EQ begin
-                ifnot AnyJumpOut# move Dat1# to JumpOutDat#
-                else if Dat1# lt JumpOutDat# move Dat1# to JumpOutDat#
-                ifnot AnyJumpIn# move Dat1# to JumpInDat#
-                else if Dat1# gt JumpInDat# move Dat1# to JumpInDat#
+              if (comp# = SC_COMP_EQ) begin
+                If (Not(AnyJumpOut#)) move Dat1# to JumpOutDat#
+                else if (Dat1# < JumpOutDat#) move Dat1# to JumpOutDat#
+                If (Not(AnyJumpIn#)) move Dat1# to JumpInDat#
+                else if (Dat1# > JumpInDat#) move Dat1# to JumpInDat#
                 move 1 to AnyJumpOut#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GE to JumpInComp#
                 move SC_COMP_LE to JumpOutComp#
               end
-              if comp# eq SC_COMP_GE begin
-                ifnot AnyJumpIn# move Dat1# to JumpInDat#
-                else if Dat1# gt JumpInDat# move Dat1# to JumpInDat#
+              if (comp# = SC_COMP_GE) begin
+                If (Not(AnyJumpIn#)) move Dat1# to JumpInDat#
+                else if (Dat1# > JumpInDat#) move Dat1# to JumpInDat#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GE to JumpInComp#
               end
-              if comp# eq SC_COMP_GT begin
-                ifnot AnyJumpIn# move Dat1# to JumpInDat#
-                else if Dat1# gt JumpInDat# move Dat1# to JumpInDat#
+              if (comp# = SC_COMP_GT) begin
+                If (Not(AnyJumpIn#)) move Dat1# to JumpInDat#
+                else if (Dat1# > JumpInDat#) move Dat1# to JumpInDat#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GT to JumpInComp#
               end
-              if comp# eq SC_COMP_BETWEEN begin
-                ifnot AnyJumpIn# move Dat1# to JumpInDat#
-                else if Dat1# gt JumpInDat# move Dat1# to JumpInDat#
-                ifnot AnyJumpOut# move Dat2# to JumpOutDat#
-                else if Dat2# lt JumpOutDat# move Dat2# to JumpOutDat#
+              if (comp# = SC_COMP_BETWEEN) begin
+                If (Not(AnyJumpIn#)) move Dat1# to JumpInDat#
+                else if (Dat1# > JumpInDat#) move Dat1# to JumpInDat#
+                If (Not(AnyJumpOut#)) move Dat2# to JumpOutDat#
+                else if (Dat2# < JumpOutDat#) move Dat2# to JumpOutDat#
                 move 1 to AnyJumpOut#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GE to JumpInComp#
                 move SC_COMP_LE to JumpOutComp#
               end
             end // SC_TYPE_DATE
-            if sc_type# eq SC_TYPE_NUMERIC begin
+            if (sc_type# = SC_TYPE_NUMERIC) begin
               get value item itm# to Num1#
               increment itm#
-              if comp# eq SC_COMP_BETWEEN begin
+              if (comp# = SC_COMP_BETWEEN) begin
                 get value item itm# to Num2#
                 increment itm#
               end
-              if comp# eq SC_COMP_LT begin
-                ifnot AnyJumpOut# move Num1# to JumpOutNum#
-                else if Num1# lt JumpOutNum# move Num1# to JumpOutNum#
+              if (comp# = SC_COMP_LT) begin
+                If (Not(AnyJumpOut#)) move Num1# to JumpOutNum#
+                else if (Num1# < JumpOutNum#) move Num1# to JumpOutNum#
                 move 1 to AnyJumpOut#
                 move SC_COMP_LT to JumpOutComp#
               end
-              if comp# eq SC_COMP_LE begin
-                ifnot AnyJumpOut# move Num1# to JumpOutNum#
-                else if Num1# lt JumpOutNum# move Num1# to JumpOutNum#
+              if (comp# = SC_COMP_LE) begin
+                If (Not(AnyJumpOut#)) move Num1# to JumpOutNum#
+                else if (Num1# < JumpOutNum#) move Num1# to JumpOutNum#
                 move 1 to AnyJumpOut#
                 move SC_COMP_LE to JumpOutComp#
               end
-              if comp# eq SC_COMP_EQ begin
-                ifnot AnyJumpOut# move Num1# to JumpOutNum#
-                else if Num1# lt JumpOutNum# move Num1# to JumpOutNum#
-                ifnot AnyJumpIn# move Num1# to JumpInNum#
-                else if Num1# gt JumpInNum# move Num1# to JumpInNum#
+              if (comp# = SC_COMP_EQ) begin
+                If (Not(AnyJumpOut#)) move Num1# to JumpOutNum#
+                else if (Num1# < JumpOutNum#) move Num1# to JumpOutNum#
+                If (Not(AnyJumpIn#)) move Num1# to JumpInNum#
+                else if (Num1# > JumpInNum#) move Num1# to JumpInNum#
                 move 1 to AnyJumpOut#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GE to JumpInComp#
                 move SC_COMP_LE to JumpOutComp#
               end
-              if comp# eq SC_COMP_GE begin
-                ifnot AnyJumpIn# move Num1# to JumpInNum#
-                else if Num1# gt JumpInNum# move Num1# to JumpInNum#
+              if (comp# = SC_COMP_GE) begin
+                If (Not(AnyJumpIn#)) move Num1# to JumpInNum#
+                else if (Num1# > JumpInNum#) move Num1# to JumpInNum#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GE to JumpInComp#
               end
-              if comp# eq SC_COMP_GT begin
-                ifnot AnyJumpIn# move Num1# to JumpInNum#
-                else if Num1# gt JumpInNum# move Num1# to JumpInNum#
+              if (comp# = SC_COMP_GT) begin
+                If (Not(AnyJumpIn#)) move Num1# to JumpInNum#
+                else if (Num1# > JumpInNum#) move Num1# to JumpInNum#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GT to JumpInComp#
               end
-              if comp# eq SC_COMP_BETWEEN begin
-                ifnot AnyJumpIn# move Num1# to JumpInNum#
-                else if Num1# gt JumpInNum# move Num1# to JumpInNum#
-                ifnot AnyJumpOut# move Num2# to JumpOutNum#
-                else if Num2# lt JumpOutNum# move Num2# to JumpOutNum#
+              if (comp# = SC_COMP_BETWEEN) begin
+                If (Not(AnyJumpIn#)) move Num1# to JumpInNum#
+                else if (Num1# > JumpInNum#) move Num1# to JumpInNum#
+                If (Not(AnyJumpOut#)) move Num2# to JumpOutNum#
+                else if (Num2# < JumpOutNum#) move Num2# to JumpOutNum#
                 move 1 to AnyJumpOut#
                 move 1 to AnyJumpIn#
                 move SC_COMP_GE to JumpInComp#
@@ -731,7 +731,7 @@ Class cSelectionCriteriaArray is a cArray
           end
           else begin
             increment itm#
-            if comp# eq SC_COMP_BETWEEN increment itm#
+            if (comp# = SC_COMP_BETWEEN) increment itm#
           end
         end
       end
@@ -740,12 +740,12 @@ Class cSelectionCriteriaArray is a cArray
     if AnyJumpIn# begin
       move (oJumpInValues(self)) to oJumpInValues#
       get value of oJumpInValues# item 0 to current_segments#
-      if current_segments# eq (testsegm#-1) begin
+      if (current_segments# = (testsegm#-1)) begin
         set value of oJumpInValues# item 0 to testsegm#
                                         set value of oJumpInValues# item (testsegm#*4+0) to TestType#
-        if TestType# eq SC_TYPE_ASCII   set value of oJumpInValues# item (testsegm#*4+1) to JumpInStr#
-        if TestType# eq SC_TYPE_DATE    set value of oJumpInValues# item (testsegm#*4+1) to JumpInDat#
-        if TestType# eq SC_TYPE_NUMERIC set value of oJumpInValues# item (testsegm#*4+1) to JumpInNum#
+        if (TestType# = SC_TYPE_ASCII) set value of oJumpInValues# item (testsegm#*4+1) to JumpInStr#
+        if (TestType# = SC_TYPE_DATE) set value of oJumpInValues# item (testsegm#*4+1) to JumpInDat#
+        if (TestType# = SC_TYPE_NUMERIC) set value of oJumpInValues# item (testsegm#*4+1) to JumpInNum#
                                         set value of oJumpInValues# item (testsegm#*4+2) to JumpInComp#
                                         set value of oJumpInValues# item (testsegm#*4+3) to TestFld#
       end
@@ -753,12 +753,12 @@ Class cSelectionCriteriaArray is a cArray
     if AnyJumpOut# begin
       move (oJumpOutValues(self)) to oJumpOutValues#
       get value of oJumpOutValues# item 0 to current_segments#
-      if current_segments# eq (testsegm#-1) begin
+      if (current_segments# = (testsegm#-1)) begin
         set value of oJumpOutValues# item 0 to testsegm#
                                         set value of oJumpOutValues# item (testsegm#*4+0) to TestType#
-        if TestType# eq SC_TYPE_ASCII   set value of oJumpOutValues# item (testsegm#*4+1) to JumpOutStr#
-        if TestType# eq SC_TYPE_DATE    set value of oJumpOutValues# item (testsegm#*4+1) to JumpOutDat#
-        if TestType# eq SC_TYPE_NUMERIC set value of oJumpOutValues# item (testsegm#*4+1) to JumpOutNum#
+        if (TestType# = SC_TYPE_ASCII) set value of oJumpOutValues# item (testsegm#*4+1) to JumpOutStr#
+        if (TestType# = SC_TYPE_DATE) set value of oJumpOutValues# item (testsegm#*4+1) to JumpOutDat#
+        if (TestType# = SC_TYPE_NUMERIC) set value of oJumpOutValues# item (testsegm#*4+1) to JumpOutNum#
                                         set value of oJumpOutValues# item (testsegm#*4+2) to JumpOutComp#
                                         set value of oJumpOutValues# item (testsegm#*4+3) to TestFld#
       end
@@ -771,11 +771,11 @@ Class cSelectionCriteriaArray is a cArray
     number seeding_number#
     string seeding_string#
     get_attribute DF_FIELD_TYPE      of file# fld# to type#
-    if type# eq DF_BCD begin
+    if (type# = DF_BCD) begin
       get_attribute DF_FIELD_LENGTH    of file# fld# to len#
       get_attribute DF_FIELD_PRECISION of file# fld# to dec#
       move (len#-dec#) to len#
-      if dir# eq DF_DESCENDING begin // Highest possible
+      if (dir# = DF_DESCENDING) begin // Highest possible
         if dec# move (repeat("9",len#)+CurrentDecimalSeparator()+repeat("9",dec#)) to seeding_string#
         else    move (repeat("9",len#)) to seeding_string#
       end
@@ -786,14 +786,14 @@ Class cSelectionCriteriaArray is a cArray
       end
       move seeding_string# to seeding_number#
     end
-    if type# eq DF_DATE if dir# eq DF_DESCENDING move LargestPossibleDate to seeding_date#
+    if ((type# = DF_DATE) and (dir# = DF_DESCENDING)) move LargestPossibleDate to seeding_date#
 
     get iTranslate_DFTYPE type# to type#
     move (oJumpInValues(self)) to oJumpInValues#
                                 set value of oJumpInValues# item (seg#*4+0) to Type#
-    if Type# eq SC_TYPE_ASCII   set value of oJumpInValues# item (seg#*4+1) to seeding_string#
-    if Type# eq SC_TYPE_DATE    set value of oJumpInValues# item (seg#*4+1) to seeding_date#
-    if Type# eq SC_TYPE_NUMERIC set value of oJumpInValues# item (seg#*4+1) to seeding_number#
+    if (Type# = SC_TYPE_ASCII) set value of oJumpInValues# item (seg#*4+1) to seeding_string#
+    if (Type# = SC_TYPE_DATE) set value of oJumpInValues# item (seg#*4+1) to seeding_date#
+    if (Type# = SC_TYPE_NUMERIC) set value of oJumpInValues# item (seg#*4+1) to seeding_number#
                                 set value of oJumpInValues# item (seg#*4+2) to SC_COMP_GE
                                 set value of oJumpInValues# item (seg#*4+3) to Fld#
     set value of oJumpInValues# item 0 to (value(oJumpInValues#,0)+1)
@@ -820,15 +820,15 @@ Class cSelectionCriteriaArray is a cArray
 
     for segment# from 1 to max#
       get idx_Segment_Direction of oIndexAnalyzer# idx# segment# to dir#
-      if dir# eq DF_DESCENDING move 1 to stop# // Stop seeding if descending segment.
-      ifnot stop# begin
+      if (dir# = DF_DESCENDING) move 1 to stop# // Stop seeding if descending segment.
+      If (Not(stop#)) begin
         get idx_segment of oIndexAnalyzer# idx# segment# to fld#
         send AnalyzeJumpInOutValuesHelp file# fld# segment#
         move segment# to last_segment_seeded#
       end
     loop
 
-    if last_segment_seeded# lt max# begin // If not all segments were seeded
+    if (last_segment_seeded# < max#) begin // If not all segments were seeded
       // Get number of first field not seeded:
       get idx_segment of oIndexAnalyzer# idx# (last_segment_seeded#+1) to fld#
       // Get direction of first segment not seeded:
@@ -847,13 +847,13 @@ Class cSelectionCriteriaArray is a cArray
     get value of oJumpInValues# item 0 to max#
     for Segment# from 1 to max#
       get value of oJumpInValues# item (Segment#*4+0) to type#
-      if type# eq SC_TYPE_ASCII   get value of oJumpInValues# item (Segment#*4+1) to JumpInStr#
-      if type# eq SC_TYPE_DATE    get value of oJumpInValues# item (Segment#*4+1) to JumpInDat#
-      if type# eq SC_TYPE_NUMERIC get value of oJumpInValues# item (Segment#*4+1) to JumpInNum#
+      if (type# = SC_TYPE_ASCII) get value of oJumpInValues# item (Segment#*4+1) to JumpInStr#
+      if (type# = SC_TYPE_DATE) get value of oJumpInValues# item (Segment#*4+1) to JumpInDat#
+      if (type# = SC_TYPE_NUMERIC) get value of oJumpInValues# item (Segment#*4+1) to JumpInNum#
       get value of oJumpInValues# item (Segment#*4+3) to Fld#
-      if type# eq SC_TYPE_ASCII   set_field_value file# fld# to JumpInStr#
-      if type# eq SC_TYPE_DATE    set_field_value file# fld# to JumpInDat#
-      if type# eq SC_TYPE_NUMERIC set_field_value file# fld# to JumpInNum#
+      if (type# = SC_TYPE_ASCII) set_field_value file# fld# to JumpInStr#
+      if (type# = SC_TYPE_DATE) set_field_value file# fld# to JumpInDat#
+      if (type# = SC_TYPE_NUMERIC) set_field_value file# fld# to JumpInNum#
     loop
   end_procedure
 
@@ -866,30 +866,30 @@ Class cSelectionCriteriaArray is a cArray
     get value of oJumpOutValues# item 0 to max#
     move DFFALSE to lbEnough
     for Segment# from 1 to max#
-      ifnot lbEnough begin
+      If (Not(lbEnough)) begin
         get value of oJumpOutValues# item (Segment#*4+0) to Type#
         get value of oJumpOutValues# item (Segment#*4+2) to Comp#
         get value of oJumpOutValues# item (Segment#*4+3) to Fld#
-        if type# eq SC_TYPE_ASCII begin
+        if (type# = SC_TYPE_ASCII) begin
           get value of oJumpOutValues# item (Segment#*4+1) to JumpOutStr#
           get_field_value file# fld# to sCurrentVal#
-          if comp# eq SC_COMP_LT if sCurrentVal# GE JumpOutStr# function_return 1
-          if comp# eq SC_COMP_LE if sCurrentVal# GT JumpOutStr# function_return 1
-          if sCurrentVal# NE JumpOutStr# move DFTRUE to lbEnough
+          if ((comp# = SC_COMP_LT) and (sCurrentVal# >= JumpOutStr#)) function_return 1
+          if ((comp# = SC_COMP_LE) and (sCurrentVal# > JumpOutStr#)) function_return 1
+          if (sCurrentVal# <> JumpOutStr#) move DFTRUE to lbEnough
         end
-        else if type# eq SC_TYPE_DATE begin
+        else if (type# = SC_TYPE_DATE) begin
           get value of oJumpOutValues# item (Segment#*4+1) to JumpOutDat#
           get_field_value file# fld# to dCurrentVal#
-          if comp# eq SC_COMP_LT if dCurrentVal# GE JumpOutDat# function_return 1
-          if comp# eq SC_COMP_LE if dCurrentVal# GT JumpOutDat# function_return 1
-          if dCurrentVal# NE JumpOutDat# move DFTRUE to lbEnough
+          if ((comp# = SC_COMP_LT) and (dCurrentVal# >= JumpOutDat#)) function_return 1
+          if ((comp# = SC_COMP_LE) and (dCurrentVal# > JumpOutDat#)) function_return 1
+          if (dCurrentVal# <> JumpOutDat#) move DFTRUE to lbEnough
         end
-        else if type# eq SC_TYPE_NUMERIC begin
+        else if (type# = SC_TYPE_NUMERIC) begin
           get value of oJumpOutValues# item (Segment#*4+1) to JumpOutNum#
           get_field_value file# fld# to nCurrentVal#
-          if comp# eq SC_COMP_LT if nCurrentVal# GE JumpOutNum# function_return 1
-          if comp# eq SC_COMP_LE if nCurrentVal# GT JumpOutNum# function_return 1
-          if nCurrentVal# NE JumpOutNum# move DFTRUE to lbEnough
+          if ((comp# = SC_COMP_LT) and (nCurrentVal# >= JumpOutNum#)) function_return 1
+          if ((comp# = SC_COMP_LE) and (nCurrentVal# > JumpOutNum#)) function_return 1
+          if (nCurrentVal# <> JumpOutNum#) move DFTRUE to lbEnough
         end
       end
     loop
@@ -943,8 +943,8 @@ class cDataScanner is a cBasicDataScanner
   end_procedure
 end_class // cDataScanner
 
-#REPLACE BRK_BEGIN -1
-#REPLACE BRK_END   -2
+Define BRK_BEGIN for -1
+Define BRK_END for -2
 class cBreakHandler is a cArray
   procedure construct_object
     forward send construct_object
@@ -987,7 +987,7 @@ class cBreakHandler is a cArray
           get piExprRow.i liRow to liExprRow
           get sEvalExpression of (Query_ExprEvaluator(self)) (piExprId.i(lhExprArr,liExprRow)) to lsValue
         end
-        if lsValue ne (psPreviousValue.i(self,liRow)) begin
+        if (lsValue <> (psPreviousValue.i(self,liRow))) begin
           move (liRow+1) to liLevel
           move liMax to liRow // Break the loop!
         end
@@ -1106,9 +1106,9 @@ class cReport_Info is a cDataScanner
     move (oBreaks(self)) to oBreaks#
     if brk# begin
       if (pOnlyMostSignificantBreakLevel(self)) begin
-        if brk# eq BRK_BEGIN send subheader 1
-        if brk# eq BRK_END send subtotal 1
-        if brk# gt 0 begin
+        if (brk# = BRK_BEGIN) send subheader 1
+        if (brk# = BRK_END) send subtotal 1
+        if (brk# > 0) begin
           send subtotal brk#
           send subheader brk#
         end

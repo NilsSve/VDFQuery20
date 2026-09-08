@@ -8,23 +8,23 @@ function RSX_CreateTableFromFDX global integer lhFDX integer liFile string lsRoo
   integer liLockType liType liRelFile liRelField liMainIndex liDir
   integer liValue
   string lsRN
-  if lsRoot ne "" move lsRoot to lsRN
+  if (lsRoot <> "") move lsRoot to lsRN
   else move (FDX_AttrValue_FILELIST(lhFDX,DF_FILE_ROOT_NAME,liFile)) to lsRN
 
 //  get DBMS_StripPathAndDriver lsRN to lsRN
 //  get HowManyWords lsRN "/\:" to liTmp
 //  if (liTmp<>1) get ExtractWord lsRN "/\:" liTmp to lsRN // get rid of driver and path
 
-  if lsRN ne "" begin
+  if (lsRN <> "") begin
     if (RS_TableCreateName(lsRN)) begin
       // Create fields:
       move (FDX_AttrValue_FILE(lhFDX,DF_FILE_NUMBER_FIELDS,liFile)) to liMax
       for liField from 1 to liMax
         move (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_TYPE,liFile,liField)) to liType
         send RS_AppendField (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_NAME,liFile,liField)) liType
-        if liType ne DF_DATE ;
+        if (liType <> DF_DATE) ;
           send RS_SetFieldAttr DF_FIELD_LENGTH IMPLICIT_FIELD (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_LENGTH,liFile,liField))
-        if liType eq DF_BCD ;
+        if (liType = DF_BCD) ;
           send RS_SetFieldAttr DF_FIELD_PRECISION IMPLICIT_FIELD (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_PRECISION,liFile,liField))
         move (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_RELATED_FILE,liFile,liField))  to liRelFile
         move (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_RELATED_FIELD,liFile,liField)) to liRelField
@@ -32,7 +32,7 @@ function RSX_CreateTableFromFDX global integer lhFDX integer liFile string lsRoo
         if liRelFile   send RS_SetFieldAttr DF_FIELD_RELATED_FILE  IMPLICIT_FIELD liRelFile
         if liRelField  send RS_SetFieldAttr DF_FIELD_RELATED_FIELD IMPLICIT_FIELD liRelField
         if liMainIndex send RS_SetFieldAttr DF_FIELD_INDEX         IMPLICIT_FIELD liMainIndex
-        if liType eq DF_OVERLAP ;
+        if (liType = DF_OVERLAP) ;
           send RS_SetFieldAttr DF_FIELD_OFFSET IMPLICIT_FIELD (FDX_AttrValue_FIELD(lhFDX,DF_FIELD_OFFSET,liFile,liField))
       loop
       for liIndex from 1 to 15

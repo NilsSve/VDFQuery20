@@ -4,7 +4,7 @@ use base.nui
 
 integer grtempx grtempy
 
-[found ~found] begin
+If (found and (Not(found))) begin
   vpegraph$Update_GDI_Objects:
     if gr$PenDirty begin
       send vpe_SetPen to oVPE# gr$PenWidth gr$PenStyle gr$PenColor
@@ -81,54 +81,54 @@ class VpeGraphicArea is a GraphicArea
     integer dsz# address# type# corr_x# corr_y# just# x# y#
     string struct#
     move gr$DotSize to dsz#
-    if type# eq DT_SQUARE move (dsz#/1.2) to dsz#
-    if dsz# lt 1 move 1 to dsz#
+    if (type# = DT_SQUARE) move (dsz#/1.2) to dsz#
+    if (dsz# < 1) move 1 to dsz#
     move gr$DotType to type#
     gosub vpegraph$PreparePoint
-    if type# eq DT_PIXEL           begin
+    if (type# = DT_PIXEL) begin
       move 1 to dsz#
       move DT_PLUS to type#
     end
 
     // Check for dot alignment
-    if type# ne DT_PIXEL begin
+    if (type# <> DT_PIXEL) begin
       // Check for horizontal alignment
-      if type# ne DT_VERTICAL begin
+      if (type# <> DT_VERTICAL) begin
         move (gr$DotAlign iand 7) to just#       // 1:left 2:center 3:right
-        if just# eq 1 move (dsz#*2) to corr_y#
-        if just# eq 2 move dsz#  to corr_y#
-        if just# eq 4 move (-dsz#) to corr_y#
-        if just# eq 5 move (-dsz#*2) to corr_y#
+        if (just# = 1) move (dsz#*2) to corr_y#
+        if (just# = 2) move dsz# to corr_y#
+        if (just# = 4) move (-dsz#) to corr_y#
+        if (just# = 5) move (-dsz#*2) to corr_y#
       end
       // Check for vertical alignment
-      if type# ne DT_HORIZONTAL begin
+      if (type# <> DT_HORIZONTAL) begin
         move ((gr$DotAlign iand 56)/8) to just#  // 1:top 2:vcenter 3:bottom
-        if just# eq 1 move (-dsz#*2) to corr_x#
-        if just# eq 2 move (-dsz#) to corr_x#
-        if just# eq 4 move dsz# to corr_x#
-        if just# eq 5 move (dsz#*2) to corr_x#
+        if (just# = 1) move (-dsz#*2) to corr_x#
+        if (just# = 2) move (-dsz#) to corr_x#
+        if (just# = 4) move dsz# to corr_x#
+        if (just# = 5) move (dsz#*2) to corr_x#
       end
     end
     move (low(gr$CoordXY1#)+corr_y#) to y#
     move (hi(gr$CoordXY1#)+corr_x#)  to x#
-    if type# eq DT_CROSS           begin
+    if (type# = DT_CROSS) begin
       send vpe_Line to oVPE# (y#-dsz#) (x#-dsz#) (y#+dsz#) (x#+dsz#)
       send vpe_Line to oVPE# (y#-dsz#) (x#+dsz#) (y#+dsz#) (x#-dsz#)
     end
-    if type# eq DT_PLUS            begin
+    if (type# = DT_PLUS) begin
       send vpe_Line to oVPE# (y#-dsz#)  x#  (y#+dsz#)  x#
       send vpe_Line to oVPE#  y#  (x#+dsz#)  y#  (x#-dsz#)
     end
-    if type# eq DT_HORIZONTAL      begin
+    if (type# = DT_HORIZONTAL) begin
       send vpe_Line to oVPE# (y#-dsz#)  x#  (y#+dsz#)  x#
     end
-    if type# eq DT_VERTICAL        begin
+    if (type# = DT_VERTICAL) begin
       send vpe_Line to oVPE#  y#  (x#+dsz#)  y#  (x#-dsz#)
     end
-    if type# eq DT_CIRCLE          begin
+    if (type# = DT_CIRCLE) begin
       send vpe_Ellipse to oVPE# (y#-dsz#) (x#-dsz#) (y#+dsz#) (x#+dsz#)
     end
-    if type# eq DT_TRIANGLE_UP     begin
+    if (type# = DT_TRIANGLE_UP) begin
       zerotype tPOINTS3 to struct#
       put (y#+dsz#) to struct# at tPOINTS3.x1
       put (x#+dsz#) to struct# at tPOINTS3.y1
@@ -136,10 +136,10 @@ class VpeGraphicArea is a GraphicArea
       put (x#-dsz#) to struct# at tPOINTS3.y2
       put (y#-dsz#) to struct# at tPOINTS3.x3
       put (x#+dsz#) to struct# at tPOINTS3.y3
-      getaddress of struct# to address#
+      Move (AddressOf(struct#)) to address#
       send vpe_Polygon to oVPE# address# 3
     end
-    if type# eq DT_TRIANGLE_DOWN   begin
+    if (type# = DT_TRIANGLE_DOWN) begin
       zerotype tPOINTS3 to struct#
       put (y#-dsz#) to struct# at tPOINTS3.x1
       put (x#-dsz#) to struct# at tPOINTS3.y1
@@ -147,10 +147,10 @@ class VpeGraphicArea is a GraphicArea
       put (x#+dsz#) to struct# at tPOINTS3.y2
       put (y#+dsz#) to struct# at tPOINTS3.x3
       put (x#-dsz#) to struct# at tPOINTS3.y3
-      getaddress of struct# to address#
+      Move (AddressOf(struct#)) to address#
       send vpe_Polygon to oVPE# address# 3
     end
-    if type# eq DT_TRIANGLE_RIGHT  begin
+    if (type# = DT_TRIANGLE_RIGHT) begin
       zerotype tPOINTS3 to struct#
       put (y#-dsz#) to struct# at tPOINTS3.x1
       put (x#-dsz#) to struct# at tPOINTS3.y1
@@ -158,10 +158,10 @@ class VpeGraphicArea is a GraphicArea
       put  x#       to struct# at tPOINTS3.y2
       put (y#-dsz#) to struct# at tPOINTS3.x3
       put (x#+dsz#) to struct# at tPOINTS3.y3
-      getaddress of struct# to address#
+      Move (AddressOf(struct#)) to address#
       send vpe_Polygon to oVPE# address# 3
     end
-    if type# eq DT_TRIANGLE_LEFT   begin
+    if (type# = DT_TRIANGLE_LEFT) begin
       zerotype tPOINTS3 to struct#
       put (y#+dsz#) to struct# at tPOINTS3.x1
       put (x#+dsz#) to struct# at tPOINTS3.y1
@@ -169,10 +169,10 @@ class VpeGraphicArea is a GraphicArea
       put  x#       to struct# at tPOINTS3.y2
       put (y#+dsz#) to struct# at tPOINTS3.x3
       put (x#-dsz#) to struct# at tPOINTS3.y3
-      getaddress of struct# to address#
+      Move (AddressOf(struct#)) to address#
       send vpe_Polygon to oVPE# address# 3
     end
-    if type# eq DT_SQUARE          begin
+    if (type# = DT_SQUARE) begin
       zerotype tPOINTS4 to struct#
       put (y#-dsz#) to struct# at tPOINTS4.x1
       put (x#-dsz#) to struct# at tPOINTS4.y1
@@ -182,10 +182,10 @@ class VpeGraphicArea is a GraphicArea
       put (x#+dsz#) to struct# at tPOINTS4.y3
       put (y#+dsz#) to struct# at tPOINTS4.x4
       put (x#-dsz#) to struct# at tPOINTS4.y4
-      getaddress of struct# to address#
+      Move (AddressOf(struct#)) to address#
       send vpe_Polygon to oVPE# address# 4
     end
-    if type# eq DT_DIAMOND         begin
+    if (type# = DT_DIAMOND) begin
       zerotype tPOINTS4 to struct#
       put (y#-dsz#) to struct# at tPOINTS4.x1
       put  x#       to struct# at tPOINTS4.y1
@@ -195,7 +195,7 @@ class VpeGraphicArea is a GraphicArea
       put  x#       to struct# at tPOINTS4.y3
       put  y#       to struct# at tPOINTS4.x4
       put (x#-dsz#) to struct# at tPOINTS4.y4
-      getaddress of struct# to address#
+      Move (AddressOf(struct#)) to address#
       send vpe_Polygon to oVPE# address# 4
     end
   end_procedure
@@ -233,41 +233,41 @@ class VpeGraphicArea is a GraphicArea
     increment gr$CPU$PC     //
     gosub vpegraph$PreparePoint
     send vpe_SetTransparentMode to oVPE# 1
-    if str# eq "" procedure_return
+    if (str# = "") procedure_return
     get pCurrentTextAlign to pCurrentTextAlign#
 
     move (pCurrentTextAlign# iand 3) to horz#       // 1:left 2:center 3:right
     move ((pCurrentTextAlign# iand 12)/4) to vert#  // 1:top 2:vcenter 3:bottom
 
-    if horz# eq 1 send vpe_SetAlign to oVPE# ALIGN_LEFT
-    if horz# eq 2 send vpe_SetAlign to oVPE# ALIGN_CENTER
-    if horz# eq 3 send vpe_SetAlign to oVPE# ALIGN_RIGHT
+    if (horz# = 1) send vpe_SetAlign to oVPE# ALIGN_LEFT
+    if (horz# = 2) send vpe_SetAlign to oVPE# ALIGN_CENTER
+    if (horz# = 3) send vpe_SetAlign to oVPE# ALIGN_RIGHT
 
-    if horz# eq 1 begin
+    if (horz# = 1) begin
       move (low(gr$CoordXY1#)) to x1#
       move (hi(gr$CoordXY1#)) to y1#
       move (x1#+1000) to x2#
       move (y1#+100) to y2#
     end
-    if horz# eq 2 begin
+    if (horz# = 2) begin
       move (low(gr$CoordXY1#)*2) to x2#
       move (hi(gr$CoordXY1#)) to y1#
       move 0 to x1#
       move (y1#+100) to y2#
     end
-    if horz# eq 3 begin
+    if (horz# = 3) begin
       move (low(gr$CoordXY1#)) to x2#
       move (hi(gr$CoordXY1#)) to y1#
       move 0 to x1#
       move (y1#+100) to y2#
     end
-    if vert# eq 2 begin // vcenter
+    if (vert# = 2) begin // vcenter
       get iTextHeight.is of oVPE# (x2#-x1#) str# to height#
       move (height#/2) to height#
       move (y1#-height#) to y1#
       move (y2#-height#) to y2#
     end
-    if vert# eq 3 begin // bottom
+    if (vert# = 3) begin // bottom
       get iTextHeight.is of oVPE# (x2#-x1#) str# to height#
       move (y1#-height#) to y1#
       move (y2#-height#) to y2#
@@ -288,8 +288,8 @@ class VpeGraphicArea is a GraphicArea
     get value of gr$CPU$RAM item gr$CPU$PC to Points#
     increment gr$CPU$PC
     move (Points#*8) to size_needed#
-    get_argument_size to argument_size#
-    if argument_size# lt size_needed# set_argument_size size_needed#
+    // get_argument_size to argument_size#
+    // if (argument_size# < size_needed#) set_argument_size size_needed#
     ZeroType tPOINT To gr$Point
     move (repeat(character(0),Points#*8)) to gr$Polygon_Points#
     For iPoint From 0 To (Points#-1)
@@ -301,11 +301,11 @@ class VpeGraphicArea is a GraphicArea
       move (overstrike(gr$Point,gr$Polygon_Points#,iPoint*8+1)) to gr$Polygon_Points#
     Loop
     Append gr$Polygon_Points# (character(0)) // Add a null-terminator character to end of the string/array
-    GetAddress Of gr$Polygon_Points# To address#
+    Move (AddressOf(gr$Polygon_Points#)) to address#
 
     if line# send vpe_Polyline to oVPE# address# points#
     else     send vpe_Polygon  to oVPE# address# points#
-    set_argument_size argument_size#
+    // set_argument_size argument_size#
   end_procedure
 
   procedure mthd_PolyLine
@@ -319,7 +319,7 @@ class VpeGraphicArea is a GraphicArea
 
   procedure copy_array.ii integer source# integer target#
     integer max# itm#
-    if source# ne target# begin
+    if (source# <> target#) begin
       send delete_data to target#
       get item_count of source# to max#
       for itm# from 0 to (max#-1)

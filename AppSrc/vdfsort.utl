@@ -26,7 +26,7 @@
 //**********************************************************************
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use Language.pkg // Default language setup
@@ -38,6 +38,7 @@ Use OpenStat.pkg // Call DFMatrix, Display open tables ...
 Use OpenStat.nui // cTablesOpenStatus class (formely cFileAllFiles) (No User Interface)
 Use Fdx3.utl     // FDX aware cFileList_List selector class
 Use Version.nui
+Use cCJGrid.pkg
 
 define VDFSORT$INCLUDE_VDFCLEAN for 1
 
@@ -101,7 +102,7 @@ define hlpid.VdfSort_Result     for 5003
  define t.VdfSort.BadErr.Txt5       for "(Component genaamd 'DataBase Builder')"           // PvM
  define t.VdfSort.Lbl.DataFile      for "Data-bestand:"
  define t.VdfSort.Lbl.BadFile       for "BAD-bestand:"
- define t.VdfSort.CantGainExcl      for "Kan geen (exclusieve)rechten tot het databestand verkrijgen"
+ define t.VdfSort.CantGainExcl      for "Kan geen (exclusieve) rechten tot het databestand verkrijgen"
  define t.VdfSort.Definition        for "Definitie"                                        // PvM
  define t.VdfSort.WriteFDX          for "Schrijf FDX"                                      // PvM
 #ENDIF
@@ -651,13 +652,13 @@ function VdfSort_field_length_string global integer file# integer field# returns
   string rval#
   get_attribute DF_FIELD_TYPE of file# field# to fieldtype#
   get_attribute DF_FIELD_LENGTH of file# field# to len#
-  if fieldtype# eq DF_DATE move 3 to len#
+  if (fieldtype# = DF_DATE) move 3 to len#
   move len# to rval#
-  if fieldtype# eq DF_BCD begin
+  if (fieldtype# = DF_BCD) begin
     get gl_effective_form_datatype file# field# to dec#
     move "#.#" to rval#
-    replace "#" in rval# with (string(len#-dec#))
-    replace "#" in rval# with (string(dec#))
+    Move (Replace("#", rval#, (string(len#-dec#)))) to rval#
+    Move (Replace("#", rval#, (string(dec#)))) to rval#
   end
   function_return rval#
 end_function
@@ -667,20 +668,20 @@ function VdfSort_field_status_help global integer file# integer field# returns s
   string rval# str#
   move "# (#)" to rval#
   move (FieldInf_FieldType(file#,field#)) to fieldtype#
-  if fieldtype# eq DF_ASCII move "Ascii" to str#
-  if fieldtype# eq DF_DATE move "Date" to str#
-  if fieldtype# eq DF_TEXT move "Text" to str#
-  if fieldtype# eq DF_BCD  move "Number" to str#
-  If fieldtype# eq DF_BINARY  Move "Binary" to str#
-  if str# eq "" move "Unknown" to str#
-  replace "#" in rval# with str#
-  replace "#" in rval# with (VdfSort_field_length_string(file#,field#))
+  if (fieldtype# = DF_ASCII) move "Ascii" to str#
+  if (fieldtype# = DF_DATE) move "Date" to str#
+  if (fieldtype# = DF_TEXT) move "Text" to str#
+  if (fieldtype# = DF_BCD) move "Number" to str#
+  If (fieldtype# = DF_BINARY) Move "Binary" to str#
+  if (str# = "") move "Unknown" to str#
+  Move (Replace("#", rval#, str#)) to rval#
+  Move (Replace("#", rval#, (VdfSort_field_length_string(file#,field#)))) to rval#
   function_return rval#
 end_function
 
 Use aps.pkg         // Auto Positioning and Sizing classes for VDF
 Use ObjGroup.utl // Defining groups of objects
-Use MsgBox       // DAC class
+Use MsgBox.pkg       // DAC class
 register_object oList
 register_object oCont
 register_object oVdfSort
@@ -766,21 +767,21 @@ DEFINE_OBJECT_GROUP OG_VdfSort_Callback_vw
     send aps_locate_multi_buttons
 
     function callback string txt# integer typ# returns integer
-      if (typ# ge DF_MESSAGE_HEADING_1 and typ# le DF_MESSAGE_HEADING_5) begin
+      if (typ# >= DF_MESSAGE_HEADING_1 and typ# <= DF_MESSAGE_HEADING_5) begin
         set value of (Sort_Progress_List(oCnt(self))) item (pcount(self)) to txt#
         send paint to (Sort_Progress_List(oCnt(self)))
         set pcount to (pcount(self) + 1)
       end
-      else if typ# eq DF_MESSAGE_PROGRESS_TITLE begin
+      else if (typ# = DF_MESSAGE_PROGRESS_TITLE) begin
         set value of (sort_progress_title(oCnt(self))) item 0 to txt#
         send paint to (sort_progress_title(oCnt(self)))
       end
-      else if typ# eq DF_MESSAGE_PROGRESS_VALUE begin
-        replace ',' in txt# with t.VdfSort.Wait.Of
+      else if (typ# = DF_MESSAGE_PROGRESS_VALUE) begin
+        Move (Replace(',', txt#, t.VdfSort.Wait.Of)) to txt#
         set value of (sort_progress_value(oCnt(self))) item 0 to txt#
         send paint to (sort_progress_value(oCnt(self)))
       end
-      else if typ# eq DF_MESSAGE_WARNING begin
+      else if (typ# = DF_MESSAGE_WARNING) begin
         set value of (sort_warning(oCnt(self))) item (pcount2(self)) to txt#
         send paint to (sort_warning(oCnt(self)))
         set pcount2 to (pcount2(self)+1)
@@ -804,7 +805,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort_Callback_vw
     end_procedure
     procedure ending_sort
       set value of (Sort_Progress_List(oCnt(self))) item (pcount(self)) to t.VdfSort.Done
-      ifnot (pcount2(self)) ;
+      If (Not((pcount2(self)))) ;
           set value of (Sort_Warning(oCnt(self))) item 0 to t.VdfSort.NoErrors
       set object_shadow_state of (oBtn1(self)) to false
       set object_shadow_state of (oBtn2(self)) to false
@@ -846,10 +847,10 @@ DEFINE_OBJECT_GROUP OG_VdfSort
        repeat
          readln str#
          move (seqeof) to fin#
-         ifnot fin# begin
+         If (Not(fin#)) begin
            if (StringBeginsWith(str#,"DUPLICATE,")) begin
              move (ExtractInteger(str#,1)) to current_rec#
-             if current_rec# ne prev_rec# increment rval#
+             if (current_rec# <> prev_rec#) increment rval#
              move (ExtractInteger(str#,2)) to prev_rec#
            end
          end
@@ -886,7 +887,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
          readln channel ch# rval#
          if (seqeof) function_return ""
          if (StringBeginsWith(rval#,"DUPLICATE,")) move 1 to fin#
-         else if rval# ne "" set pBadDataInFile to true
+         else if (rval# <> "") set pBadDataInFile to true
        until fin#
        function_return rval#
      end_function
@@ -936,7 +937,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
        integer obj# ch# rval# pos# continue# fin#
        integer prev_rec# current_rec#
        string str#
-       if num_arguments gt 1 move tmp_obj# to obj#
+       if (num_arguments > 1) move tmp_obj# to obj#
        else move self to obj#
        get Seq_New_Channel to ch#
 
@@ -946,13 +947,13 @@ DEFINE_OBJECT_GROUP OG_VdfSort
 
        get pCurrentPosition to pos#
        direct_input channel ch# (pBadFileName(self))
-       ifnot (seqeof) begin
+       If (Not((seqeof))) begin
          set_channel_position ch# to (pCurrentPosition(self))
 
          get sReadLnDuplicate.i ch# to str# // Get first line
-         if str# eq "" move CBNS_END_OF_FILE to rval#
+         if (str# = "") move CBNS_END_OF_FILE to rval#
 
-         if rval# ne CBNS_END_OF_FILE begin
+         if (rval# <> CBNS_END_OF_FILE) begin
            move (ExtractInteger(str#,1)) to current_rec#
            move (ExtractInteger(str#,2)) to prev_rec#
            get iCallBack_Next_Set_Help get# obj# current_rec# to continue#
@@ -961,13 +962,13 @@ DEFINE_OBJECT_GROUP OG_VdfSort
              move 0 to fin#
              repeat
                get sReadLnDuplicate.i ch# to str# // Get first line
-               if str# eq "" move 1 to fin#
+               if (str# = "") move 1 to fin#
                else begin
                  move (ExtractInteger(str#,1)) to current_rec#
-                 if current_rec# eq prev_rec# begin // still part of current set
+                 if (current_rec# = prev_rec#) begin // still part of current set
                    move (ExtractInteger(str#,2)) to prev_rec#
                    get iCallBack_Next_Set_Help get# obj# prev_rec# to continue#
-                   ifnot continue# begin
+                   If (Not(continue#)) begin
                      move 1 to fin#
                      move CBNS_CANCELLED to fin#
                    end
@@ -1020,7 +1021,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
        get_attribute DF_FILE_NUMBER_FIELDS of file# to max#
        for fld# from 0 to max#
          get_attribute DF_FIELD_TYPE of file# fld# to type#
-         if type# ne DF_OVERLAP begin
+         if (type# <> DF_OVERLAP) begin
            set value of obj# item itm# to fld#
            increment itm#
          end
@@ -1145,8 +1146,8 @@ DEFINE_OBJECT_GROUP OG_VdfSort
        procedure display_set_no
          string str#
          move t.VdfSort.Lbl.SetNo to str#
-         replace "#" in str# with (string(pSetNumber(self)))
-         replace "#" in str# with (string(pMaxSet(self)))
+         Move (Replace("#", str#, (string(pSetNumber(self))))) to str#
+         Move (Replace("#", str#, (string(pMaxSet(self))))) to str#
          set label to str#
        end_procedure
        procedure increment_set_no
@@ -1157,20 +1158,29 @@ DEFINE_OBJECT_GROUP OG_VdfSort
          set pSetNumber to 0
          send display_set_no
        end_procedure
-       object oLst is a aps.List label t.VdfSort.Lbl.SelectRec
+       object oLst is a cCJGrid
+           // TODO: oLst was a aps.List - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+           Set pbShowHeader to False   // single-column list (no column header)
          set size to 150 65
          set label_justification_mode to jmode_top
-         set select_mode to multi_select // Makes it single select (???)
+         Set pbMultipleSelection to True
+
+           Object oCol1 is a cCJGridColumn
+               Set piWidth to 100
+               Set psCaption to ""
+           End_Object
+
          function add_recnum integer rec# returns integer
-           send add_item msg_none rec# //(string(rec#))
+//           send add_item msg_none rec# //(string(rec#))
            function_return 1 // makes it continue
          end_function
+
          function iFill_List returns integer
            integer rval# get# self# max#
-           send cursor_wait to (cursor_control(self))
-           send update_form t.VdfSort.LoadingSet
-           send clear_record_grid
-           send delete_data
+//           send cursor_wait to (cursor_control(self))
+//           send update_form t.VdfSort.LoadingSet
+//           send clear_record_grid
+//           send delete_data
            move self to self#
            move get_add_recnum to get#
            repeat
@@ -1178,19 +1188,22 @@ DEFINE_OBJECT_GROUP OG_VdfSort
              if (rval#=CBNS_OK or rval#=CBNS_ONE_OR_NONE_IN_SET) send increment_set_no
            until (rval#<>CBNS_ONE_OR_NONE_IN_SET)
            get item_count to max#
-           send update_form (string(max#)+t.VdfSort.RecordsInSet)
-           send cursor_ready to (cursor_control(self))
+//           send update_form (string(max#)+t.VdfSort.RecordsInSet)
+//           send cursor_ready to (cursor_control(self))
            function_return rval#
          end_function
-         procedure fill_list
-           integer rval#
-           get iFill_List to rval#
-           if rval# eq CBNS_END_OF_FILE begin
-             send obs t.VdfSort.DoReindexAgain
-             send DeleteBadFile // Delete .BAD file if file is cleaned
-             send close_panel
-           end
-         end_procedure
+
+         // TODO: Legacy grid method -- consider using InitializeData (note: parameters and calling convention differ).
+//         procedure fill_list
+//           integer rval#
+//           get iFill_List to rval#
+//           if (rval# = CBNS_END_OF_FILE) begin
+//             send obs t.VdfSort.DoReindexAgain
+//             send DeleteBadFile // Delete .BAD file if file is cleaned
+//             send close_panel
+//           end
+//         end_procedure
+
          procedure select_first
            integer rec#
            set current_item to 0
@@ -1198,26 +1211,28 @@ DEFINE_OBJECT_GROUP OG_VdfSort
            get value item 0 to rec#
            set pRecordToKeep to rec#
          end_procedure
+
          procedure initialize_set_count
            send cursor_wait to (cursor_control(self))
            send update_form t.VdfSort.CountingSets
            set pMaxSet to (iCountSetsInFile(oBadFileReader(self)))
            send cursor_ready to (cursor_control(self))
          end_procedure
+
          procedure auto_clean
            integer fin# keep_rec# rval#
            move 0 to fin#
            repeat
              get iRecordSelected to keep_rec#
-             ifnot keep_rec# begin
+             If (Not(keep_rec#)) begin
                send select_first
                get iRecordSelected to keep_rec#
              end
-             ifnot keep_rec# move 1 to fin#
-             ifnot fin# begin
+             If (Not(keep_rec#)) move 1 to fin#
+             If (Not(fin#)) begin
                send delete_records keep_rec#
                get iFill_List to rval#
-               if rval# eq CBNS_END_OF_FILE begin
+               if (rval# = CBNS_END_OF_FILE) begin
                  send obs t.VdfSort.DoReindexAgain
                  send DeleteBadFile // Delete .BAD file if file is cleaned
                  move 1 to fin#
@@ -1229,6 +1244,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
          // This function will serve as a boolean test that it is indeed
          // OK to delete all the records (but one) in the set. And it will
          // in fact return the record number of the record to be kept
+
          function iRecordSelected returns integer
            integer rec# file#
            // First we will check that a record has been selected:
@@ -1246,10 +1262,11 @@ DEFINE_OBJECT_GROUP OG_VdfSort
              clear file#
              set_field_value file# 0 to rec#
              vfind file# 0 EQ
-             ifnot (found) move 0 to rec#
+             If (Not((found))) move 0 to rec#
            end
            function_return rec#
          end_function
+
          procedure delete_records integer keep_rec#
            integer itm# max# rec# file#
            send cursor_wait to (cursor_control(self))
@@ -1259,7 +1276,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
            lock
              for itm# from 0 to (max#-1)
                get value item itm# to rec#
-               if rec# ne keep_rec# begin // If it's not the record we want to keep
+               if (rec# <> keep_rec#) begin // If it's not the record we want to keep
                  clear file#
                  set_field_value file# 0 to rec#
                  vfind file# 0 EQ
@@ -1269,6 +1286,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
            unlock
            send cursor_ready to (cursor_control(self))
          end_procedure
+
          procedure delete_records_and_fill_list // Delete all records not selected and get next set
            integer keep_rec#
            get iRecordSelected to keep_rec#
@@ -1278,13 +1296,16 @@ DEFINE_OBJECT_GROUP OG_VdfSort
            end
            else send obs t.VdfSort.SelectError
          end_procedure
-         procedure item_change integer i1# integer i2# returns integer
-           integer rec#
-           forward get msg_item_change i1# i2# to i2#
-           get value item i2# to rec#
-           send display_current_record rec#
-           procedure_return i2#
-         end_procedure
+
+         // TODO: Legacy grid method -- consider using OnRowChange (note: Item_Change fires on every cell move; OnRowChange only fires when the row changes).
+//         procedure item_change integer i1# integer i2# returns integer
+//           integer rec#
+//           forward get msg_item_change i1# i2# to i2#
+//           get value item i2# to rec#
+//           send display_current_record rec#
+//           procedure_return i2#
+//         end_procedure
+
          procedure select_toggling integer itm# integer st#
            integer rec#
            forward send select_toggling itm# st#
@@ -1293,6 +1314,32 @@ DEFINE_OBJECT_GROUP OG_VdfSort
              send display_keep_record rec#
            end
          end_procedure
+
+           Procedure LoadData
+               tDataSourceRow[] TheData TheDataEmpty
+               Integer iRow iCol1
+
+               Get piColumnId of oCol1 to iCol1
+               Move 0 to iRow
+
+               // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+               //   Move someValue to TheData[iRow].sValue[iCol1]
+               //   Increment iRow
+
+               If (iRow <> 0) Begin
+                   Send ReInitializeData TheData False
+                   Send MoveToFirstRow
+               End
+               Else Begin
+                   Send InitializeData TheDataEmpty
+               End
+           End_Procedure
+
+           Procedure Activating
+               Forward Send Activating
+               Send LoadData
+           End_Procedure
+
        end_object
        object oFrm1 is a aps.form abstract aft_ascii25 snap sl_down
          set object_shadow_state to true
@@ -1304,25 +1351,20 @@ DEFINE_OBJECT_GROUP OG_VdfSort
        end_procedure
      end_object // oGrp
 
-     object oRecordValues is a cDisplayRecordsGrid
+     object oRecordValues is a cCJGrid
+         // TODO: oRecordValues was a cDisplayRecordsGrid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
        set size to 100 0
-       set highlight_row_state to true
+       Set pbShowRowFocus to True
 //      set highlight_row_color to (rgb(0,255,255))
 //      set current_item_color to (rgb(0,255,255))
-       set CurrentCellColor     to clHighlight
-       set CurrentCellTextColor to clHighlightText
-       set CurrentRowColor      to clHighlight
-       set CurrentRowTextColor  to clHighlightText
-       set line_width to 4 0
+       Set piFocusCellBackColor to clHighlight
+       Set piFocusCellForeColor to clHighlightText
+       Set piHighlightBackColor to clHighlight
+       Set piHighlightForeColor to clHighlightText
        set form_margin item 0 to 3
        set form_margin item 1 to 25
        set form_margin item 2 to 25
        set form_margin item 3 to 10
-       set header_label item 0 to t.VdfSort.Lbl.FieldName
-       set header_label item 1 to t.VdfSort.Lbl.CurrentRec
-       set header_label item 2 to t.VdfSort.Lbl.RecordToKeep
-       set header_label item 3 to t.VdfSort.Lbl.FieldType
-       set select_mode to no_select
        set column_color item 0 to clLtGray
        set column_color item 2 to |CI$0000FF00 // Light green
        set column_color item 3 to clLtGray
@@ -1330,14 +1372,37 @@ DEFINE_OBJECT_GROUP OG_VdfSort
        on_key kprevious_item send switch_back
        on_key kswitch send switch
        on_key kswitch_back send switch_back
+
+         Object oCol1 is a cCJGridColumn
+             Set piWidth to 100
+             Set psCaption to t.VdfSort.Lbl.FieldName
+         End_Object
+
+         Object oCol2 is a cCJGridColumn
+             Set piWidth to 100
+             Set psCaption to t.VdfSort.Lbl.CurrentRec
+         End_Object
+
+         Object oCol3 is a cCJGridColumn
+             Set piWidth to 100
+             Set psCaption to t.VdfSort.Lbl.RecordToKeep
+         End_Object
+
+         Object oCol4 is a cCJGridColumn
+             Set piWidth to 100
+             Set psCaption to t.VdfSort.Lbl.FieldType
+         End_Object
+
        procedure clear_column integer col#
-         if col# eq 2 set pRecordToKeep to 0
+         if (col# = 2) set pRecordToKeep to 0
          forward send clear_column col#
        end_procedure
+
        procedure fill_list.i integer file#
          set pRecordToKeep to 0
          forward send fill_list.i file#
        end_procedure
+
        procedure display_current_record integer rec#
          integer file#
          get pMainFile to file#
@@ -1345,10 +1410,11 @@ DEFINE_OBJECT_GROUP OG_VdfSort
            clear file#
            set_field_value file# 0 to rec#
            vfind file# 0 EQ
-           send fill_list_field_data 1
+//           send fill_list_field_data 1
          end
          else send clear_column 1
        end_procedure
+
        procedure display_keep_record integer rec#
          integer file#
          get pMainFile to file#
@@ -1357,10 +1423,42 @@ DEFINE_OBJECT_GROUP OG_VdfSort
            clear file#
            set_field_value file# 0 to rec#
            vfind file# 0 EQ
-           send fill_list_field_data 2
+//           send fill_list_field_data 2
          end
          else send clear_column 2
        end_procedure
+
+         Procedure LoadData
+             tDataSourceRow[] TheData TheDataEmpty
+             Integer iRow iCol1 iCol2 iCol3 iCol4
+
+             Get piColumnId of oCol1 to iCol1
+             Get piColumnId of oCol2 to iCol2
+             Get piColumnId of oCol3 to iCol3
+             Get piColumnId of oCol4 to iCol4
+             Move 0 to iRow
+
+             // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+             //   Move someValue to TheData[iRow].sValue[iCol1]
+             //   Move someValue to TheData[iRow].sValue[iCol2]
+             //   Move someValue to TheData[iRow].sValue[iCol3]
+             //   Move someValue to TheData[iRow].sValue[iCol4]
+             //   Increment iRow
+
+             If (iRow <> 0) Begin
+                 Send ReInitializeData TheData False
+                 Send MoveToFirstRow
+             End
+             Else Begin
+                 Send InitializeData TheDataEmpty
+             End
+         End_Procedure
+
+         Procedure Activating
+             Forward Send Activating
+             Send LoadData
+         End_Procedure
+
      end_object // oRecordValues
      send aps_align_by_sizing (oRecordValues(self)) (oGrp(self)) sl_align_bottom
      procedure display_current_record integer rec#
@@ -1396,9 +1494,9 @@ DEFINE_OBJECT_GROUP OG_VdfSort
        number ts#
        if (SEQ_FileExists(badfile#)) begin
          move "# bytes, generated: #" to rval#
-         replace "#" in rval# with (string(SEQ_FileSize(badfile#)))
+         Move (Replace("#", rval#, (string(SEQ_FileSize(badfile#))))) to rval#
          move (SEQ_FileModTime(badfile#)) to ts#
-         replace "#" in rval# with (TS_ConvertToString(ts#))
+         Move (Replace("#", rval#, (TS_ConvertToString(ts#)))) to rval#
        end
        else move "File not found" to rval#
        function_return rval#
@@ -1454,32 +1552,50 @@ DEFINE_OBJECT_GROUP OG_VdfSort
      set Border_Style to BORDER_THICK   // Make panel resizeable
      on_key kCancel      send close_panel
      on_key kSave_Record send CleanUp_File
-     object oGrd is a aps.Grid
+     object oGrd is a cCJGrid
+         // TODO: oGrd was a aps.Grid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
        set size to 200 0
-       set highlight_row_state to true
-       set CurrentCellColor     to clHighlight
-       set CurrentCellTextColor to clHighlightText
-       set CurrentRowColor      to clHighlight
-       set CurrentRowTextColor  to clHighlightText
+       Set pbShowRowFocus to True
+       Set piFocusCellBackColor to clHighlight
+       Set piFocusCellForeColor to clHighlightText
+       Set piHighlightBackColor to clHighlight
+       Set piHighlightForeColor to clHighlightText
      //set highlight_row_color to (rgb(0,255,255))
      //set current_item_color to (rgb(0,255,255))
-       set line_width to 5 0
        set form_margin item 0 to 3
        set form_margin item 1 to 17
        set form_margin item 2 to 30
        set form_margin item 3 to 30
        set form_margin item 4 to 25
-       set header_label item 0 to "#"
-       set header_label item 1 to t.VdfSort.Lbl.UserName
-       set header_label item 2 to t.VdfSort.Lbl.DataFileLoc
-       set header_label item 3 to t.VdfSort.Lbl.BadFileLoc
-       set header_label item 4 to t.VdfSort.Lbl.SizeAndTime
-       set select_mode to no_select
        on_key kenter send CleanUp_File
        on_key kSave_Record send CleanUp_File
-
        object oValues is an array
        end_object
+
+         Object oCol1 is a cCJGridColumn
+             Set piWidth to 100
+             Set psCaption to "#"
+         End_Object
+
+         Object oCol2 is a cCJGridColumn
+             Set piWidth to 100
+             Set psCaption to t.VdfSort.Lbl.UserName
+         End_Object
+
+         Object oCol3 is a cCJGridColumn
+             Set piWidth to 100
+             Set psCaption to t.VdfSort.Lbl.DataFileLoc
+         End_Object
+
+         Object oCol4 is a cCJGridColumn
+             Set piWidth to 100
+             Set psCaption to t.VdfSort.Lbl.BadFileLoc
+         End_Object
+
+         Object oCol5 is a cCJGridColumn
+             Set piWidth to 100
+             Set psCaption to t.VdfSort.Lbl.SizeAndTime
+         End_Object
 
        procedure add_item_value string value#
          integer arr#
@@ -1490,16 +1606,16 @@ DEFINE_OBJECT_GROUP OG_VdfSort
        procedure add_bad_file integer file# string dn# string rn_path# string badfile#
          string str#
          move (TS_ConvertToString(SEQ_FileModTime(badfile#))+", ("+InsertThousandsSep(string(SEQ_FileSize(badfile#)))+" bytes)") to str#
-         send add_item msg_none (string(file#))
-         send add_item msg_none dn#
-         send add_item msg_none (lowercase(rn_path#))
-         send add_item msg_none badfile#
-         send add_item msg_none str#
-         send add_item_value (string(file#))
-         send add_item_value dn#
-         send add_item_value (lowercase(rn_path#))
-         send add_item_value badfile#
-         send add_item_value str#
+//         send add_item msg_none (string(file#))
+//         send add_item msg_none dn#
+//         send add_item msg_none (lowercase(rn_path#))
+//         send add_item msg_none badfile#
+//         send add_item msg_none str#
+//         send add_item_value (string(file#))
+//         send add_item_value dn#
+//         send add_item_value (lowercase(rn_path#))
+//         send add_item_value badfile#
+//         send add_item_value str#
        end_procedure
 
        object oBadFiles is a set
@@ -1520,7 +1636,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
            send delete_data
 
            // First test if there is a .BAD file next to the .DAT file:
-           uppercase rn_path#
+           Move (Uppercase(rn_path#)) to rn_path#
            move (StripFromLastOccurance(rn_path#,".DAT")) to badfile#
            move (badfile#+".BAD") to badfile#
            if (SEQ_FileExists(badfile#)) send add_element_lowercase badfile#
@@ -1532,6 +1648,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
            send delete_data
          end_procedure
        end_object // oBadFiles
+
        procedure fill_list1 integer file#
          integer wasopen# type#
          string str# rn# bad_name#
@@ -1539,41 +1656,83 @@ DEFINE_OBJECT_GROUP OG_VdfSort
            move (DBMS_IsOpenFile(file#)) to wasopen#
            if wasopen# move (DBMS_FileDriverType(file#)) to type#
            else move (DBMS_OpenFile(file#,DF_SHARE,0)) to type#
-           if type# eq DBMS_DRIVER_DATAFLEX begin // OK! We're dealing with a DF file that can be opened:
+           if (type# = DBMS_DRIVER_DATAFLEX) begin // OK! We're dealing with a DF file that can be opened:
              // Now, is there a BAD file present on the system?:
              get_attribute DF_FILE_ROOT_NAME of file# to rn#
-             send fill_list_help2 to (oBadFiles(self)) file# (File_Display_Name(file#)) rn# (DBMS_Rootname_Path(file#))
+//             send fill_list_help2 to (oBadFiles(self)) file# (File_Display_Name(file#)) rn# (DBMS_Rootname_Path(file#))
            end
            if (DBMS_IsOpenFile(file#) and not(wasopen#)) close file#
          end
        end_procedure
-       procedure fill_list
-         integer itm# max# self#
-         send cursor_wait to (cursor_control(self))
-         send delete_data
-         send delete_data to (oValues(self))
-         move self to self#
-         send DBMS_Callback_FilelistEntries (FLEC_ALL+FLEC_NO_ALIAS) msg_fill_list1 self#
-         get item_count to max#
-         for itm# from 0 to (max#-1)
-           set entry_state item itm# to false
-         loop
-         send cursor_ready to (cursor_control(self))
-       end_procedure
+
+       // TODO: Legacy grid method -- consider using InitializeData (note: parameters and calling convention differ).
+//       procedure fill_list
+//         integer itm# max# self#
+//         send cursor_wait to (cursor_control(self))
+//         send delete_data
+//         send delete_data to (oValues(self))
+//         move self to self#
+//         send DBMS_Callback_FilelistEntries (FLEC_ALL+FLEC_NO_ALIAS) msg_fill_list1 self#
+//         get item_count to max#
+//         for itm# from 0 to (max#-1)
+//           set entry_state item itm# to false
+//         loop
+//         send cursor_ready to (cursor_control(self))
+//       end_procedure
+
        procedure CleanUp_File
-         integer base# tmp# file#
+         integer iRow tmp# file#
          string caption# rn# bad_file#
+         Integer iCol
+         Handle hoDataSource
+         tDataSourceRow[] TheData
+
          if (item_count(self)) begin
-           get current_item to base#
-           move ((base#/5)*5) to base#
-           get value of (oValues(self)) item base# to file#
-           get value of (oValues(self)) item (base#+1) to caption#
-           get value of (oValues(self)) item (base#+2) to rn#
-           get value of (oValues(self)) item (base#+3) to bad_file#
-           send DoCleanupFile file# caption# rn# bad_file#
-           ifnot (SEQ_FileExists(bad_file#)) send fill_list
+           Get phoDataSource to hoDataSource
+           Get SelectedRow of hoDataSource to iRow
+           Get DataSource of hoDataSource to TheData
+           get value of (oValues(self)) item iRow to file#
+           get value of (oValues(self)) item (iRow+1) to caption#
+           get value of (oValues(self)) item (iRow+2) to rn#
+           get value of (oValues(self)) item (iRow+3) to bad_file#
+//           send DoCleanupFile file# caption# rn# bad_file#
+           If (Not((SEQ_FileExists(bad_file#)))) send fill_list
          end
        end_procedure
+
+         Procedure LoadData
+             tDataSourceRow[] TheData TheDataEmpty
+             Integer iRow iCol1 iCol2 iCol3 iCol4 iCol5
+
+             Get piColumnId of oCol1 to iCol1
+             Get piColumnId of oCol2 to iCol2
+             Get piColumnId of oCol3 to iCol3
+             Get piColumnId of oCol4 to iCol4
+             Get piColumnId of oCol5 to iCol5
+             Move 0 to iRow
+
+             // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+             //   Move someValue to TheData[iRow].sValue[iCol1]
+             //   Move someValue to TheData[iRow].sValue[iCol2]
+             //   Move someValue to TheData[iRow].sValue[iCol3]
+             //   Move someValue to TheData[iRow].sValue[iCol4]
+             //   Move someValue to TheData[iRow].sValue[iCol5]
+             //   Increment iRow
+
+             If (iRow <> 0) Begin
+                 Send ReInitializeData TheData False
+                 Send MoveToFirstRow
+             End
+             Else Begin
+                 Send InitializeData TheDataEmpty
+             End
+         End_Procedure
+
+         Procedure Activating
+             Forward Send Activating
+             Send LoadData
+         End_Procedure
+
      end_object // oGrd
      procedure CleanUp_File
        send CleanUp_File to (oGrd(self))
@@ -1585,7 +1744,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
      end_procedure
      procedure popup
        send fill_list to (oGrd(self))
-       ifnot (item_count(oGrd(self))) send deferred_message msg_empty_warning
+       If (Not((item_count(oGrd(self))))) send deferred_message msg_empty_warning
        forward send popup
      end_procedure
      object oBtn1 is a aps.Multi_Button
@@ -1684,13 +1843,13 @@ DEFINE_OBJECT_GROUP OG_VdfSort
       if (pResult(self)) begin
         move 0 to oVdfSort_SortOptions#
         get current_radio of (oRadio1(self)) to itm#
-        if itm# eq 0 move DF_SORT_OPTION_NO_DATA_CHECK  to oVdfSort_SortOptions#
-        if itm# eq 1 move DF_SORT_OPTION_BAD_DATA_FIXUP to oVdfSort_SortOptions#
-        if itm# eq 2 move DF_SORT_OPTION_BAD_DATA_FILE  to oVdfSort_SortOptions#
-        if itm# eq 3 move DF_SORT_OPTION_BAD_DATA_ABORT to oVdfSort_SortOptions#
+        if (itm# = 0) move DF_SORT_OPTION_NO_DATA_CHECK to oVdfSort_SortOptions#
+        if (itm# = 1) move DF_SORT_OPTION_BAD_DATA_FIXUP to oVdfSort_SortOptions#
+        if (itm# = 2) move DF_SORT_OPTION_BAD_DATA_FILE to oVdfSort_SortOptions#
+        if (itm# = 3) move DF_SORT_OPTION_BAD_DATA_ABORT to oVdfSort_SortOptions#
         get current_radio of (oRadio2(self)) to itm#
-        if itm# eq 0 move (DF_SORT_OPTION_DUP_DATA_FILE +oVdfSort_SortOptions#) to oVdfSort_SortOptions#
-        if itm# eq 1 move (DF_SORT_OPTION_DUP_DATA_ABORT+oVdfSort_SortOptions#) to oVdfSort_SortOptions#
+        if (itm# = 0) move (DF_SORT_OPTION_DUP_DATA_FILE +oVdfSort_SortOptions#) to oVdfSort_SortOptions#
+        if (itm# = 1) move (DF_SORT_OPTION_DUP_DATA_ABORT+oVdfSort_SortOptions#) to oVdfSort_SortOptions#
 
         get value of (oSortBufferSize(self)) item 0 to buffer#
         call_driver iNull "DATAFLEX" function FLEX_SET_MAX_SORT_BUFFER callback iNull passing sNull iNull buffer# result grb#
@@ -1711,6 +1870,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
     object oCont is a aps.Container3D
       set p_auto_column to false
       set peAnchors to (anTop+anLeft+anRight+anBottom)
+      // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (DriverFilter_Add) may be where they are defined
       object oList is a cFdxFileMultiSelector // cFileListMultiSelectorGrid
         set size to 180 0
         set piNo_Alias_State to true          // Exclude alias files
@@ -1728,14 +1888,14 @@ DEFINE_OBJECT_GROUP OG_VdfSort
           move (max# min 5) to max#
           for itm# from 0 to (max#-1)
             move (rval#+DBMS_Rootname_Path(value(obj#,itm#))) to rval#
-            if itm# ne (max#-1) move (rval#+character(10)) to rval#
+            if (itm# <> (max#-1)) move (rval#+character(10)) to rval#
           loop
-          if (item_count(obj#)) gt max# move (rval#+character(10)+"...") to rval#
+          if ((item_count(obj#)) > max#) move (rval#+character(10)+"...") to rval#
           function_return rval#
         end_function
 
         procedure add_file.i integer file#
-          if file# ne 50 forward send add_file.i file# // Skip FLEXERRS
+          if (file# <> 50) forward send add_file.i file# // Skip FLEXERRS
         end_procedure
 
         procedure SortFile integer file#
@@ -1743,7 +1903,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
         end_procedure
 
         procedure OpenFileExclusive integer file#
-          ifnot (iOpen_file.ii(VdfSort_oFileAllFiles(self),file#,DF_EXCLUSIVE)) ;
+          If (Not((iOpen_file.ii(VdfSort_oFileAllFiles(self),file#,DF_EXCLUSIVE)))) ;
             set value of (oExclusiveError(self)) ;
               item (item_count(oExclusiveError(self))) to file#
         end_procedure
@@ -1772,7 +1932,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
           integer Self# Client_ID#
           string str#
           move self to Self#
-          ifnot oVdfSort_Callback_vw# begin
+          If (Not(oVdfSort_Callback_vw#)) begin
             // If oVdfSort_Callback_vw has not yet been created we do it here:
             move (Client_ID(Self#)) to Client_ID#
             if Client_ID# CREATE_OBJECT_GROUP OG_VdfSort_Callback_vw PARENT Client_ID#
@@ -1784,7 +1944,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
             send CloseAllFiles to (VdfSort_oFileAllFiles(self))
             send Delete_Data to (oExclusiveError(self))
             send Callback_Selected_Files msg_OpenFileExclusive
-            ifnot (item_count(oExclusiveError(self))) begin
+            If (Not((item_count(oExclusiveError(self))))) begin
               send Popup to oVdfSort_Callback_vw#
               // The below message makes sure that procedure DoReindex_Help
               // is not executed until the previous message has finished
@@ -1807,7 +1967,7 @@ DEFINE_OBJECT_GROUP OG_VdfSort
         end_procedure
         send fill_list_all_files
         procedure Conditional_FillList
-          ifnot (item_count(self)) send fill_list_all_files
+          If (Not((item_count(self)))) send fill_list_all_files
         end_procedure
         procedure SelectBadFile
           send popup to (oSelectBadFile(self))
@@ -1894,7 +2054,7 @@ END_DEFINE_OBJECT_GROUP // OG_VdfSort
 
 procedure Activate_Sort_Vw
   integer Self# Client_ID# DbBldr#
-  ifnot oVdfSort# begin
+  If (Not(oVdfSort#)) begin
     // If oVdfSort view has not yet been created we do it here:
     move self to Self#
     move (Client_ID(Self#)) to Client_ID#

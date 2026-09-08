@@ -111,7 +111,7 @@ class cMapper is a cArray
     get iFindIdentifier.i of (phObject2(self)) liIdent2 to liRow2
 
     get iFindItem2Row liRow2 to liRow
-    if liRow eq -1 get row_count to liRow
+    if (liRow = -1) get row_count to liRow
 
     set piItem1.i liRow to liRow1
     set piItem2.i liRow to liRow2
@@ -121,7 +121,7 @@ class cMapper is a cArray
     integer liRow liRow2
     get iFindIdentifier.i of (phObject2(self)) liIdent2 to liRow2
     get iFindItem2Row liRow2 to liRow
-    if liRow ne -1 begin
+    if (liRow <> -1) begin
       send delete_row liRow
       set pbFastMapState to DFFALSE
     end
@@ -156,7 +156,7 @@ class cMapper is a cArray
     get row_count of lhObj1 to liMax
     decrement liMax
     for liRow from 0 to liMax
-      ifnot (integer(value(lhTmpArray,liRow))) send liMsg to lhObj (piIdentifier.i(lhObj1,liRow)) (psName.i(lhObj1,liRow)) (psExtraInfo.i(lhObj1,liRow))
+      If (Not((integer(value(lhTmpArray,liRow))))) send liMsg to lhObj (piIdentifier.i(lhObj1,liRow)) (psName.i(lhObj1,liRow)) (psExtraInfo.i(lhObj1,liRow))
     loop
   end_procedure
   procedure DoCallback_UnmappedItems2 integer liMsg integer lhObj
@@ -167,7 +167,7 @@ class cMapper is a cArray
     get row_count of lhObj2 to liMax
     decrement liMax
     for liRow from 0 to liMax
-      ifnot (integer(value(lhTmpArray,liRow))) send liMsg to lhObj (piIdentifier.i(lhObj2,liRow)) (psName.i(lhObj2,liRow)) (psExtraInfo.i(lhObj2,liRow))
+      If (Not((integer(value(lhTmpArray,liRow))))) send liMsg to lhObj (piIdentifier.i(lhObj2,liRow)) (psName.i(lhObj2,liRow)) (psExtraInfo.i(lhObj2,liRow))
     loop
   end_procedure
   procedure DoCallback_AllItems1 integer liMsg integer lhObj
@@ -180,7 +180,7 @@ class cMapper is a cArray
     decrement liMax
     for liRow from 0 to liMax
       get value of lhTmpArray liRow to liMapRow
-      ifnot liMapRow send liMsg to lhObj (piIdentifier.i(lhObj1,liRow)) (psName.i(lhObj1,liRow)) (psExtraInfo.i(lhObj1,liRow)) DFFALSE 0 "" ""
+      If (Not(liMapRow)) send liMsg to lhObj (piIdentifier.i(lhObj1,liRow)) (psName.i(lhObj1,liRow)) (psExtraInfo.i(lhObj1,liRow)) DFFALSE 0 "" ""
       else begin
         decrement liMapRow
         send liMsg to lhObj (piIdentifier.i(lhObj1,liRow)) (psName.i(lhObj1,liRow)) (psExtraInfo.i(lhObj1,liRow)) DFTRUE (piIdentifier.i(lhObj2,liMapRow)) (psName.i(lhObj2,liMapRow)) (psExtraInfo.i(lhObj2,liMapRow))
@@ -197,7 +197,7 @@ class cMapper is a cArray
     decrement liMax
     for liRow from 0 to liMax
       get value of lhTmpArray liRow to liMapRow
-      ifnot liMapRow send liMsg to lhObj (piIdentifier.i(lhObj2,liRow)) (psName.i(lhObj2,liRow)) (psExtraInfo.i(lhObj2,liRow)) DFFALSE 0 "" ""
+      If (Not(liMapRow)) send liMsg to lhObj (piIdentifier.i(lhObj2,liRow)) (psName.i(lhObj2,liRow)) (psExtraInfo.i(lhObj2,liRow)) DFFALSE 0 "" ""
       else begin
         decrement liMapRow
         send liMsg to lhObj (piIdentifier.i(lhObj2,liRow)) (psName.i(lhObj2,liRow)) (psExtraInfo.i(lhObj2,liRow)) DFTRUE (piIdentifier.i(lhObj1,liMapRow)) (psName.i(lhObj1,liMapRow)) (psExtraInfo.i(lhObj1,liMapRow))

@@ -21,7 +21,7 @@
 //
 //
 //
-Use Windows
+Use Windows.pkg
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes (No User Interface)
 Use Files.nui    // Utilities for handling file related stuff (No User Interface)
 Use HTML.utl     // HTML functions
@@ -150,7 +150,7 @@ Class cDocumentAttacher_vdfq is a cArray
                if (SEQ_FileExists(lsPath)=SEQIT_NONE) begin
 //                 send obs "Does not exist"
                  // Doesn't exist, let's create it:
-                 get wvaWin32_CreateDirectory (ToAnsi(lsPath)) to lbCreateError
+                 get wvaWin32_CreateDirectory (Utf8ToAnsi(lsPath)) to lbCreateError
                  if lbCreateError move DFFALSE to lbHomeDirectory
                  else move DFTRUE to lbHomeDirectory
                end
@@ -212,7 +212,7 @@ Class cDocumentAttacher_vdfq is a cArray
         get Files_AppendPath lsDir lsSubDir to lsCheckPath
         if (SEQ_FileExists(lsCheckPath)=SEQIT_NONE) begin
           // Doesn't exist, let's create it:
-          get wvaWin32_CreateDirectory (ToAnsi(lsCheckPath)) to lbCreateError
+          get wvaWin32_CreateDirectory (Utf8ToAnsi(lsCheckPath)) to lbCreateError
           if lbCreateError function_return ""
         end
       end
@@ -331,7 +331,7 @@ Class cDocumentAttacher_vdfq is a cArray
     if (SEQ_FileExists(lsFrom)=SEQIT_FILE) begin
       // We only attempt this if the source document exists
       get SEQ_MoveFile lsFrom lsTo to lbOk
-      ifnot lbOk error 225 "Document could not be renamed!"
+      If (Not(lbOk)) error 225 "Document could not be renamed!"
     end
   end_procedure
 

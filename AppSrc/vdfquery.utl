@@ -7,7 +7,7 @@
 //**********************************************************************
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use Version.nui
@@ -37,6 +37,7 @@ Use MouseMov.utl // Procedure Mouse_MoveToObject
 Use Fdx2.utl     // FDX aware object for displaying a table definition
 Use QryFolde.pkg // Directory setup for VDFQuery and DbQuery (defs and out)
 Use Focus.utl    // Retrieve basic information about object
+Use cCJGrid.pkg
 
 Define hlpid.VdfQuery for 5000
 
@@ -45,7 +46,6 @@ Define hlpid.VdfQuery for 5000
  Define VPE.USED for 1
  Move Self to glMainClientId# 
 #ELSE
- Use DFWinRpt
  Use cWinreport2.pkg
  integer oWinPrintReport#
  Move ghoWinprint2 to WinprintId
@@ -116,7 +116,7 @@ class vdq.orlist_grid is a aps.Grid // or-list
   end_procedure
 
   procedure entering // Make sure that there is at least one item on entering
-    ifnot (item_count(self)) begin
+    If (Not((item_count(self)))) begin
       send add_item MSG_NONE ""
       send add_item MSG_NONE ""
       set item_shadow_state item (item_count(self)-1) to true
@@ -214,7 +214,7 @@ class vdq.orlist_grid is a aps.Grid // or-list
     if (item_count(self)) begin
       send Grid_DeleteCurrentRow self
     end
-    ifnot (item_count(self)) send DoAppendItem
+    If (Not((item_count(self)))) send DoAppendItem
   end_procedure
   procedure DoUppercase
     integer liMax liItem
@@ -253,7 +253,7 @@ class vdq.orlist_grid is a aps.Grid // or-list
     direct_input channel 0 "CLIPBOARD:"
     while (not(seqeof))
       readln channel 0 lsValue
-      ifnot (seqeof) begin
+      If (Not((seqeof))) begin
         send add_item MSG_NONE lsValue
         send add_item MSG_NONE ""
         set item_shadow_state item (item_count(self)-1) to true
@@ -279,12 +279,13 @@ DEFINE_OBJECT_GROUP OG_QuerySelectDialogElement // label# mrg# type# comp# val1#
         string label#
         move (og_param(0)) to label#
         // Remove ":"
-        if (right(label#,1)) eq ":" move (StringLeftBut(label#,1)) to label#
+        if ((right(label#,1)) = ":") move (StringLeftBut(label#,1)) to label#
         move (label#+" ("+DfQuery_CompModeTxt_Short(SC_COMP_OR_LIST)+"):") to label#
         set label to label#
       end_procedure
       send do_label
     end_object
+    // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (DoSetup) may be where they are defined
     object oList is a vdq.orlist_grid snap 1
       move self to OG_Current_Object#
       send DoSetup (og_param(6)) (og_param(7))
@@ -306,7 +307,7 @@ DEFINE_OBJECT_GROUP OG_QuerySelectDialogElement // label# mrg# type# comp# val1#
         move (og_param(0)) to label#
         move (og_param(3)) to comp#
         // Remove ":"
-        if (right(label#,1)) eq ":" move (StringLeftBut(label#,1)) to label#
+        if ((right(label#,1)) = ":") move (StringLeftBut(label#,1)) to label#
         move (label#+" ("+DfQuery_CompModeTxt_Short(comp#)+"):") to label#
         set label to label#
       end_procedure
@@ -346,8 +347,8 @@ DEFINE_OBJECT_GROUP OG_QuerySelectDialogElement // label# mrg# type# comp# val1#
         end_procedure
       end
       send add_object_id OG_Current_Object#
-      if (og_param(3)) eq SC_COMP_NOT_BLANK set object_shadow_state to true
-      if (og_param(3)) eq SC_COMP_BLANK     set object_shadow_state to true
+      if ((og_param(3)) = SC_COMP_NOT_BLANK) set object_shadow_state to true
+      if ((og_param(3)) = SC_COMP_BLANK) set object_shadow_state to true
     end_object
     if (og_param(3)=SC_COMP_BETWEEN or og_param(3)=SC_COMP_CBETWEEN) begin
       #PUSH !Zb   // Compiler trick (non static number of objects)  <-- This is probably not needed anymore
@@ -505,12 +506,13 @@ DEFINE_OBJECT_GROUP OG_QuerySingleCrit // label# mrg# type# comp# val1# val2# li
           procedure do_label
             string label#
             move (og_param(0)) to label#
-            if (right(label#,1)) eq ":" move (StringLeftBut(label#,1)) to label#
+            if ((right(label#,1)) = ":") move (StringLeftBut(label#,1)) to label#
             move (label#+" ("+DfQuery_CompModeTxt_Short(SC_COMP_OR_LIST)+"):") to label#
             set label to label#
           end_procedure
           send do_label
         end_object
+        // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (DoSetup) may be where they are defined
         object oList is a vdq.orlist_grid snap 1
           send DoSetup (og_param(6)) (og_param(7))
           set select_value to (og_param(4))
@@ -524,8 +526,8 @@ DEFINE_OBJECT_GROUP OG_QuerySingleCrit // label# mrg# type# comp# val1# val2# li
           set form_datatype item 0 to (og_param(2))
           set form_margin item 0 to (og_param(1) min 40)
           set value item 0 to (og_param(4))
-          if (og_param(3)) eq SC_COMP_NOT_BLANK set object_shadow_state to true
-          if (og_param(3)) eq SC_COMP_BLANK     set object_shadow_state to true
+          if ((og_param(3)) = SC_COMP_NOT_BLANK) set object_shadow_state to true
+          if ((og_param(3)) = SC_COMP_BLANK) set object_shadow_state to true
         end_object
         if (og_param(3)=SC_COMP_BETWEEN or og_param(3)=SC_COMP_CBETWEEN) begin
           object oVal2 is a aps.form label "-" snap (if(integer(og_param(1))>15,0,sl_right))
@@ -609,19 +611,29 @@ desktop_section // Place object on desktop no matter where declared
     on_key key_ctrl+key_P send msg_none
     property integer pReturnValue 0
     on_key kcancel send close_panel
-    object oLst is a aps.list
+    object oLst is a cCJGrid
+        // TODO: oLst was a aps.list - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+        Set pbShowHeader to False   // single-column list (no column header)
       set size to 120 150
-      procedure Mouse_click integer i1 integer i2
+      // Converted from Mouse_Click: iRow = row index, iCol = column index.
+      Procedure OnRowDoubleClick Integer iRow Integer iCol
          send close_panel_ok
       end_procedure
+
+        Object oCol1 is a cCJGridColumn
+            Set piWidth to 100
+            Set psCaption to ""
+        End_Object
+
       procedure add_item.ii integer current# integer aux#
         send add_item msg_close_panel_ok (DfQuery_CompModeTxt_Long(aux#)+" ("+DfQuery_CompModeTxt_Short(aux#)+")") aux#
         set aux_value item (item_count(self)-1) to aux#
-        if current# eq aux# set current_item to (item_count(self)-1)
+        if (current# = aux#) set current_item to (item_count(self)-1)
       end_procedure
-      procedure fill_list integer current# integer type#
+
+      procedure LoadData integer current# integer type#
         send delete_data
-        if type# ne DF_TEXT begin
+        if (type# <> DF_TEXT) begin
           send add_item.ii current# SC_COMP_EQ
           send add_item.ii current# SC_COMP_LT
           send add_item.ii current# SC_COMP_LE
@@ -631,7 +643,7 @@ desktop_section // Place object on desktop no matter where declared
         end
         send add_item.ii current# SC_COMP_IN
         send add_item.ii current# SC_COMP_CIN
-        if type# ne DF_TEXT begin
+        if (type# <> DF_TEXT) begin
           send add_item.ii current# SC_COMP_BETWEEN
           send add_item.ii current# SC_COMP_CBETWEEN
         end
@@ -639,10 +651,36 @@ desktop_section // Place object on desktop no matter where declared
           send add_item.ii current# SC_COMP_NOT_BLANK
           send add_item.ii current# SC_COMP_BLANK
         end
-        if type# ne DF_TEXT begin // or-list
+        if (type# <> DF_TEXT) begin // or-list
           send add_item.ii current# SC_COMP_OR_LIST
         end
       end_procedure
+
+        Procedure LoadData
+            tDataSourceRow[] TheData TheDataEmpty
+            Integer iRow iCol1
+
+            Get piColumnId of oCol1 to iCol1
+            Move 0 to iRow
+
+            // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+            //   Move someValue to TheData[iRow].sValue[iCol1]
+            //   Increment iRow
+
+            If (iRow <> 0) Begin
+                Send ReInitializeData TheData False
+                Send MoveToFirstRow
+            End
+            Else Begin
+                Send InitializeData TheDataEmpty
+            End
+        End_Procedure
+
+        Procedure Activating
+            Forward Send Activating
+            Send LoadData
+        End_Procedure
+
     end_object
     procedure close_panel_ok
       integer obj#
@@ -665,7 +703,7 @@ function VdfQuery_SelectCompMode global integer type# integer current# returns i
   integer obj#
   move (QueryCompMode_SL(self)) to obj#
   set pReturnValue of obj# to current#
-  send fill_list to (oLst(obj#)) current# type#
+  send LoadData to (oLst(obj#)) current# type#
   send popup_modal to obj#
   function_return (pReturnValue(obj#))
 end_function
@@ -675,12 +713,12 @@ function VdfQuery_field_width_cm global integer typ# integer mrg# integer caps# 
   move (120/fontsize#/2.56) to factor#
   move (1.0/factor#) to factor#
   //move (factor#*0.8) to factor# // Un-explainable factor (0.8)
-  if typ# eq DF_ASCII begin
+  if (typ# = DF_ASCII) begin
     if caps# move (mrg#*factor#*1.5) to rval#
     else     move (mrg#*factor#) to rval#
   end
-  if typ# eq DF_DATE move (10*factor#) to rval#
-  if typ# eq DF_BCD  move (mrg#*factor#) to rval#
+  if (typ# = DF_DATE) move (10*factor#) to rval#
+  if (typ# = DF_BCD) move (mrg#*factor#) to rval#
   function_return rval#
 end_function
 
@@ -692,11 +730,11 @@ end_function
 
 function VdfQuery_field_margin global integer file# integer field# returns integer
   integer fieldtype# len# dec# obj#
-  if field# lt 256 begin
+  if (field# < 256) begin
     get_attribute DF_FIELD_TYPE of file# field# to fieldtype#
     get_attribute DF_FIELD_LENGTH of file# field# to len#
-    if fieldtype# eq DF_DATE move 10 to len#
-    if fieldtype# eq DF_BCD begin
+    if (fieldtype# = DF_DATE) move 10 to len#
+    if (fieldtype# = DF_BCD) begin
       get gl_effective_form_datatype file# field# to dec#
       if dec# move (len#+1) to len#
     end
@@ -706,7 +744,7 @@ function VdfQuery_field_margin global integer file# integer field# returns integ
     move (field#-256) to field#
     get piFieldType.i of obj# field# to fieldtype#
     get piFieldLength.i of obj# field# to len#
-    if fieldtype# eq DF_DATE move 10 to len#
+    if (fieldtype# = DF_DATE) move 10 to len#
   end
   function_return len#
 end_function
@@ -716,9 +754,9 @@ function VdfQuery_file_status_help global integer file# returns string
   string rval# str#
   move "DF-name: #, Root: #" to rval#
   get_attribute DF_FILE_LOGICAL_NAME of file# to str#
-  replace "#" in rval# with str#
+  Move (Replace("#", rval#, str#)) to rval#
   get_attribute DF_FILE_ROOT_NAME of file# to str#
-  replace "#" in rval# with str#
+  Move (Replace("#", rval#, str#)) to rval#
   function_return rval#
 end_function
 
@@ -727,14 +765,14 @@ function VdfQuery_field_status_help global integer file# integer field# returns 
   string rval# str#
   move "# (#)" to rval#
   move (FieldInf_FieldType(file#,field#)) to fieldtype#
-  if fieldtype# eq DF_ASCII  move "Ascii" to str#
-  if fieldtype# eq DF_DATE   move "Date" to str#
-  if fieldtype# eq DF_TEXT   move "Text" to str#
-  if fieldtype# eq DF_BCD    move "Number" to str#
-  if fieldtype# eq DF_BINARY move "Binary" to str#
-  if str# eq "" move "Unknown" to str#
-  replace "#" in rval# with str#
-  replace "#" in rval# with (FieldInf_field_length_string(file#,field#))
+  if (fieldtype# = DF_ASCII) move "Ascii" to str#
+  if (fieldtype# = DF_DATE) move "Date" to str#
+  if (fieldtype# = DF_TEXT) move "Text" to str#
+  if (fieldtype# = DF_BCD) move "Number" to str#
+  if (fieldtype# = DF_BINARY) move "Binary" to str#
+  if (str# = "") move "Unknown" to str#
+  Move (Replace("#", rval#, str#)) to rval#
+  Move (Replace("#", rval#, (FieldInf_field_length_string(file#,field#)))) to rval#
   function_return rval#
 end_function
 
@@ -779,10 +817,10 @@ object oReport_info is an cReport_info
   property integer next_current_row      0
   property string  pDeferredHeader       t.DfQuery.RightHeader
   property string  pCurDeferredHeader    ""
-  property integer pLeftMargin           200
-  property integer pRightMargin          2000
-  property integer pTopMargin            150
-  property integer pBottomMargin         2750
+  property Real pLeftMargin           200
+  property Real pRightMargin          2000
+  property Real pTopMargin            150
+  property Real pBottomMargin         2750
   property integer pColumnHeaderRowStart 0
   property integer pTotalsOnly           0
   property integer pLandscape            0
@@ -876,7 +914,7 @@ object oReport_info is an cReport_info
       get piExprRow.i of oBreakInfo# level# to liExprRow
       get sEvalExpression of (Query_ExprEvaluator(self)) (piExprId.i(lhExprArr,liExprRow)) to rval#
     end
-    if rval# eq "" move "    " to rval# // Make evident that field is empty!
+    if (rval# = "") move "    " to rval# // Make evident that field is empty!
     else move (trim(rval#)) to rval#
     move (psLabel.i(oBreakInfo#,level#)) to label#
     function_return (label#+rval#)
@@ -906,7 +944,7 @@ object oReport_info is an cReport_info
         writeln "  </tr>"
       end
       if (pFileFormat(self)=DFQ.FORMAT.PRINT) begin
-        if level# eq 1 writeln channel 1 ""
+        if (level# = 1) writeln channel 1 ""
         writeln channel 1 (pad("",level#*2)+str#)
       end
     end
@@ -932,7 +970,7 @@ object oReport_info is an cReport_info
     repeat
       decrement level#
       move (level#<0 or piSelect.i(oBreakInfo#,level#)) to fin#
-      ifnot fin# ;
+      If (Not(fin#)) ;
         move (sBreakField_Value.i(self,level#)+", "+str#) to str#
     until fin#
     send print_subheader str# logical_level#
@@ -1084,10 +1122,10 @@ object oReport_info is an cReport_info
            Move (start#+.10)  to start#
 
 //EXPR           move (FieldInf_FieldType(file#,field#)) to fieldtype#
-           if fieldtype# eq DF_BCD move 1 to FontRight#
+           if (fieldtype# = DF_BCD) move 1 to FontRight#
            else move 0 to FontRight#
 
-           if FieldType# eq DF_TEXT begin
+           if (FieldType# = DF_TEXT) begin
              get item_count of (oValues(self)) to base#
              set value of (oValues(self)) item base# to fld#
            end
@@ -1162,13 +1200,13 @@ object oReport_info is an cReport_info
          DFFontSize font_size#
 
 
-         if fieldtype# eq DF_BCD move 1 to FontRight#
+         if (fieldtype# = DF_BCD) move 1 to FontRight#
          else move 0 to FontRight#
 
          if sum# send Sum_Data.in to (oTotals(self)) fld# field_value#
 
-         ifnot TotalsOnly# begin
-           if FieldType# eq DF_TEXT ;
+         If (Not(TotalsOnly#)) begin
+           if (FieldType# = DF_TEXT) ;
              set value of (oValues(self)) item (item_count(oValues(self))) to (Text_RemoveTrailingCr(field_value#))
            else begin
              if cr# DFWriteLn ""
@@ -1182,7 +1220,7 @@ object oReport_info is an cReport_info
            end
          end
        loop
-       ifnot TotalsOnly# begin
+       If (Not(TotalsOnly#)) begin
          If Max# DFWriteLn "" // Only if any fields have been printed
          move (item_count(oValues(self))) to max#
          for fld# from 0 to (max#-1)
@@ -1208,7 +1246,7 @@ object oReport_info is an cReport_info
        DFFont "Arial"
        DFFontSize iFontSize
 
-       if level# eq 1 DFWriteLn ""
+       if (level# = 1) DFWriteLn ""
        
 //       Send DFSetFontSize To WinPrintID ((4-level#*2+10) max 10) 0
 
@@ -1230,7 +1268,7 @@ object oReport_info is an cReport_info
        number start# width# RightStart# oCriteriaTexts#
 
        DFWriteLn ""
-       ifnot end_it_all# DFWriteLine DFGR_CURRLINE DFGR_CURRLINE DFGR_RB_MARGIN DFGR_HORI
+       If (Not(end_it_all#)) DFWriteLine DFGR_CURRLINE DFGR_CURRLINE DFGR_RB_MARGIN DFGR_HORI
 
        DFBeginHeader DFTotal
          DFHeaderPos  HDR_LEFT
@@ -1305,7 +1343,7 @@ object oReport_info is an cReport_info
          if (pPrintCriteria(self)) begin
            move (oCriteriaTexts(self)) to oCriteriaTexts#
            DFWriteLn ""
-           ifnot (item_count(oCriteriaTexts#)) DFWriteLn t.DfQuery.NoSelectionCrit
+           If (Not((item_count(oCriteriaTexts#)))) DFWriteLn t.DfQuery.NoSelectionCrit
            else begin
              DFWriteLn t.DfQuery.SelectionCrit
              for itm# from 0 to (item_count(oCriteriaTexts#)-1)
@@ -1315,7 +1353,7 @@ object oReport_info is an cReport_info
          end
          DFWriteLn (t.DfQuery.LblRecords+" "+string(pRecordCount(self)))
          if (pInterrupted(self)) DFWriteLn t.DfQuery.ReportCancelled
-         if (psTextBottom(self)) ne "" begin
+         if ((psTextBottom(self)) <> "") begin
 //           DFFont "Arial"
 //           DFFontSize 10
            DFWriteLn ""
@@ -1393,7 +1431,7 @@ object oReport_info is an cReport_info
     send batch_on to (oBatchCompanion(self)) (pReportTitle(self))
     #ELSE
     //if liDestination eq DFQ.DEST.FILE begin // File
-    if liDestination ne DFQ.DEST.SCREEN begin // File
+    if (liDestination <> DFQ.DEST.SCREEN) begin // File
        send batch_on to (oBatchCompanion(self)) (pReportTitle(self))
     end   
     #ENDIF
@@ -1403,7 +1441,7 @@ object oReport_info is an cReport_info
     #IFDEF USE$VPE
      set pCurDeferredHeader to (pDeferredHeader(self))
     #ENDIF
-    if liDestination eq DFQ.DEST.FILE begin // File
+    if (liDestination = DFQ.DEST.FILE) begin // File
       get pOutFileName to lsFileName
       direct_output channel 1 (StringOemToAnsi(lsFileName))
       set pLineCount to 0
@@ -1466,15 +1504,15 @@ object oReport_info is an cReport_info
     if (pDestination(self)<>DFQ.DEST.FILE) begin // Not file
       #IFDEF USE$VPE
        get current_row to current_row#
-       if current_row# eq 0 begin
+       if (current_row# = 0) begin
          get vpe_Get of oVPE# VTOPMARGIN to current_row#
          set current_row to current_row#
        end
        send vpe_SetAlign to oVPE# align#
        send vpe_Write to oVPE# start# current_row# (start#+width#) VFREE (trim(value#))
        get vpe_Get of oVPE# VBOTTOM to vbottom#
-       if vbottom# ge (next_current_row(self)) set next_current_row to vbottom#
-       if vbottom# lt current_row# begin
+       if (vbottom# >= (next_current_row(self))) set next_current_row to vbottom#
+       if (vbottom# < current_row#) begin
          get vpe_Get of oVPE# VTOP to vtop#
          set current_row to vtop#
          set next_current_row to vbottom#
@@ -1483,7 +1521,7 @@ object oReport_info is an cReport_info
     end
     else begin
       get pCurrentFileLine to CurrentFileLine#
-      if align# eq ALIGN_RIGHT move (overstrike(RightShift(value#,width#),CurrentFileLine#,start#)) to CurrentFileLine#
+      if (align# = ALIGN_RIGHT) move (overstrike(RightShift(value#,width#),CurrentFileLine#,start#)) to CurrentFileLine#
       else move (overstrike(Pad(value#,width#),CurrentFileLine#,start#)) to CurrentFileLine#
       set pCurrentFileLine to CurrentFileLine#
     end
@@ -1530,7 +1568,7 @@ object oReport_info is an cReport_info
 
      for itm# from 0 to (item_count(oValues(self))-1)
        get value of (oValues(self)) item itm# to str#
-       if str# ne "" begin
+       if (str# <> "") begin
          send new_line
          send print_column str# ALIGN_LEFT (pLeftMargin(self)) 512
        end
@@ -1552,7 +1590,7 @@ object oReport_info is an cReport_info
   end_procedure
 
   function sSeqFile.sii string str# integer format# integer ansi# returns string
-    if format# eq DFQ.FORMAT.CD move ('"'+replaces('"',str#,"'")+'"') to str#
+    if (format# = DFQ.FORMAT.CD) move ('"'+replaces('"',str#,"'")+'"') to str#
     if ansi# move (StringOemToAnsi(str#)) to str#
     function_return str#
   end_function
@@ -1602,7 +1640,7 @@ object oReport_info is an cReport_info
 
        for itm# from 0 to (item_count(oValues#)-1)
          get value of oValues# item itm# to str#
-         if str# ne "" begin
+         if (str# <> "") begin
            send new_line
            send print_column str# ALIGN_LEFT (pLeftMargin(self)) 512
          end
@@ -1657,7 +1695,7 @@ object oReport_info is an cReport_info
 
         for itm# from 0 to (item_count(oValues#)-1)
           get value of oValues# item itm# to str#
-          if str# ne "" begin
+          if (str# <> "") begin
             send new_line
             send print_column str# ALIGN_LEFT (pLeftMargin(self)) 512
           end
@@ -1694,7 +1732,7 @@ object oReport_info is an cReport_info
         loop
         for itm# from 0 to (item_count(oValues#)-1)
           get value of oValues# item itm# to str#
-          if str# ne "" begin
+          if (str# <> "") begin
             writeln ('    <td bgcolor='+RGB_ToHTML(pHTML_TabelHdrColor(self))+'><strong>'+html_DfToHtmlTable(str#)+'</strong></td>')
           end
         loop
@@ -1715,7 +1753,7 @@ object oReport_info is an cReport_info
 
 // Three lines below commented in an attempt to fix problem reported by Bernd Ullenboom. 
 //            if (type#<>DF_TEXT and type#<>DF_BINARY) begin
-              if format# eq DFQ.FORMAT.LD writeln channel 1 (sSeqFile.sii(self,str#,format#,UseAnsiCharacters#))
+              if (format# = DFQ.FORMAT.LD) writeln channel 1 (sSeqFile.sii(self,str#,format#,UseAnsiCharacters#))
               else begin
                 write channel 1 (sSeqFile.sii(self,str#,format#,UseAnsiCharacters#))
                 if (itm#<>(max#-1) or item_count(oValues#)) write field_sep#
@@ -1726,13 +1764,13 @@ object oReport_info is an cReport_info
           get item_count of oValues# to max#
           for itm# from 0 to (max#-1)
             get value of oValues# item itm# to str#
-            if format# eq DFQ.FORMAT.LD writeln channel 1 str#
+            if (format# = DFQ.FORMAT.LD) writeln channel 1 str#
             else begin
               write channel 1 str#
-              if itm# ne (max#-1) write field_sep#
+              if (itm# <> (max#-1)) write field_sep#
             end
           loop
-          if format# eq DFQ.FORMAT.CD writeln channel 1 ""
+          if (format# = DFQ.FORMAT.CD) writeln channel 1 ""
         end
       end //
     end // if file
@@ -1800,7 +1838,7 @@ object oReport_info is an cReport_info
          if (pPrintCriteria(self)) begin
            get vpe_Get of oVPE# VBOTTOM to vbottom#
            move (vbottom#+25) to vbottom#
-           ifnot (item_count(oCriteriaTexts#)) send vpe_Write to oVPE# (pLeftMargin(self)) vbottom# (pRightMargin(self)) VFREE t.DfQuery.NoSelectionCrit
+           If (Not((item_count(oCriteriaTexts#)))) send vpe_Write to oVPE# (pLeftMargin(self)) vbottom# (pRightMargin(self)) VFREE t.DfQuery.NoSelectionCrit
            else begin
              send vpe_Write to oVPE# (pLeftMargin(self)) vbottom# (pRightMargin(self)) VFREE t.DfQuery.SelectionCrit
              for itm# from 0 to (item_count(oCriteriaTexts#)-1)
@@ -1815,7 +1853,7 @@ object oReport_info is an cReport_info
            get vpe_Get of oVPE# VBOTTOM to vbottom#
            send vpe_Write to oVPE# (pLeftMargin(self)) (vbottom#+15) (pRightMargin(self)) VFREE t.DfQuery.ReportCancelled
          end
-         if (psTextBottom(self)) ne "" begin
+         if ((psTextBottom(self)) <> "") begin
            get vpe_Get of oVPE# VBOTTOM to vbottom#
            set current_row to (vbottom#+50)
            set next_current_row to (vbottom#+50)
@@ -1825,11 +1863,11 @@ object oReport_info is an cReport_info
       #ENDIF
     end
     else if (FileFormat#=DFQ.FORMAT.PRINT or FileFormat#=DFQ.FORMAT.HTML) begin
-      if FileFormat# eq DFQ.FORMAT.PRINT begin
+      if (FileFormat# = DFQ.FORMAT.PRINT) begin
         send new_line
         if (any_totals_at_all# or end_it_all#) writeln channel 1 "--------------------------------------------------------------------------"
       end
-      if FileFormat# eq DFQ.FORMAT.HTML begin
+      if (FileFormat# = DFQ.FORMAT.HTML) begin
         if any_totals_at_all# writeln channel 1 "  <tr>"
       end
       get pLeftMargin to pLeftMargin#
@@ -1854,22 +1892,22 @@ object oReport_info is an cReport_info
           else get piDecimals.i of lhExprArr liExprRow to precision#
           move (NumToStr(value#,precision#)) to value#
 
-          if FileFormat# eq DFQ.FORMAT.PRINT ;
+          if (FileFormat# = DFQ.FORMAT.PRINT) ;
             send print_column value# ALIGN_RIGHT (start#*100+pLeftMargin#) (width#*100)
           else ;
             writeln ('    <td bgcolor='+RGB_ToHTML(RGB_Brighten(pHTML_TabelHdrColor(self),50))+if(type#=DF_BCD,' align=right','')+'>'+html_DfToHtmlTable(value#)+'</td>')
         end
         else begin
-          if FileFormat# eq DFQ.FORMAT.HTML begin
-            if any_totals_at_all# if type# ne DF_TEXT writeln '    <td></td>'
+          if (FileFormat# = DFQ.FORMAT.HTML) begin
+            if any_totals_at_all# if (type# <> DF_TEXT) writeln '    <td></td>'
           end
         end
       loop
-      if FileFormat# eq DFQ.FORMAT.HTML begin
+      if (FileFormat# = DFQ.FORMAT.HTML) begin
         if any_totals_at_all# writeln channel 1 "  </tr>"
       end
       if end_it_all# begin
-        if FileFormat# eq DFQ.FORMAT.PRINT begin
+        if (FileFormat# = DFQ.FORMAT.PRINT) begin
           send new_line
           writeln (t.DfQuery.LblRecords+" "+string(pRecordCount(self)))
         end
@@ -1879,9 +1917,9 @@ object oReport_info is an cReport_info
           writeln (html_DfToHtmlTable(t.DfQuery.LblRecords+" "+string(pRecordCount(self)))+"<br>")
         end
         if (pPrintCriteria(self)) begin
-          if FileFormat# eq DFQ.FORMAT.PRINT begin
+          if (FileFormat# = DFQ.FORMAT.PRINT) begin
             writeln ""
-            ifnot (item_count(oCriteriaTexts#)) writeln t.DfQuery.NoSelectionCrit
+            If (Not((item_count(oCriteriaTexts#)))) writeln t.DfQuery.NoSelectionCrit
             else begin
               writeln t.DfQuery.SelectionCrit
               for itm# from 0 to (item_count(oCriteriaTexts#)-1)
@@ -1892,7 +1930,7 @@ object oReport_info is an cReport_info
           end
           else begin
             writeln "<br>"
-            ifnot (item_count(oCriteriaTexts#)) writeln (html_DfToHtmlTable(t.DfQuery.NoSelectionCrit)+'<br>')
+            If (Not((item_count(oCriteriaTexts#)))) writeln (html_DfToHtmlTable(t.DfQuery.NoSelectionCrit)+'<br>')
             else begin
               writeln (html_DfToHtmlTable(t.DfQuery.SelectionCrit)+'<br>')
               for itm# from 0 to (item_count(oCriteriaTexts#)-1)
@@ -1903,11 +1941,11 @@ object oReport_info is an cReport_info
           end
         end
         if (pInterrupted(self)) begin
-          if FileFormat# eq DFQ.FORMAT.PRINT writeln t.DfQuery.ReportCancelled
+          if (FileFormat# = DFQ.FORMAT.PRINT) writeln t.DfQuery.ReportCancelled
           else writeln (html_DfToHtmlTable(t.DfQuery.ReportCancelled)+"<br>")
         end
-        if (psTextBottom(self)) ne "" begin
-          if FileFormat# eq DFQ.FORMAT.PRINT writeln ""
+        if ((psTextBottom(self)) <> "") begin
+          if (FileFormat# = DFQ.FORMAT.PRINT) writeln ""
           else write "<br>"
           get psTextBottom to str#
           if (pUseAnsiCharacters(self)) move (StringOemToAnsi(str#)) to str#
@@ -1962,9 +2000,9 @@ object oReport_info is an cReport_info
     if (pDestination(self)<>DFQ.DEST.FILE) begin // If not file
       #IFDEF USE$VPE
        move (next_current_row(self)-current_row(self)) to delta#
-       if delta# lt 0 move 0 to delta#
+       if (delta# < 0) move 0 to delta#
        set current_row to (next_current_row(self))
-       if (current_row(self)+delta#) gt (pBottomMargin(self)) ;
+       if (current_row(self)+delta# > (pBottomMargin(self))) ;
          send New_Page
       #ENDIF
     end
@@ -2021,7 +2059,7 @@ object oReport_info is an cReport_info
         get rpt_field_expr_row   item itm# to liExprRow
         get rpt_field_type       item itm# to type#
         #IFDEF USE$VPE
-         if liDestination ne DFQ.DEST.FILE send vpe_SelectFont to oVPE# font# size# // Only if not file
+         if (liDestination <> DFQ.DEST.FILE) send vpe_SelectFont to oVPE# font# size# // Only if not file
         #ENDIF
         if file# move (FieldInf_FieldValue(file#,fld#)) to value#
         else begin
@@ -2033,10 +2071,10 @@ object oReport_info is an cReport_info
         if (not(TotalsOnly#) or (liDestination=DFQ.DEST.FILE and (FileFormat#<>DFQ.FORMAT.PRINT and FileFormat#<>DFQ.FORMAT.HTML))) begin
           //move (FieldInf_FieldType(file#,fld#)) to type#
           if cr# send new_line
-          if liDestination ne DFQ.DEST.FILE begin // If not file
+          if (liDestination <> DFQ.DEST.FILE) begin // If not file
             #IFDEF USE$VPE
              if (type#<>DF_TEXT and type#<>DF_BINARY) begin
-               if type# eq DF_BCD begin
+               if (type# = DF_BCD) begin
                  //send obs value#
 
                  if file# get FieldInf_DecPoints file# fld# to dec#
@@ -2058,13 +2096,13 @@ object oReport_info is an cReport_info
                 if (FileFormat#<>DFQ.FORMAT.HTML) move (StringOemToAnsi(value#)) to value#
               end
               if (type#<>DF_TEXT and type#<>DF_BINARY) begin
-                if type# eq DF_BCD begin
+                if (type# = DF_BCD) begin
                   if file# get FieldInf_DecPoints file# fld# to dec#
                   else get piDecimals.i of lhExprArr liExprRow to dec#
 
                   move (NumToStr(value#,dec#)) to value#
                 end
-                if FileFormat# eq DFQ.FORMAT.HTML writeln channel 1 ('    <td'+if(type#=DF_BCD,' align=right','')+'>'+html_DfToHtmlTable(value#)+'</td>')
+                if (FileFormat# = DFQ.FORMAT.HTML) writeln channel 1 ('    <td'+if(type#=DF_BCD,' align=right','')+'>'+html_DfToHtmlTable(value#)+'</td>')
                 else send print_column value# (if(type#=DF_BCD,ALIGN_RIGHT,ALIGN_LEFT)) (start#*100+pLeftMargin#) (width#*100)
               end
               Else Begin
@@ -2085,10 +2123,10 @@ object oReport_info is an cReport_info
               else begin // DFQ.FORMAT.CD or DFQ.FORMAT.LD
                 if (type#=DF_TEXT or type#=DF_BINARY) begin // Text or binary
                   move (length(value#)) to len#
-                  if FileFormat# eq DFQ.FORMAT.CD begin // Comma delimited
+                  if (FileFormat# = DFQ.FORMAT.CD) begin // Comma delimited
                     move (replaces('"',value#,"'")) to value#
                     move ('"'+Text_CompressSubstCr(value#," ")+'"') to value#
-                    if itm# ne (max#-1) write (value#+field_sep#)
+                    if (itm# <> (max#-1)) write (value#+field_sep#)
                     else writeln value#
                   end
                   else begin // Line delimited
@@ -2098,10 +2136,10 @@ object oReport_info is an cReport_info
                 end
                 else begin // Everything but text or binary
                   move (rtrim(value#)) to value#
-                  if FileFormat# eq DFQ.FORMAT.CD begin
-                    if type# eq DF_ASCII move (replaces('"',value#,"'")) to value#
-                    if type# ne DF_DATE move ('"'+value#+'"') to value#
-                    if itm# ne (max#-1) write (value#+field_sep#)
+                  if (FileFormat# = DFQ.FORMAT.CD) begin
+                    if (type# = DF_ASCII) move (replaces('"',value#,"'")) to value#
+                    if (type# <> DF_DATE) move ('"'+value#+'"') to value#
+                    if (itm# <> (max#-1)) write (value#+field_sep#)
                     else writeln value#
                   end
                   else begin // DFQ.FORMAT.LD
@@ -2113,13 +2151,13 @@ object oReport_info is an cReport_info
           end // If file
         end // IfNot TotalsOnly#
       loop
-      ifnot TotalsOnly# begin
+      If (Not(TotalsOnly#)) begin
         for itm# from 0 to (item_count(oValues(self))-1)
           get value of (oValues(self)) item itm# to value#
           move (Text_RemoveTrailingCr(value#)) to value#
           if (liDestination=DFQ.DEST.FILE and FileFormat#=DFQ.FORMAT.HTML) writeln channel 1 ('    <td>'+html_DfToHtmlTable(value#)+'</td>')
           else begin
-            if value# ne "" begin
+            if (value# <> "") begin
               send new_line
               send print_text value#
             end
@@ -2133,7 +2171,7 @@ object oReport_info is an cReport_info
 
     end
     #IFDEF USE$VPE
-     if liDestination ne DFQ.DEST.FILE ;
+     if (liDestination <> DFQ.DEST.FILE) ;
         send batch_update3 to (oBatchCompanion(self)) (t.DfQuery.Page+" "+string(vpe_GetCurrentPage(oVPE#)))
     #ELSE
      else begin
@@ -2169,22 +2207,22 @@ object oReport_info is an cReport_info
     get pDestination to liDestination
     forward send scan_ended
     send print_totals 1 // Parameter 1 makes it print number of records etc...
-    if liDestination ne DFQ.DEST.FILE send print_deferred_headers
+    if (liDestination <> DFQ.DEST.FILE) send print_deferred_headers
     send batch_off to (oBatchCompanion(self))
 
     #IFDEF USE$VPE
-     if liDestination eq DFQ.DEST.PRINTER send PrintDoc to oVPE#
-     if liDestination eq DFQ.DEST.SCREEN send PreviewDoc to oVPE#
+     if (liDestination = DFQ.DEST.PRINTER) send PrintDoc to oVPE#
+     if (liDestination = DFQ.DEST.SCREEN) send PreviewDoc to oVPE#
     #ELSE
-     if liDestination ne DFQ.DEST.FILE begin
+     if (liDestination <> DFQ.DEST.FILE) begin
        Get End_Report of oWinPrintReport# (if(pInterrupted(self),RPT_CANCEL,RPT_OK)) to st#
        send dfClearPrinter of oWinPrintReport#
      end
     #ENDIF
-    if liDestination eq DFQ.DEST.FILE begin
+    if (liDestination = DFQ.DEST.FILE) begin
       if (pFileFormat(self)=DFQ.FORMAT.HTML) writeln '</body></html>'
       close_output channel 1
-      ifnot (pbQuiet(self)) begin
+      If (Not((pbQuiet(self)))) begin
         if (pFileFormat(self)=DFQ.FORMAT.HTML or pFileFormat(self)=DFQ.FORMAT.XML) send html_StartDoc (pOutFileName(self))
         else send info_box t.DfQuery.FileCompleted t.MsgBox.Message
       end
@@ -2214,9 +2252,9 @@ object oReport_info is an cReport_info
     send initialize_breaks
     get pDestination to liDestination
     get pFileFormat to liFileFormat
-    if liDestination eq DFQ.DEST.FILE begin // File#
+    if (liDestination = DFQ.DEST.FILE) begin // File#
       get pOutFileName to lsFileName
-      if lsFileName eq "" begin
+      if (lsFileName = "") begin
         send obs t.DfQuery.FileNameNotSpec
         procedure_return // Goodbye!
       end
@@ -2270,11 +2308,11 @@ object oReport_info is an cReport_info
       set pOpenOptions of oVPE# to (pOpenOptions# iOr VPE_LANDSCAPE)
   #ENDIF
     end
-    get_argument_size to argument_size#
+    // get_argument_size to argument_size#
     // This we do to avoid having the RT crash because of default 2048:
-    if argument_size# lt 32767 set_argument_size 32767 // 32K-1
+    // if (argument_size# < 32767) set_argument_size 32767 // 32K-1
     forward send run
-    set_argument_size argument_size#
+    // set_argument_size argument_size#
     set pOpenOptions of oVPE# to pOpenOptions#
     if (pLandScape(self)) begin
       get pLeftMargin to vpetmp#
@@ -2287,20 +2325,20 @@ object oReport_info is an cReport_info
     move tmp# to oVPE#
     #ELSE
     // wp2.... add a printer select dialog with cancel
-    if liDestination ne DFQ.DEST.FILE begin // File#
+    if (liDestination <> DFQ.DEST.FILE) begin // File#
        send DfClosePreview of oWinPrintReport# //<-inserted Feb 22nd 2005
        send DFClearDoc of oWinPrintReport#
     end
     Get DFGetMetrics of oWinPrintReport# to metrics#
     Send DFSetMetrics of oWinPrintReport# wpm_cm
-    get_argument_size to argument_size#
+    // get_argument_size to argument_size#
     // This we do to avoid having the RT crash because of default 2048:
-    if argument_size# lt 32767 set_argument_size 32767 // 32K-1
+    // if (argument_size# < 32767) set_argument_size 32767 // 32K-1
     forward send run
-    set_argument_size argument_size#
+    // set_argument_size argument_size#
     Send DFSetMetrics of oWinPrintReport# metrics#
     #ENDIF
-    if liDestination eq DFQ.DEST.FILE begin // File#
+    if (liDestination = DFQ.DEST.FILE) begin // File#
       set pLeftMargin to pLeftMargin#
       for itm# from 0 to (max#-1)
         set rpt_field_start item itm# to (rpt_field_start(self,itm#)*100)
@@ -2382,7 +2420,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
     property string  pFont        ""
     property integer pFontSize    0
     property integer phForcedDD   0
-    if gsVdfQuery_Icon# ne "" set icon to gsVdfQuery_Icon#
+    if (gsVdfQuery_Icon# <> "") set icon to gsVdfQuery_Icon#
     set help_id to hlpid.VdfQuery
     set Window_Style to WS_MAXIMIZEBOX 1
     property integer pDestroyOnClose (not(og_param(2)))
@@ -2463,10 +2501,10 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             if (DfQuery_ExcludeFile(file#)=DFQ_FALSE) begin
               get_attribute DF_FILE_DISPLAY_NAME of file# to str#
               move (rtrim(str#)) to str#
-              ifnot (StringBeginsWith(str#,"@")) send combo_add_item str# file#
+              If (Not((StringBeginsWith(str#,"@")))) send combo_add_item str# file#
             end
           end
-        until file# eq 0
+        until (file# = 0)
       end_procedure
       send init
 
@@ -2474,7 +2512,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
       procedure DoSetFile integer file# integer set_main_window#
         integer callfile#
         string str#
-        ifnot (pbNoRecursion(self)) begin
+        If (Not((pbNoRecursion(self)))) begin
           set pbNoRecursion to DFTRUE
           move file# to callfile#
           if (DBMS_OpenFile(file#,DF_SHARE,0)) begin
@@ -2485,7 +2523,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             if file# error 200 "File could not be opened"
             get pMainFile to file#
           end
-          if file# eq 0 move "" to str#
+          if (file# = 0) move "" to str#
           else begin
             get_attribute DF_FILE_DISPLAY_NAME of file# to str#
             move (rtrim(str#)) to str#
@@ -2530,7 +2568,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
       send Add_ToolTip t.DfQuery.tt.AdvTableOpen
       send Add_Button ICO_STD_FILEOPEN msg_Read_Report_Definition
       send Add_ToolTip t.DfQuery.tt.Open
-      ifnot (integer(og_param(2))) begin // If not a sub-report
+      If (Not((integer(og_param(2))))) begin
         send Add_Button ICO_STD_FILESAVE msg_Write_Report_Definition
         send Add_ToolTip t.DfQuery.tt.Save
         send Add_Button ICO_STD_FILENEW msg_NewQuery
@@ -2550,16 +2588,16 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
       string str#
       get pMainFile to file#
       get value of (oTitle(self)) item 0 to str#
-      if str# eq "" if file# get_attribute DF_FILE_DISPLAY_NAME of file# to str#
+      if ((str# = "") and file#) get_attribute DF_FILE_DISPLAY_NAME of file# to str#
       function_return (trim(str#))
     end_function
 
     procedure OnChangeMainFile
       string str# caption# title#
       get report_title to title#
-      if title# ne "" begin
+      if (title# <> "") begin
         move (t.DfQuery.QueryDefinition+" (#)") to caption#
-        replace "#" in caption# with (report_title(self))
+        Move (Replace("#", caption#, (report_title(self)))) to caption#
       end
       else move t.DfQuery.QueryDefinition to caption#
       set label to caption#
@@ -2574,30 +2612,42 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
         set p_auto_column to 0
 
         DEFINE_OBJECT_GROUP OG_QueryViewComponent // int: allow DoAddAllFields
-          object oDBMS_Files is a aps.list label t.DfQuery.DBMSfiles
+          object oDBMS_Files is a cCJGrid
+              // TODO: oDBMS_Files was a aps.list - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+              Set pbShowHeader to False   // single-column list (no column header)
             property integer pDisplayFileNamesUser 1
             set size to 60 150
             set label_justification_mode to JMODE_TOP
-
             set Label_Shadow_Display_Mode to TBSHADOW_ON_NONE // Nicholas Herlick
             set label to t.DfQuery.DBMSfiles
-
             on_key kenter send next
             on_key kswitch_back send activate to (oTitle(self))
             on_key key_ctrl+key_p send OpenQueryOnParentFile
             on_key kuser send toggle_display
             on_key KEY_CTRL+KEY_D send DoDisplayTableDefinition
             set peAnchors to (anTop+anLeft)
+
+              Object oCol1 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to ""
+              End_Object
+
             procedure toggle_display
               set pDisplayFileNamesUser to (not(pDisplayFileNamesUser(self)))
               send InsertFileNames
             end_procedure
 
             procedure OpenQueryOnParentFile
-              integer file# itm#
+              integer file# iRow
+              Integer iCol
+              Handle hoDataSource
+              tDataSourceRow[] TheData
+
               if (item_count(self)) begin
-                get current_item to itm#
-                get aux_value item itm# to file#
+                Get phoDataSource to hoDataSource
+                Get SelectedRow of hoDataSource to iRow
+                Get DataSource of hoDataSource to TheData
+                get aux_value item iRow to file#
                 send CreateNewQuery file#
               end
             end_procedure
@@ -2635,12 +2685,13 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 else get_attribute DF_FILE_LOGICAL_NAME of file# to str#
                 set value item itm# to str#
               loop
-              set dynamic_update_state to true
             end_procedure
+
             procedure FileNamesLogical
               set pDisplayFileNamesUser to false
               send InsertFileNames
             end_procedure
+
             procedure FileNamesUser
               set pDisplayFileNamesUser to true
               send InsertFileNames
@@ -2648,27 +2699,33 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
 
             property integer piOgParam0 0
             set piOgParam0 to (og_param(0))
-            procedure mouse_down2 integer liWin integer liCharPos
-              send mouse_down liWin liCharPos // Take focus
+            // Converted from Mouse_Down2: iRow = row index, iCol = column index.
+            Procedure OnRowRightClick Integer iRow Integer iCol
+              send mouse_down iRow iCol // Take focus
               if (piOgParam0(self)) send popup to (oVdfQuery_FileSelectTab1_FM(self))
               else send popup to (oVdfQuery_FileSelect_FM(self))
             end_procedure
 
             procedure add_file integer file#
-              integer field# max_field# rel_file#
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow iCol1 field# max_field# rel_file#
+
+              Get piColumnId of oCol1 to iCol1
+              Move 0 to iRow
 
               if (DBMS_OpenFile(file#,DF_SHARE,0)) begin
                 get_attribute DF_FILE_NUMBER_FIELDS of file# to max_field#
                 move (max_field# min 255) to max_field#
 
-                if (find_element(oSet(self),file#)) eq -1 begin
+                if ((find_element(oSet(self),file#)) = -1) begin
                   send add_element to (oSet(self)) file#
-                  send add_item msg_none ""
+                  Move "" to TheData[iRow].sValue[iCol1]
+                  Increment iRow
                   set aux_value item (item_count(self) - 1) to file#
 
                   for field# from 1 to max_field#
                     get_attribute DF_FIELD_RELATED_FILE of file# field# to rel_file#
-                    if rel_file# ne 0 begin
+                    if (rel_file# <> 0) begin
                       if (DfQuery_ExcludeFile(file#)<>DFQ_ALWAYS) ;
                         send add_file rel_file#
                     end
@@ -2676,9 +2733,17 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 end
               end
               else error 200 ("Related file could not be opened (entry: "+string(file#)+")")
-            end_procedure
 
-            procedure fill_list
+                  If (iRow <> 0) Begin
+                      Send ReInitializeData TheData False
+                      Send MoveToFirstRow
+                  End
+                  Else Begin
+                      Send InitializeData TheDataEmpty
+                  End
+              End_Procedure
+
+            procedure LoadData
               integer file# st#
 
               send delete_data
@@ -2691,7 +2756,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             end_procedure
 
             procedure OnChangeMainFile
-              send fill_list
+              send LoadData
             end_procedure
 
             procedure onchange
@@ -2706,11 +2771,17 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             end_function
 
             Function Status_Help integer itm_tmp# returns string
-              integer itm# aux#
+              integer iRow aux#
               string str#
-              if num_arguments eq 0 get current_item to itm#
+              Integer iCol
+              Handle hoDataSource
+              tDataSourceRow[] TheData
+
+              Get phoDataSource to hoDataSource
+              Get SelectedRow of hoDataSource to iRow
+              Get DataSource of hoDataSource to TheData
               //else move itm_tmp# to itm#
-              get aux_value item itm# to aux#
+              get aux_value item iRow to aux#
               get VdfQuery_file_status_help aux# to str#
               function_return str#
             End_Function
@@ -2726,17 +2797,23 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
           end_object
           send aps_goto_max_row
           send make_row_space
-          object oDBMS_Fields is a aps.list //snap sl_down
+          object oDBMS_Fields is a cCJGrid
+              // TODO: oDBMS_Fields was a aps.list - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+              Set pbShowHeader to False   // single-column list (no column header)
             property integer pDisplayFieldNamesUser 1
             property integer pFileNumber            0
             set size to 75 150
-
             on_key kswitch send switch
             on_key kswitch_back send switch_back
             on_key kEnter Send do_add_field
             on_key kuser send toggle_display
-
             set peAnchors to (anTop+anLeft+anBottom)
+
+              Object oCol1 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to ""
+              End_Object
+
             procedure toggle_display
               set pDisplayFieldNamesUser to (not(pDisplayFieldNamesUser(self)))
               send InsertFieldNames
@@ -2744,8 +2821,9 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
 
             property integer piOgParam0 0
             set piOgParam0 to (og_param(0))
-            procedure mouse_down2 integer liWin integer liCharPos
-              send mouse_down liWin liCharPos // Take focus
+            // Converted from Mouse_Down2: iRow = row index, iCol = column index.
+            Procedure OnRowRightClick Integer iRow Integer iCol
+              send mouse_down iRow iCol // Take focus
               if (piOgParam0(self)) send popup to (oVdfQuery_FieldSelectTab1_FM(self))
               else send popup to (oVdfQuery_FieldSelect_FM(self))
             end_procedure
@@ -2759,33 +2837,36 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               get item_count to max#
               for itm# from 0 to (max#-1)
                 get aux_value item itm# to fld#
-                if fld# lt 256 begin
+                if (fld# < 256) begin
                   if type# get FieldInf_FieldLabel_Long file# fld# to str#
                   else get_attribute DF_FIELD_NAME of file# fld# to str#
                   set value item itm# to str#
                 end
               loop
-              set dynamic_update_state to true
             end_procedure
 
             if (integer(og_param(0))) on_key key_ctrl+key_a send DoAddAllFields
             if (integer(og_param(0))) on_key key_ctrl+key_i send DoAddIndexFields
+
             procedure FieldNamesLogical
               set pDisplayFieldNamesUser to false
               send InsertFieldNames
             end_procedure
+
             procedure FieldNamesUser
               set pDisplayFieldNamesUser to true
               send InsertFieldNames
             end_procedure
-            procedure mouse_click integer i1 integer i2
+            // Converted from Mouse_Click: iRow = row index, iCol = column index.
+            Procedure OnRowDoubleClick Integer iRow Integer iCol
                Send do_add_field
             end_procedure
+
             procedure load_virtual_fields integer file#
               integer obj# fld# max#
               get FieldInf_VirtualFields_Object file# to obj#
               if obj# begin
-                get row_count of obj# to max#
+                Get piRowCount to max#
                 for fld# from 0 to (max#-1)
                   if (piFieldActive.i(obj#,fld#)) begin
                     send add_item msg_do_add_field (psFieldLabel.i(obj#,fld#))
@@ -2794,6 +2875,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 loop
               end
             end_procedure
+
             procedure file_change integer file#
               integer field# max_field# fieldtype# st#
               string str#
@@ -2808,8 +2890,8 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                   get_attribute DF_FIELD_NAME of file# field# to str#
                   move (FieldInf_FieldType(file#,field#)) to fieldtype#
                   if (fieldtype#<>DF_OVERLAP and fieldtype#<>DF_BINARY) begin
-                    ifnot (StringBeginsWith(str#,"@")) begin
-                      ifnot (DfQuery_ExcludeField(file#,field#)) begin
+                    If (Not((StringBeginsWith(str#,"@")))) begin
+                      If (Not((DfQuery_ExcludeField(file#,field#)))) begin
                         send add_item msg_do_add_field "" //str#
                         set aux_value item (item_count(self)-1) to field#
                       end
@@ -2820,9 +2902,11 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 send load_virtual_fields file#
               end
             end_procedure
+
             function current_aux returns integer
               function_return (aux_value(self,current_item(self)))
             end_function
+
             function iFindField.i integer liField returns integer
               integer liItm liMax
               get item_count to liMax
@@ -2832,6 +2916,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               loop
               function_return -1 // not found
             end_function
+
             procedure DoAddIndexFields
               integer liIndex liFile liMax liItm liField lbFieldAllowed
               string lsFields
@@ -2855,6 +2940,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 end
               end
             end_procedure
+
             procedure DoAddAllFields
               integer itm# max#
               get item_count to max#
@@ -2865,19 +2951,28 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 end
               loop
             end_procedure
+
             Function Status_Help integer itm_tmp# returns string
-              integer itm# file# aux#
+              integer iRow file# aux#
               string str#
-              if num_arguments eq 0 get current_item to itm#
-              else move itm_tmp# to itm#
+              Integer iCol
+              Handle hoDataSource
+              tDataSourceRow[] TheData
+
+              Get phoDataSource to hoDataSource
+              Get SelectedRow of hoDataSource to iRow
+              Get DataSource of hoDataSource to TheData
+              else move itm_tmp# to iRow
               get current_aux of (oDBMS_Files(self)) to file#
-              get aux_value item itm# to aux#
+              get aux_value item iRow to aux#
               get VdfQuery_field_status_help file# aux# to str#
               function_return str#
             End_Function
+
             procedure OnChange
               send request_status_help 1
             end_procedure
+
             procedure DoGotoField integer liField
               integer liMax liItm
               get item_count to liMax
@@ -2886,6 +2981,32 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 if (aux_value(self,liItm)=liField) set current_item to liItm
               loop
             end_procedure
+
+              Procedure LoadData
+                  tDataSourceRow[] TheData TheDataEmpty
+                  Integer iRow iCol1
+
+                  Get piColumnId of oCol1 to iCol1
+                  Move 0 to iRow
+
+                  // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+                  //   Move someValue to TheData[iRow].sValue[iCol1]
+                  //   Increment iRow
+
+                  If (iRow <> 0) Begin
+                      Send ReInitializeData TheData False
+                      Send MoveToFirstRow
+                  End
+                  Else Begin
+                      Send InitializeData TheDataEmpty
+                  End
+              End_Procedure
+
+              Procedure Activating
+                  Forward Send Activating
+                  Send LoadData
+              End_Procedure
+
           end_object // oDBMS_Files
           set label of (oDBMS_Fields(self)) to t.DfQuery.DBMSfields
           set Label_Shadow_Display_Mode of (oDBMS_Fields(self)) to TBSHADOW_ON_NONE // Nicholas Herlick
@@ -2900,12 +3021,11 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
         object oGrp is a aps.Group label t.DfQuery.LblGrpPrnt snap sl_right relative_to (oDBMS_Files(self))
           set p_auto_column to 0
           set peAnchors to (anTop+anLeft+anRight+anBottom)
-          object oGrd is a aps.Grid
-            set peResizeColumn to rcAll
+          object oGrd is a cCJGrid
+              // TODO: oGrd was a aps.Grid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
             set peAnchors to (anTop+anLeft+anRight+anBottom)
             on_key kenter send next
             set size to 100 0
-            set line_width to 5 0
             set form_margin item 0 to 25
             set form_margin item 1 to 2
             set form_margin item 2 to 2
@@ -2916,11 +3036,6 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             set form_datatype item 2 to ascii_window
             set form_datatype item 3 to 1
             set form_datatype item 4 to 1
-            set header_label item 0 to t.DfQuery.LblGrdPrnt0
-            set header_label item 1 to t.DfQuery.LblGrdPrnt1
-            set header_label item 2 to t.DfQuery.LblGrdPrnt2
-            set header_label item 3 to t.DfQuery.LblGrdPrnt3
-            set header_label item 4 to t.DfQuery.LblGrdPrnt4
             set Status_Help item 0 to t.DfQuery.SthGrdPrnt0
             set Status_Help item 1 to t.DfQuery.SthGrdPrnt1
             set Status_Help item 2 to t.DfQuery.SthGrdPrnt2
@@ -2928,18 +3043,41 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             set Status_Help item 4 to t.DfQuery.SthGrdPrnt4
             //set highlight_row_state to true
             //set highlight_row_color to (rgb(0,255,255))
-
-            set CurrentCellColor     to clHighlight
-            set CurrentCellTextColor to clHighlightText
-            set CurrentRowColor      to clHighlight
-            set CurrentRowTextColor  to clHighlightText
-
-            set select_mode to multi_select
+            Set piFocusCellBackColor to clHighlight
+            Set piFocusCellForeColor to clHighlightText
+            Set piHighlightBackColor to clHighlight
+            Set piHighlightForeColor to clHighlightText
+            Set pbMultipleSelection to True
             set auto_top_item_state to false
             on_key kdelete_record send delete_row
             on_key key_ctrl+key_j send calculate_offsets
             on_key kswitch send switch
             on_key kswitch_back send switch_back
+
+              Object oCol1 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to t.DfQuery.LblGrdPrnt0
+              End_Object
+
+              Object oCol2 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to t.DfQuery.LblGrdPrnt1
+              End_Object
+
+              Object oCol3 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to t.DfQuery.LblGrdPrnt2
+              End_Object
+
+              Object oCol4 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to t.DfQuery.LblGrdPrnt3
+              End_Object
+
+              Object oCol5 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to t.DfQuery.LblGrdPrnt4
+              End_Object
 
             procedure load_report_info // Title, file, fields to be printed
               integer row# max# file# field# base# sum# cr# fontsize#
@@ -2950,7 +3088,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               set pMainFile of oReport_info# to (pMainFile(self))
               set pOrdering of oReport_info# to (pOrdering(self))
               set pBottomText of oReport_info# to "bottom"
-              send delete_data to oReport_info#
+//              send delete_data to oReport_info#
               get report_fontsize to fontsize#
               get report_font to font#
               // wp2 - addded for wp1
@@ -2972,55 +3110,76 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 get value item (base#+3) to start#
                 get value item (base#+4) to width#
                 if file# begin
-                  send add_field to oReport_info# file# field# name# cr# start# width# font# fontsize# sum# 0 0 0
+//                  send add_field to oReport_info# file# field# name# cr# start# width# font# fontsize# sum# 0 0 0
                 end
                 else begin
                   get aux_value item (base#+1) to liExprRow
-                  send add_field to oReport_info# file# field# name# cr# start# width# font# fontsize# sum# 0 lhExprArr liExprRow
+//                  send add_field to oReport_info# file# field# name# cr# start# width# font# fontsize# sum# 0 lhExprArr liExprRow
                 end
               loop
             end_procedure
+
             function base_item returns integer
-              integer itm#
-              get current_item to itm#
-              function_return ((itm#/5)*5)
+              integer iRow
+              Integer iCol
+              Handle hoDataSource
+              tDataSourceRow[] TheData
+
+              Get phoDataSource to hoDataSource
+              Get SelectedRow of hoDataSource to iRow
+              Get DataSource of hoDataSource to TheData
+              function_return ((iRow/5)*5)
             end_function
-            procedure add_row
-              integer base#
-              get item_count to base#
-              set dynamic_update_state to DFFALSE
-              send add_item msg_none ""
-              send add_item msg_none ""
-              send add_item msg_none ""
-              send add_item msg_none ""
-              send add_item msg_none ""
-              set dynamic_update_state to DFTRUE
-            end_procedure
+
+            procedure LoadData
+              tDataSourceRow[] TheData TheDataEmpty
+              Integer iRow iCol1 iCol2 iCol3 iCol4 iCol5 base#
+
+              Get piColumnId of oCol1 to iCol1
+              Get piColumnId of oCol2 to iCol2
+              Get piColumnId of oCol3 to iCol3
+              Get piColumnId of oCol4 to iCol4
+              Get piColumnId of oCol5 to iCol5
+              Move 0 to iRow
+
+              Move "" to TheData[iRow].sValue[iCol1]
+              Move "" to TheData[iRow].sValue[iCol2]
+              Move "" to TheData[iRow].sValue[iCol3]
+              Move "" to TheData[iRow].sValue[iCol4]
+              Move "" to TheData[iRow].sValue[iCol5]
+              Increment iRow
+
+                  If (iRow <> 0) Begin
+                      Send ReInitializeData TheData False
+                      Send MoveToFirstRow
+                  End
+                  Else Begin
+                      Send InitializeData TheDataEmpty
+                  End
+              End_Procedure
+
             procedure insert_row
               integer base#
               if (item_count(self)) begin
                 get base_item to base#
-                set dynamic_update_state to DFFALSE
-                send insert_item 0 "" base#
-                send insert_item 0 "" base#
-                send insert_item 0 "" base#
-                send insert_item 0 "" base#
-                send insert_item 0 "" base#
-                set dynamic_update_state to DFTRUE
+//                send insert_item 0 "" base#
+//                send insert_item 0 "" base#
+//                send insert_item 0 "" base#
+//                send insert_item 0 "" base#
+//                send insert_item 0 "" base#
               end
-              else send add_row
+              else send LoadData
             end_procedure
+
             procedure delete_row
               integer base#
               if (item_count(self)) begin
                 get base_item to base#
-                set dynamic_update_state to DFFALSE
-                send delete_item base#
-                send delete_item base#
-                send delete_item base#
-                send delete_item base#
-                send delete_item base#
-                set dynamic_update_state to DFTRUE
+//                send delete_item base#
+//                send delete_item base#
+//                send delete_item base#
+//                send delete_item base#
+//                send delete_item base#
               end
             end_procedure
 
@@ -3035,12 +3194,12 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
 
               move (piType.i(lhExprArr,liRow)) to liFieldType
 
-              if liFieldType ne DF_BCD set item_shadow_state item (liBase+1) to DFTRUE
+              if (liFieldType <> DF_BCD) set item_shadow_state item (liBase+1) to DFTRUE
               else set checkbox_item_state item (liBase+1) to DFTRUE
 
               set checkbox_item_state item (liBase+2) to DFTRUE
 
-              if liFieldType eq DF_TEXT set item_shadow_state item (liBase+4) to DFTRUE
+              if (liFieldType = DF_TEXT) set item_shadow_state item (liBase+4) to DFTRUE
               set current_item to liBase
             end_procedure
 
@@ -3051,31 +3210,29 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
 
               move (FieldInf_FieldType(file#,field#)) to fieldtype#
 
-              if fieldtype# ne DF_BCD set item_shadow_state item (base#+1) to DFTRUE
+              if (fieldtype# <> DF_BCD) set item_shadow_state item (base#+1) to DFTRUE
               else set checkbox_item_state item (base#+1) to DFTRUE
 
               set checkbox_item_state item (base#+2) to DFTRUE
 
-              if fieldtype# eq DF_TEXT set item_shadow_state item (base#+4) to DFTRUE
+              if (fieldtype# = DF_TEXT) set item_shadow_state item (base#+4) to DFTRUE
               set current_item to base#
             end_procedure
 
             procedure add_field integer file# integer field#
               integer base#
               get item_count to base#
-              send add_row
-              send do_field file# field# base#
-              set dynamic_update_state to true
-              send calculate_offsets
+//              send LoadData
+//              send do_field file# field# base#
+//              send calculate_offsets
             end_procedure
 
             procedure insert_field integer file# integer field#
               integer base#
               get base_item to base#
-              send insert_row
-              send do_field file# field# base#
-              set dynamic_update_state to true
-              send key kuparrow
+//              send insert_row
+//              send do_field file# field# base#
+//              send key kuparrow
             end_procedure
 
             function bIsExprRow integer liBase returns integer
@@ -3085,27 +3242,26 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             procedure DoCcAdd
               integer liRow lhExprArr liBase
               move (oQuery_ExprArray(self)) to lhExprArr
-              send DoInformExpressionThingAboutAllowedTables to (oDBMS_Files(self))
+//              send DoInformExpressionThingAboutAllowedTables to (oDBMS_Files(self))
               get iPopup.ii of (Query_ColumnExpression(self)) lhExprArr -1 to liRow
               if (liRow<>-1) begin
                 get item_count to liBase
-                send add_row
-                send do_expression liRow liBase
-                set dynamic_update_state to DFTRUE
-                send calculate_offsets
+//                send LoadData
+//                send do_expression liRow liBase
+//                send calculate_offsets
               end
             end_procedure
+
             procedure DoCcInsert
               integer liRow lhExprArr liBase
               move (oQuery_ExprArray(self)) to lhExprArr
-              send DoInformExpressionThingAboutAllowedTables to (oDBMS_Files(self))
+//              send DoInformExpressionThingAboutAllowedTables to (oDBMS_Files(self))
               get iPopup.ii of (Query_ColumnExpression(self)) lhExprArr -1 to liRow
               if (liRow<>-1) begin
                 get base_item to liBase
-                send insert_row
-                send do_expression liRow liBase
-                set dynamic_update_state to DFTRUE
-                send calculate_offsets
+//                send insert_row
+//                send do_expression liRow liBase
+//                send calculate_offsets
               end
             end_procedure
 
@@ -3114,14 +3270,13 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               if (item_count(self)) begin
                 get base_item to liBase
                 if (bIsExprRow(self,liBase)) begin
-                  send DoInformExpressionThingAboutAllowedTables to (oDBMS_Files(self))
+//                  send DoInformExpressionThingAboutAllowedTables to (oDBMS_Files(self))
                   move (oQuery_ExprArray(self)) to lhExprArr
                   get aux_value item (liBase+1) to liExprRow
                   get iPopup.ii of (Query_ColumnExpression(self)) lhExprArr liExprRow to liRow
                   if (liRow<>-1) begin
-                    send do_expression liRow liBase
-                    set dynamic_update_state to DFTRUE
-                    send calculate_offsets
+//                    send do_expression liRow liBase
+//                    send calculate_offsets
                   end
                 end
               end
@@ -3131,27 +3286,35 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             function row_start integer row# returns number
               function_return (value(self,row#*5+3))
             end_function
+
             function row_width integer row# returns number
               function_return (value(self,row#*5+4))
             end_function
+
             procedure set row_start integer row# number value#
               set value item (row#*5+3) to value#
             end_procedure
+
             procedure set row_width integer row# number value#
               set value item (row#*5+4) to value#
             end_procedure
+
             function row_file integer row# returns integer
               function_return (hi(integer(aux_value(self,row#*5))))
             end_function
+
             function row_field integer row# returns integer
               function_return (low(integer(aux_value(self,row#*5))))
             end_function
+
             function row_cr integer row# returns integer
               function_return (select_state(self,row#*5+2))
             end_function
+
             function row_label integer row# returns string
               function_return (value(self,row#*5))
             end_function
+
             function row_expr_row integer row# returns string
               function_return (integer(aux_value(self,row#*5+1)))
             end_function
@@ -3161,17 +3324,19 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               get row_file liRowTo to liFile
               get row_field liRowTo to liField
               if (liFile<>0) begin
-                send DoGotoFile to (oDBMS_Files(self)) liFile
-                send DoGotoField to (oDBMS_Fields(self)) liField
+//                send DoGotoFile to (oDBMS_Files(self)) liFile
+//                send DoGotoField to (oDBMS_Fields(self)) liField
               end
             end_procedure
-            procedure item_change integer liItm1 integer liItm2 returns integer
-              integer liRval liColumns
-              get Grid_Columns self to liColumns
-              forward get msg_item_change liItm1 liItm2 to liRval
-              if ((liItm1/liColumns)<>(liRval/liColumns)) send row_change (liItm1/liColumns) (liRval/liColumns)
-              procedure_return liRval
-            end_procedure
+
+            // TODO: Legacy grid method -- consider using OnRowChange (note: Item_Change fires on every cell move; OnRowChange only fires when the row changes).
+//            procedure item_change integer liItm1 integer liItm2 returns integer
+//              integer liRval liColumns
+//              get Grid_Columns self to liColumns
+//              forward get msg_item_change liItm1 liItm2 to liRval
+//              if ((liItm1/liColumns)<>(liRval/liColumns)) send row_change (liItm1/liColumns) (liRval/liColumns)
+//              procedure_return liRval
+//            end_procedure
 
 
             procedure MarkUsedExpressions
@@ -3182,9 +3347,9 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               for liRow from 0 to liMax
                 get Grid_RowBaseItem self liRow to liBase
                 get aux_value item liBase to liFileField
-                ifnot liFileField begin
+                If (Not(liFileField)) begin
                   get aux_value item (liBase+1) to liExprRow
-                  send CleanUp_MarkAsUsed to lhExprArr liExprRow
+//                  send CleanUp_MarkAsUsed to lhExprArr liExprRow
                 end
               loop
             end_procedure
@@ -3197,7 +3362,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               for liRow from 0 to liMax
                 get Grid_RowBaseItem self liRow to liBase
                 get aux_value item liBase to liFileField
-                ifnot liFileField begin
+                If (Not(liFileField)) begin
                   get aux_value item (liBase+1) to liExprRow
                   get pbCleanupNewRow.i of lhExprArr liExprRow to liExprRow
                   set aux_value item (liBase+1) to liExprRow
@@ -3213,9 +3378,9 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               move (oQuery_ExprArray(self)) to lhExprArr
 
               get Current_Destination to printable_file#
-              if printable_file# eq 2 begin
+              if (printable_file# = 2) begin
                 get Current_FileFormat to printable_file#
-                if printable_file# eq DFQ.FORMAT.PRINT move 1 to printable_file#
+                if (printable_file# = DFQ.FORMAT.PRINT) move 1 to printable_file#
                 else move 0 to printable_file#
               end
               else move 0 to printable_file#
@@ -3225,7 +3390,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
 
               move (item_count(self)/5) to max#
               move (base_item(self)/5) to row#
-              if row# ne 0 begin
+              if (row# <> 0) begin
                 get row_width (row#-1) to width#
                 get row_start (row#-1) to start#
                 move (start#+space#) to start#
@@ -3244,7 +3409,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                   move (piType.i(lhExprArr,liExprRow)) to fieldtype#
                 end
                 else move (FieldInf_FieldType(file#,field#)) to fieldtype#
-                if fieldtype# ne DF_TEXT begin
+                if (fieldtype# <> DF_TEXT) begin
                   move (start#+width#) to start#
                   if (row_cr(self,row#)) move 0 to start#
                   if (file#=0) get piWidth.i of lhExprArr liExprRow to mrg#
@@ -3258,7 +3423,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                     get row_label row# to row_label#
                     get VdfQuery_value_width_cm row_label# font# fontsize# to label_width#
                   end
-                  if label_width# gt width# move label_width# to width#
+                  if (label_width# > width#) move label_width# to width#
                   set row_start row# to start#
                   set row_width row# to width#
                   move (start#+space#) to start#
@@ -3267,8 +3432,14 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             end_procedure
 
             procedure OnChangeMainFile
-              send delete_data
+//              send delete_data
             end_procedure
+
+              Procedure Activating
+                  Forward Send Activating
+                  Send LoadData
+              End_Procedure
+
           end_object
           set multi_button_size to 14 40
           object oBtn1 is a aps.Multi_Button
@@ -3409,40 +3580,49 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
           end_object
 
           set p_auto_column to 0
-          object oGrd is a aps.Grid
-            set peResizeColumn to rcAll
+          object oGrd is a cCJGrid
+              // TODO: oGrd was a aps.Grid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
             set peAnchors to (anTop+anLeft+anRight+anBottom)
             if giVdfQuery_Expressions_State set Size to 87 0
             else set Size to 100 0
-            set Line_Width to 3 0
             set Form_Margin item 0 to 20
             set Form_Margin item 1 to 2
             set Form_Margin item 2 to 20
             set Form_Datatype item 0 to ascii_window
             set Form_Datatype item 1 to ascii_window
             set Form_Datatype item 2 to ascii_window
-            set Header_Label item 0 to t.DfQuery.LblGrdCrit0
-            set Header_Label item 1 to t.DfQuery.LblGrdCrit1
-            set Header_Label item 2 to t.DfQuery.LblGrdCrit2
             set Status_Help item 0 to t.DfQuery.SthGrdCrit0
             set Status_Help item 1 to t.DfQuery.SthGrdCrit1
             set Status_Help item 2 to t.DfQuery.SthGrdCrit2
-            set Highlight_Row_State to true
+            Set pbShowRowFocus to True
 //          set Highlight_Row_Color to (rgb(0,255,255))
-            set CurrentCellColor     to clHighlight
-            set CurrentCellTextColor to clHighlightText
-            set CurrentRowColor      to clHighlight
-            set CurrentRowTextColor  to clHighlightText
-
+            Set piFocusCellBackColor to clHighlight
+            Set piFocusCellForeColor to clHighlightText
+            Set piHighlightBackColor to clHighlight
+            Set piHighlightForeColor to clHighlightText
             Set pbUseDisabledColor  To True
             Set peDisabledColor     To clWhite // clBtnShadow
             Set peDisabledTextColor To clBlack // clBtnText
-
-            set Select_Mode to MULTI_SELECT
+            Set pbMultipleSelection to True
             set Auto_Top_Item_State to false
             on_key kdelete_record send delete_row
             on_key kswitch send switch
             on_key kswitch_back send switch_back
+
+              Object oCol1 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to t.DfQuery.LblGrdCrit0
+              End_Object
+
+              Object oCol2 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to t.DfQuery.LblGrdCrit1
+              End_Object
+
+              Object oCol3 is a cCJGridColumn
+                  Set piWidth to 100
+                  Set psCaption to t.DfQuery.LblGrdCrit2
+              End_Object
 
             function row_count returns integer
               function_return (item_count(self)/3)
@@ -3453,7 +3633,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               integer lbError liExprRow lhExprArr
               string val1# val2#
               move (oDefault_Selection_Values(self)) to oDSV#
-              get row_count to max#
+              Get piRowCount to max#
 
               for row# from 0 to (max#-1)
                 get row_file row# to file#
@@ -3463,21 +3643,21 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 get qry_crit_val1 of oDSV# critidx# to val1#
                 get qry_crit_val2 of oDSV# critidx# to val2#
 
-                if comp# eq SC_COMP_OR_LIST begin // or-list
-                  send add_criteria_orlist to oReport_info# file# fld# val1#
-                  send add_criteria_text to oReport_info# (value(self,row#*3+0)) comp# (replaces("|",val1#,"; "))
+                if (comp# = SC_COMP_OR_LIST) begin // or-list
+//                  send add_criteria_orlist to oReport_info# file# fld# val1#
+//                  send add_criteria_text to oReport_info# (value(self,row#*3+0)) comp# (replaces("|",val1#,"; "))
                 end
                 else begin
-                  send add_criteria_simple to oReport_info# file# fld# comp# val1# val2#
-                  send add_criteria_text to oReport_info# (value(self,row#*3+0)) comp# (value(self,row#*3+2))
+//                  send add_criteria_simple to oReport_info# file# fld# comp# val1# val2#
+//                  send add_criteria_text to oReport_info# (value(self,row#*3+0)) comp# (value(self,row#*3+2))
                 end
               loop
 
               get piExprRow to liExprRow
               if (liExprRow<>-1) begin
                 move (oQuery_ExprArray(self)) to lhExprArr
-                send add_criteria_boolean_expr to oReport_info# (piExprId.i(lhExprArr,liExprRow))
-                send add_criteria_text to oReport_info# "" -1 (psExpression.i(lhExprArr,liExprRow))
+//                send add_criteria_boolean_expr to oReport_info# (piExprId.i(lhExprArr,liExprRow))
+//                send add_criteria_text to oReport_info# "" -1 (psExpression.i(lhExprArr,liExprRow))
               end
 
         //    liExprRow lhExprArr
@@ -3494,44 +3674,49 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
         //        // send add_criteria_text to oReport_info# (value(self,row#*3+0)) comp# (value(self,row#*3+2))
         //    end
             end_procedure
+
             function base_item returns integer
-              integer itm#
-              get current_item to itm#
-              function_return ((itm#/3)*3)
+              integer iRow
+              Integer iCol
+              Handle hoDataSource
+              tDataSourceRow[] TheData
+
+              Get phoDataSource to hoDataSource
+              Get SelectedRow of hoDataSource to iRow
+              Get DataSource of hoDataSource to TheData
+              function_return ((iRow/3)*3)
             end_function
             register_procedure do_one_value
-            procedure add_row
+
+            procedure LoadData
               integer base#
               get item_count to base#
-              set dynamic_update_state to false
-              send add_item msg_none ""
-              send add_item msg_none ""
-              send add_item msg_do_one_value ""
-              set dynamic_update_state to true
+//              send add_item msg_none ""
+//              send add_item msg_none ""
+//              send add_item msg_do_one_value ""
             end_procedure
+
             procedure insert_row
               integer base#
               if (item_count(self)) begin
                 get base_item to base#
-                set dynamic_update_state to false
-                send insert_item 0 "" base#
-                send insert_item 0 "" base#
-                send insert_item 0 "" base#
-                set dynamic_update_state to true
+//                send insert_item 0 "" base#
+//                send insert_item 0 "" base#
+//                send insert_item 0 "" base#
               end
-              else send add_row
+              else send LoadData
             end_procedure
+
             procedure delete_row
               integer base#
               if (item_count(self)) begin
                 get base_item to base#
-                set dynamic_update_state to false
-                send delete_item base#
-                send delete_item base#
-                send delete_item base#
-                set dynamic_update_state to true
+//                send delete_item base#
+//                send delete_item base#
+//                send delete_item base#
               end
             end_procedure
+
             procedure do_field integer file# integer field# integer base#
               integer fieldtype# comp# type# obj#
 
@@ -3540,7 +3725,6 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               set value item base# to (FieldInf_FieldLabel_Long(file#,field#))
               set item_shadow_state item (base#+1) to true
               set item_shadow_state item (base#+2) to true
-              set dynamic_update_state to true // Force update
 
               move (FieldInf_FieldType(file#,field#)) to fieldtype#
 
@@ -3549,43 +3733,42 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               set value item (base#+1) to (DfQuery_CompModeTxt_Short(comp#))
               set aux_value item (base#+1) to comp#
 
-              if fieldtype# eq DF_ASCII move ascii_window to type#
+              if (fieldtype# = DF_ASCII) move ascii_window to type#
               else begin
-                if fieldtype# eq DF_DATE move date_window to type#
+                if (fieldtype# = DF_DATE) move date_window to type#
                 else begin
-                  if fieldtype# eq DF_TEXT move ascii_window to type#
+                  if (fieldtype# = DF_TEXT) move ascii_window to type#
                   else move 0 to type#
                 end
               end
               set value item (base#+2) to (DfQuery_CritText(self,type#,comp#,"",""))
 
-              set dynamic_update_state to true
               set current_item to (base#+2)
             end_procedure
 
             procedure add_field integer file# integer field#
               integer base#
               get item_count to base#
-              send add_row
-              set dynamic_update_state to true
-              send do_field file# field# base#
+//              send LoadData
+//              send do_field file# field# base#
             end_procedure
 
             procedure insert_field integer file# integer field#
               integer base#
               get base_item to base#
-              send insert_row
-              set dynamic_update_state to true
-              send do_field file# field# base#
-              send key kuparrow
+//              send insert_row
+//              send do_field file# field# base#
+//              send key kuparrow
             end_procedure
 
             function row_file integer row# returns integer
               function_return (hi(integer(aux_value(self,row#*3))))
             end_function
+
             function row_field integer row# returns integer
               function_return (low(integer(aux_value(self,row#*3))))
             end_function
+
             function row_field_type integer row# returns integer
               integer file# field# fieldtype#
               get row_file row# to file#
@@ -3593,12 +3776,15 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               move (FieldInf_FieldType(file#,field#)) to fieldtype#
               function_return fieldtype#
             end_function
+
             function row_label integer row# returns string
               function_return (value(self,row#*3))
             end_function
+
             function row_crit integer row# returns integer
               function_return (aux_value(self,row#*3+2))
             end_function
+
             function row_form_margin integer row# returns integer
               integer file# field# rval#
               get row_file row# to file#
@@ -3606,12 +3792,13 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               get VdfQuery_field_margin file# field# to rval#
               function_return rval#
             end_function
+
             function row_comp integer row# returns integer
               function_return (aux_value(self,row#*3+1))
             end_function
 
             procedure OnChangeMainFile
-              send delete_data
+//              send delete_data
             end_procedure
 
           //procedure DoDisplayArrayValues
@@ -3637,15 +3824,15 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               get row_file row# to file#
               get row_field row# to field#
 
-              if type# eq DF_ASCII move ASCII_WINDOW to type#
+              if (type# = DF_ASCII) move ASCII_WINDOW to type#
               else begin
-                if type# eq DF_DATE move DATE_WINDOW to type#
+                if (type# = DF_DATE) move DATE_WINDOW to type#
                 else begin
-                  if type# eq DF_TEXT move ASCII_WINDOW to type#
+                  if (type# = DF_TEXT) move ASCII_WINDOW to type#
                   else get FieldInf_DecPoints file# field# to type#
                 end
               end
-              send add_crit_and_value to arr# label# mrg# type# comp# val1# val2# file# field#
+//              send add_crit_and_value to arr# label# mrg# type# comp# val1# val2# file# field#
             end_procedure
 
             procedure do_one_value
@@ -3656,8 +3843,8 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 move (oCritDialogArray(self)) to CritDialogArr#
                 get base_item to base#
                 move (base#/3) to row#
-                send delete_data to CritDialogArr#
-                send add_criteria_to_CritDialogArray row#
+//                send delete_data to CritDialogArr#
+//                send add_criteria_to_CritDialogArray row#
                 get psLabel.i  of CritDialogArr# item 0 to label#
                 get piMargin.i of CritDialogArr# item 0 to mrg#
                 get piType.i   of CritDialogArr# item 0 to type#
@@ -3668,15 +3855,15 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 get piField.i  of CritDialogArr# item 0 to liField
                 // label# mrg# type# comp# val1# val2#
                 CREATE_OBJECT_GROUP OG_QuerySingleCrit PARENT (parent(aps_PanelID(self))) (label#+":") mrg# type# comp# val1# val2# liFile liField
-                send popup_modal to OG_Current_Object#
+//                send popup_modal to OG_Current_Object#
 
                 if (pReturnValue(OG_Current_Object#)) begin
-                  if (pReturnValue(OG_Current_Object#)) eq 1 begin
+                  if ((pReturnValue(OG_Current_Object#)) = 1) begin
                     get value_from of OG_Current_Object# to val1#
                     get value_to of OG_Current_Object# to val2#
                     get row_crit row# to crit#
-                    ifnot crit# get qry_new_criteria of obj# to crit#
-                    send qry_change_criteria to obj# crit# val1# val2#
+                    If (Not(crit#)) get qry_new_criteria of obj# to crit#
+//                    send qry_change_criteria to obj# crit# val1# val2#
                     set aux_value item (base#+2) to crit#
                     set value item (base#+2) to (DfQuery_CritText(self,type#,comp#,val1#,val2#))
                   end
@@ -3685,20 +3872,19 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                     set value item (base#+2) to ""
                   end
                 end
-                set dynamic_update_state to true
-                send request_destroy_object to OG_Current_Object#
+//                send request_destroy_object to OG_Current_Object#
               end
             end_procedure
 
             procedure load_global_crit_array
               integer row# CritDialogArr# max#
               move (oCritDialogArray(self)) to CritDialogArr#
-              send delete_data to CritDialogArr#
+//              send delete_data to CritDialogArr#
 
               get item_count to max#
               move (max#/3) to max#
               for row# from 0 to (max#-1)
-                send add_criteria_to_CritDialogArray row#
+//                send add_criteria_to_CritDialogArray row#
               loop
             end_procedure
 
@@ -3706,35 +3892,35 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
               integer CritDialogArr# max# oDefault_Selection_Values# crit# row#
               integer base# comp# type#
               string val1# val2#
-              send load_global_crit_array
+//              send load_global_crit_array
               move (oDefault_Selection_Values(self)) to oDefault_Selection_Values#
               move (oCritDialogArray(self)) to CritDialogArr#
               CREATE_OBJECT_GROUP OG_QuerySelectDialog PARENT (parent(aps_PanelID(self))) (report_title(self)) CritDialogArr#
-              send popup_modal to OG_Current_Object#
+//              send popup_modal to OG_Current_Object#
               if (pReturnValue(OG_Current_Object#)) begin
                 // User pressed OK. Let's get our values back:
-                get row_count of CritDialogArr# to max#
+                Get piRowCount to max#
                 for row# from 0 to (max#-1)
                   move (row#*3) to base#
                   get row_crit row# to crit#
-                  ifnot crit# get qry_new_criteria of oDefault_Selection_Values# to crit#
+                  If (Not(crit#)) get qry_new_criteria of oDefault_Selection_Values# to crit#
                   set aux_value item (base#+2) to crit#
                   move (psVal1.i(CritDialogArr#,row#)) to val1#
                   move (psVal2.i(CritDialogArr#,row#)) to val2#
                   move (piType.i(CritDialogArr#,row#)) to Type#
                   move (piComp.i(CritDialogArr#,row#)) to Comp#
-                  send qry_change_criteria to oDefault_Selection_Values# crit# val1# val2#
+//                  send qry_change_criteria to oDefault_Selection_Values# crit# val1# val2#
                   set value item (base#+2) to (DfQuery_CritText(self,type#,comp#,val1#,val2#))
                 loop
               end
-              send request_destroy_object to OG_Current_Object#
+//              send request_destroy_object to OG_Current_Object#
             end_procedure
 
             Procedure Header_Mouse_Click Integer Item#
               integer comp# base# fieldtype#
               forward send Header_Mouse_Click Item#
               if (item_count(self)) begin
-                if item# eq 1 begin
+                if (item# = 1) begin
                   get base_item to base#
                   get aux_value item (base#+1) to comp#
                   get row_field_type (base#/3) to fieldtype#
@@ -3742,16 +3928,47 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                   set aux_value item (base#+1) to comp#
                   set value item (base#+1) to (DfQuery_CompModeTxt_Short(comp#))
                 end
-                if item# eq 2 send do_one_value
+                if (item# = 2) send do_one_value
               end
             end_procedure
+
             procedure Request_Header_Mouse_Click
               integer base#
               get base_item to base#
-              send Header_Mouse_Click (current_item(self)-base#)
+//              send Header_Mouse_Click (current_item(self)-base#)
             end_procedure
             on_key kprompt send Request_Header_Mouse_Click
             on_key kenter send Request_Header_Mouse_Click
+
+              Procedure LoadData
+                  tDataSourceRow[] TheData TheDataEmpty
+                  Integer iRow iCol1 iCol2 iCol3
+
+                  Get piColumnId of oCol1 to iCol1
+                  Get piColumnId of oCol2 to iCol2
+                  Get piColumnId of oCol3 to iCol3
+                  Move 0 to iRow
+
+                  // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+                  //   Move someValue to TheData[iRow].sValue[iCol1]
+                  //   Move someValue to TheData[iRow].sValue[iCol2]
+                  //   Move someValue to TheData[iRow].sValue[iCol3]
+                  //   Increment iRow
+
+                  If (iRow <> 0) Begin
+                      Send ReInitializeData TheData False
+                      Send MoveToFirstRow
+                  End
+                  Else Begin
+                      Send InitializeData TheDataEmpty
+                  End
+              End_Procedure
+
+              Procedure Activating
+                  Forward Send Activating
+                  Send LoadData
+              End_Procedure
+
           end_object // oGrd
           send aps_goto_max_row
           if giVdfQuery_Expressions_State begin
@@ -3831,7 +4048,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             send read_file_definition to obj# (pMainfile(self))
             send idx_translate_overlaps_all to obj#
             move (og_param(1)) to forced_index#
-            if forced_index# ge 0 begin
+            if (forced_index# >= 0) begin
               get idx_field_names of obj# forced_index# 1 0 to default_index#
               set pOrdering to forced_index#
             end
@@ -3841,9 +4058,9 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             send combo_add_item "Recnum" 0
             for idx# from 1 to 15
               get idx_field_names of obj# idx# 1 0 to str#
-              if str# ne "" begin
+              if (str# <> "") begin
                 send combo_add_item str# idx#
-                if default_index# eq "" begin
+                if (default_index# = "") begin
                   move str# to default_index#
                   set pOrdering to idx#
                 end
@@ -3859,7 +4076,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             end
             send combo_add_item "Ad hoc index" 1023
 
-            if default_index# ne "" set value item 0 to default_index#
+            if (default_index# <> "") set value item 0 to default_index#
             else set value item 0 to "Recnum"
           end_procedure
           procedure OnChange
@@ -3883,47 +4100,56 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
         end_procedure
         send aps_goto_max_row
         send aps_make_row_space 4
-        object oGrd is a aps.Grid
-          set peResizeColumn to rcAll
+        object oGrd is a cCJGrid
+            // TODO: oGrd was a aps.Grid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
           set peAnchors to (anTop+anLeft+anRight+anBottom)
           set Size to 100 0
-          set Line_Width to 2 0
           set Form_Margin item 0 to 2
           set Form_Margin item 1 to 30
           set Form_Datatype item 0 to ascii_window
           set Form_Datatype item 1 to ascii_window
-          set Header_Label item 0 to t.DfQuery.LblGrdBreak1
-          set Header_Label item 1 to t.DfQuery.LblGrdBreak2
           set Status_Help  item 0 to t.DfQuery.SthGrdBreak0
           set Status_Help  item 1 to t.DfQuery.SthGrdBreak1
-          set Highlight_Row_State to DFTRUE
+          Set pbShowRowFocus to False
           //set Highlight_Row_Color to (rgb(0,255,255))
-          set CurrentCellColor     to clHighlight
-          set CurrentCellTextColor to clHighlightText
-          set CurrentRowColor      to clHighlight
-          set CurrentRowTextColor  to clHighlightText
-
-
-          set Select_Mode to multi_select
+          Set piFocusCellBackColor to clHighlight
+          Set piFocusCellForeColor to clHighlightText
+          Set piHighlightBackColor to clHighlight
+          Set piHighlightForeColor to clHighlightText
+          Set pbMultipleSelection to True
           set Auto_Top_Item_State to DFFALSE
           on_key kswitch send switch
           on_key kswitch_back send switch_back
-          procedure fill_list
-            integer idx# seg# max# obj# field# file# base#
+
+            Object oCol1 is a cCJGridColumn
+                Set piWidth to 100
+                Set psCaption to t.DfQuery.LblGrdBreak1
+            End_Object
+
+            Object oCol2 is a cCJGridColumn
+                Set piWidth to 100
+                Set psCaption to t.DfQuery.LblGrdBreak2
+            End_Object
+
+          procedure LoadData
+            tDataSourceRow[] TheData TheDataEmpty
+            Integer iRow iCol1 iCol2 idx# seg# max# obj# field# file# base#
+
+            Get piColumnId of oCol1 to iCol1
+            Get piColumnId of oCol2 to iCol2
+            Move 0 to iRow
+
             move (oVdfQuery_IndexAnalyzer(self)) to obj#
-            send delete_data
             get pMainFile to file#
-            set dynamic_update_state to DFFALSE
             get pOrdering to idx#
-            if idx# lt 256 begin
+            if (idx# < 256) begin
               get idx_max_segment of obj# idx# to max#
               for seg# from 1 to (max#-1) // Exclude the least significant segment
                 get idx_segment of obj# idx# seg# to field#
-                get item_count to base#
-                send add_item MSG_none ""
+                Move "" to TheData[iRow].sValue[iCol1]
                 set aux_value item base# to (file#*65536+field#)
-                set checkbox_item_state item base# to DFTRUE
-                send add_item MSG_none (FieldInf_FieldLabel_Long(file#,field#)+": ")
+                Move (FieldInf_FieldLabel_Long(file#,field#)+": ") to TheData[iRow].sValue[iCol2]
+                Increment iRow
               loop
             end
             else begin
@@ -3933,11 +4159,10 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                 for seg# from 0 to (max#-1) // Do not exclude the least significant segment
                   get piFile.i of obj# seg# to file#
                   get piField.i of obj# seg# to field#
-                  get item_count to base#
-                  send add_item msg_none ""
+                  Move "" to TheData[iRow].sValue[iCol1]
                   set aux_value item base# to (file#*65536+field#)
-                  set checkbox_item_state item base# to DFTRUE
-                  send add_item msg_none (sSegmentName(obj#,seg#)+": ")
+                  Move (sSegmentName(obj#,seg#)+": ") to TheData[iRow].sValue[iCol2]
+                  Increment iRow
                 loop
               end
               else begin
@@ -3947,21 +4172,34 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
                   get row_count of obj# to max#
                   for seg# from 0 to (max#-2) // Exclude the least significant segment
                     get piField.i of obj# seg# to field#
-                    get item_count to base#
-                    send add_item msg_none ""
+                    Move "" to TheData[iRow].sValue[iCol1]
                     set aux_value item base# to (file#*65536+field#)
-                    set checkbox_item_state item base# to DFTRUE
-                    send add_item msg_none (sSegmentName(obj#,seg#)+": ")
+                    Move (sSegmentName(obj#,seg#)+": ") to TheData[iRow].sValue[iCol2]
+                    Increment iRow
                   loop
                 end
               end
             end
-            set dynamic_update_state to DFTRUE
-          end_procedure
+
+                If (iRow <> 0) Begin
+                    Send ReInitializeData TheData False
+                    Send MoveToFirstRow
+                End
+                Else Begin
+                    Send InitializeData TheDataEmpty
+                End
+            End_Procedure
+
           procedure OnChangeMainFile
             set object_shadow_state of (oAdHoc(self)) to DFTRUE
-            send fill_list
+//            send LoadData
           end_procedure
+
+            Procedure Activating
+                Forward Send Activating
+                Send LoadData
+            End_Procedure
+
         end_object
         send aps_goto_max_row
         send aps_make_row_space 4
@@ -3977,7 +4215,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             send read_file_definition to obj# (pMainfile(self))
             send idx_translate_overlaps_all to obj#
             move (og_param(1)) to forced_index#
-            if forced_index# ge 0 begin
+            if (forced_index# >= 0) begin
               get idx_field_names of obj# forced_index# 1 0 to default_index#
               set pOrdering to forced_index#
             end
@@ -3987,15 +4225,15 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
             send combo_add_item "Recnum" 0
             for idx# from 1 to 15
               get idx_field_names of obj# idx# 1 0 to str#
-              if str# ne "" begin
+              if (str# <> "") begin
                 send combo_add_item str# idx#
-                if default_index# eq "" begin
+                if (default_index# = "") begin
                   move str# to default_index#
                   set pOrdering to idx#
                 end
               end
             loop
-            if default_index# ne "" set value item 0 to default_index#
+            if (default_index# <> "") set value item 0 to default_index#
             else set value item 0 to "Recnum"
             set object_shadow_state to DFTRUE
           end_procedure
@@ -4009,7 +4247,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
           integer order#
           get pOrdering to order#
           set object_shadow_state of (oFrm2(self)) to (order#<256)
-          send fill_list to (oGrd(self))
+          send LoadData to (oGrd(self))
           set object_shadow_state of (oAdHoc(self)) to (order#<>1023)
         end_procedure
         procedure load_report_info // Index and breaks
@@ -4018,9 +4256,9 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
           set pMainFile of oReport_Info# to file#
           move (oQuery_ExprArray(self)) to lhExprArr
           move (pOrdering(self)) to index#
-          if index# ge 256 begin
+          if (index# >= 256) begin
             set pCustom_Sort_State of oReport_Info# to true
-            if index# eq 1023 set pCustom_Sort_Object of oReport_Info# to (oQueryOrderExpression(self))
+            if (index# = 1023) set pCustom_Sort_Object of oReport_Info# to (oQueryOrderExpression(self))
             else set pCustom_Sort_Object of oReport_Info# to (FieldInf_VirtualIndex_Object(file#,index#-256))
             set pOrdering of oReport_Info# to (iIndex(oFrm2(self)))
           end
@@ -4204,7 +4442,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
 
           get value of (oFrm1(oGrp1(self))) item 0 to lsOutFileName
           if (lsOutFileName<>"") begin
-            ifnot (lsOutFileName contains sysconf(SYSCONF_DIR_SEPARATOR) or lsOutFileName contains ":") begin
+            If (Not((lsOutFileName contains sysconf(SYSCONF_DIR_SEPARATOR) or lsOutFileName contains ":"))) begin
               get Query_Folder QRYFOLD_CURRENT_USER_OUT to lsStartDir
               if (lsStartDir<>"") get Files_AppendPath lsStartDir lsOutFileName to lsOutFileName
             end
@@ -4453,7 +4691,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
       else get SEQ_SelectOutFile t.DfQuery.SaveFileCaption t.DfQuery.FileFilter to lsFileName
 
       //move (SEQ_SelectOutFile(t.DfQuery.SaveFileCaption,t.DfQuery.FileFilter)) to lsFileName
-      if lsFileName ne "" begin
+      if (lsFileName <> "") begin
         get SEQ_DirectOutput lsFileName to liChannel
         if (liChannel>-1) begin
           send write_deffile_channel liChannel
@@ -4474,7 +4712,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
         move (oTab5(oTabs(self))) to oTab5#
         readln channel channel# file#
         move (DBMS_IsOpenFile(file#)) to open#
-        ifnot open# begin
+        If (Not(open#)) begin
           if (DBMS_CanOpenFile(file#)) move (DBMS_OpenFile(file#,DF_SHARE,0)) to open#
           else error 200 "File could not be opened"
         end
@@ -4496,9 +4734,9 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
           readln font_size#
           readln crit_in_report#
           readln totals_only#
-          if version# ne "QDF1.0" readln orientation#
+          if (version# <> "QDF1.0") readln orientation#
           else move 0 to orientation#
-          if version# ge "QDF1.4" begin
+          if (version# >= "QDF1.4") begin
             readln ansi#
             readln labels#
             readln semicolon#
@@ -4535,8 +4773,8 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
           set Combo_Current_Aux_Value of (oCf1(oGrp1(oTab5#))) to file_format#
           set value of (oFrm1(oGrp1(oTab5#))) item 0 to fn#
           send auto_shade_objects to (oGrp1(oTab5#))
-          if version# ge "QDF1.3" send SEQ_ReadGridItems channel# (oGrd(oTab3(oTabs(self))))
-          if version# ge "QDF2.0" begin
+          if (version# >= "QDF1.3") send SEQ_ReadGridItems channel# (oGrd(oTab3(oTabs(self))))
+          if (version# >= "QDF2.0") begin
             readln len#
             read_block str# len#
             send Text_SetEditObjectValue (oEditTop(oTab4(oTabs(self)))) str#
@@ -4556,7 +4794,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
 
     procedure load_deffile string lsFileName
       integer liChannel
-      if lsFileName ne "" begin
+      if (lsFileName <> "") begin
         get SEQ_DirectInput lsFileName to liChannel
         if (liChannel>=0) begin
           send load_deffile_channel liChannel
@@ -4573,7 +4811,7 @@ DEFINE_OBJECT_GROUP OG_QueryView // file# index# subreport?
       if (lsStartDir<>"") ;
            get SEQ_SelectFileStartDir t.DfQuery.OpenFileCaption t.DfQuery.FileFilter lsStartDir to lsDefFile
       else get SEQ_SelectFile t.DfQuery.OpenFileCaption t.DfQuery.FileFilter to lsDefFile
-      if lsDefFile ne "" send load_deffile lsDefFile
+      if (lsDefFile <> "") send load_deffile lsDefFile
     end_procedure
 
     procedure NewQuery
@@ -4595,7 +4833,7 @@ procedure CreateNewQuery integer tmpfile# string tmp_deffile#
   move (Client_ID(Self#)) to Client_ID#
   if num_arguments begin
     move tmpfile# to file#
-    if num_arguments gt 1 move tmp_deffile# to deffile#
+    if (num_arguments > 1) move tmp_deffile# to deffile#
     else move "" to deffile#
   end
   else begin
@@ -4710,7 +4948,7 @@ class cVdfQueryLauncher is a cArray
     string tmp#
     get row_crit of (oGrd(oGrp(oTab2(oTabs(piVDFQueryObject(self)))))) row# to row#
     move (oDefault_Selection_Values(piVDFQueryObject(self))) to obj#
-    if num_arguments eq 2 move "" to tmp#
+    if (num_arguments = 2) move "" to tmp#
     else move value2# to tmp#
     set value of obj# item (row#*2) to value1#
     set value of obj# item (row#*2+1) to tmp#
@@ -4724,7 +4962,7 @@ class cVdfQueryLauncher is a cArray
     integer lhDD lhDEO liMax liColumn liFile liField
     send Focus_Analyze_Focus
     get Focus_Info FOCUS_DEO_MODAL to lbModal
-    ifnot lbModal begin
+    If (Not(lbModal)) begin
       get Focus_Info FOCUS_DD to lhDD
       if lhDD begin
         get Focus_Info FOCUS_DEO_ID to lhDEO
@@ -4758,7 +4996,7 @@ end_class // cVdfQueryLauncher
 
 register_object oGridQueryLauncher
 procedure AutoLaunchGridQuery for AppClientArea
-  ifnot (oGridQueryLauncher(self)) begin
+  If (Not((oGridQueryLauncher(self)))) begin
     object oGridQueryLauncher is a cVdfQueryLauncher
     end_object
   end

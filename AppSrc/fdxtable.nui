@@ -18,7 +18,7 @@ procedure FDX_TablesCallback global integer lhFDX integer lhMsg integer lhObj
       send lhMsg to lhObj liFile lsRoot lsLogical lsDisplay
       // procedure HandleTable integer liFile string lsRoot string lsLogical string lsDisplay
     end
-  until liFile eq 0
+  until (liFile = 0)
 end_procedure
 
           desktop_section
@@ -60,4 +60,3 @@ procedure FDX_ConstrainedTablesCallback global integer lhFDX integer liConstrain
   else error 429 "lhFDX must be specified in FDX_ConstrainedTablesCallback call"
   send delete_data of lhTmp
 end_procedure
-

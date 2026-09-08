@@ -14,6 +14,7 @@ Use Fdx3.utl     // FDX aware cFileList_List selector class
 
 
 use aps.pkg
+Use cCJGrid.pkg
 object oUserModalSelectTables is a aps.ModalPanel
   set Border_Style to BORDER_THICK   // Make panel resizeable
   set pMinimumSize to 180 0
@@ -28,18 +29,45 @@ object oUserModalSelectTables is a aps.ModalPanel
   end_procedure
   object oCont is a aps.Container3D
     set p_auto_column to false
-    object oLst is a cFdxFileMultiSelector
+    object oLst is a cCJGrid
+        // TODO: oLst was a cFdxFileMultiSelector - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
       set size to 180 0
       set piNo_Alias_State to true          // Exclude alias files
       //send DriverFilter_Add DBMS_DRIVER_DATAFLEX
+
       procedure re_order
       end_procedure
+
       procedure update_select_display // This is called automatically by the class
         integer selected# total#
         get File_Select_Count to selected#
-        get Row_Count to total#
-        send select_display selected# total#
+        Get piRowCount to total#
+//        send select_display selected# total#
       end_procedure
+
+        Procedure LoadData
+            tDataSourceRow[] TheData TheDataEmpty
+            Integer iRow
+
+            Move 0 to iRow
+
+            // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+            //   Increment iRow
+
+            If (iRow <> 0) Begin
+                Send ReInitializeData TheData False
+                Send MoveToFirstRow
+            End
+            Else Begin
+                Send InitializeData TheDataEmpty
+            End
+        End_Procedure
+
+        Procedure Activating
+            Forward Send Activating
+            Send LoadData
+        End_Procedure
+
     end_object // oLst
 
     object oSelectTxt is a aps.TextBox snap sl_right
@@ -129,23 +157,23 @@ procedure UserModalSelectTablesSetup global ;
   integer obj# fill_list#
   move 0 to fill_list#
   move (oLst(oCont(oUserModalSelectTables(self)))) to obj#
-  if oFDX ne (piFDX_Server(obj#)) begin
+  if (oFDX <> (piFDX_Server(obj#))) begin
     set piFDX_Server of obj# to oFDX
     move 1 to fill_list#
   end
-  if BES_State# ne (piBad_Entries_State(obj#)) begin
+  if (BES_State# <> (piBad_Entries_State(obj#))) begin
     set piBad_Entries_State of obj# to BES_State#
     move 1 to fill_list#
   end
-  if No_Alias_State# ne (piNo_Alias_State(obj#)) begin
+  if (No_Alias_State# <> (piNo_Alias_State(obj#))) begin
     set piNo_Alias_State of obj# to No_Alias_State#
     move 1 to fill_list#
   end
-  if Driver_Filter_State# ne (piDriverFilter_State(obj#)) begin
+  if (Driver_Filter_State# <> (piDriverFilter_State(obj#))) begin
     set piDriverFilter_State of obj# to Driver_Filter_State#
     move 1 to fill_list#
   end
-  if Generic_Display_Name_State# ne (piGeneric_Display_Name_State(obj#)) begin
+  if (Generic_Display_Name_State# <> (piGeneric_Display_Name_State(obj#))) begin
     set piGeneric_Display_Name_State of obj# to Generic_Display_Name_State#
     move 1 to fill_list#
   end

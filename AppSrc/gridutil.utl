@@ -178,7 +178,7 @@ procedure Grid_CopySelectedListItems global integer lhSourceGrid integer lhTarge
   move (oGridMoveSelectedListItems(self)) to lhObj
   get item_count of lhSourceGrid to liMax
   for liItem from 0 to (liMax-1) // Copy selected items
-    ifnot lbAllItems get select_state of lhSourceGrid item liItem to liSelect
+    If (Not(lbAllItems)) get select_state of lhSourceGrid item liItem to liSelect
     if (liSelect or lbAllItems) begin
       get value of lhSourceGrid item liItem to lsValue
       send add_item to lhTargetGrid msg_none lsValue
@@ -205,7 +205,7 @@ procedure Grid_SetEntryState global integer lhObj integer liState
   integer liItem liMax
   get item_count of lhObj to liMax
   for liItem from 0 to (liMax-1)
-    ifnot (checkbox_item_state(lhObj,liItem)) set entry_state of lhObj item liItem to liState
+    If (Not((checkbox_item_state(lhObj,liItem)))) set entry_state of lhObj item liItem to liState
   loop
 end_procedure
 
@@ -235,20 +235,20 @@ end_function
 function Grid_ItemColumn global integer lhObj integer liItem returns integer
   integer liColumns
   get Grid_Columns lhObj to liColumns
-  if liItem eq -99 get current_item of lhObj to liItem
+  if (liItem = -99) get current_item of lhObj to liItem
   function_return (mod(liItem,liColumns))
 end_function
 
 function Grid_ItemRow global integer lhObj integer liItem returns integer
   integer liColumns
   get Grid_Columns lhObj to liColumns
-  if liItem eq -99 get current_item of lhObj to liItem
+  if (liItem = -99) get current_item of lhObj to liItem
   function_return (liItem/liColumns)
 end_function
 
 function Grid_ItemBaseItem global integer lhObj integer liItem returns integer
   integer liColumns
-  if liItem eq -99 get current_item of lhObj to liItem
+  if (liItem = -99) get current_item of lhObj to liItem
   get Grid_Columns lhObj to liColumns
   function_return ((liItem/liColumns)*liColumns)
 end_function
@@ -361,7 +361,7 @@ end_procedure
 procedure Grid_SwapCurrentRowUp global integer lhObj
   integer liCurrentRow liCurrentItem
   get Grid_CurrentRow lhObj to liCurrentRow
-  if liCurrentRow gt 0 begin
+  if (liCurrentRow > 0) begin
     get Current_Item of lhObj to liCurrentItem
     send Grid_SwapRows lhObj liCurrentRow (liCurrentRow-1)
     set Current_Item of lhObj to (liCurrentItem-Grid_Columns(lhObj))
@@ -371,13 +371,13 @@ procedure Grid_SwapCurrentRowTop global integer lhObj
   integer liCurrentRow liCurrentItem
   repeat
     get Grid_CurrentRow lhObj to liCurrentRow
-    if liCurrentRow gt 0 send Grid_SwapCurrentRowUp lhObj
+    if (liCurrentRow > 0) send Grid_SwapCurrentRowUp lhObj
   until (liCurrentRow=0)
 end_procedure
 procedure Grid_SwapCurrentRowDown global integer lhObj
   integer liCurrentRow liCurrentItem
   get Grid_CurrentRow lhObj to liCurrentRow
-  if liCurrentRow lt (Grid_RowCount(lhObj)-1) begin
+  if (liCurrentRow < (Grid_RowCount(lhObj)-1)) begin
     get Current_Item of lhObj to liCurrentItem
     send Grid_SwapRows lhObj liCurrentRow (liCurrentRow+1)
     set Current_Item of lhObj to (liCurrentItem+Grid_Columns(lhObj))
@@ -387,7 +387,7 @@ procedure Grid_SwapCurrentRowBottom global integer lhObj
   integer liCurrentRow liCurrentItem
   repeat
     get Grid_CurrentRow lhObj to liCurrentRow
-    if liCurrentRow lt (Grid_RowCount(lhObj)-1) send Grid_SwapCurrentRowDown lhObj
+    if (liCurrentRow < (Grid_RowCount(lhObj)-1)) send Grid_SwapCurrentRowDown lhObj
   until (liCurrentRow=(Grid_RowCount(lhObj)-1))
 end_procedure
 
@@ -418,7 +418,7 @@ desktop_section
       decrement liMax
       for liRow from 0 to liMax
         set header_label of lhObj liRow to (psHeaderLabel.i(self,liRow))
-        if (piField.i(self,liRow)) eq -1 begin // Then it's an Abstract
+        if ((piField.i(self,liRow)) = -1) begin // Then it's an Abstract
           set form_margin of lhObj liRow to (integer_value.ii(form_margin_array#,0,piAbstractOrFile.i(self,liRow)))
           set form_datatype of lhObj liRow to (integer_value.ii(form_datatype_array#,0,piAbstractOrFile.i(self,liRow)))
         end
@@ -449,7 +449,7 @@ desktop_section
   end_procedure
   procedure GridPrepare_AddCheckBoxColumn global string lsHeader
     string lsTmp
-    if num_arguments gt 0 move lsHeader to lsTmp
+    if (num_arguments > 0) move lsHeader to lsTmp
     else move "" to lsTmp
     send add_column to (oGridPrepare(self)) lsTmp AFT_ASCII3 -1
   end_procedure
@@ -461,7 +461,7 @@ desktop_section
   end_procedure
   procedure GridPrepare_Apply global integer lhObj integer lbDoColor
     integer liTemp
-    if num_arguments gt 1 move lbDoColor to liTemp
+    if (num_arguments > 1) move lbDoColor to liTemp
     else move 1 to liTemp
     send apply_settings to (oGridPrepare(self)) lhObj liTemp
     send GridPrepare_Reset
@@ -573,7 +573,7 @@ desktop_section
       move 0 to grid_liItem
       for liRow from 0 to (liMax-1)
         move (right(value(lhSortArr,liRow),6)) to grid_liRow
-        if grid_liRow eq liCurrentRow set piCurrentRow to liRow
+        if (grid_liRow = liCurrentRow) set piCurrentRow to liRow
         move (grid_liRow*liColumns) to liItmMin
         move (liItmMin+liColumns-1) to liItmMax
         for liItem from liItmMin to liItmMax
@@ -637,7 +637,7 @@ procedure Grid_RowSelectAll global integer lhGrid
   decrement liMax
   for liRow from 0 to liMax
     get Grid_RowBaseItem lhGrid liRow to liBase
-    ifnot (item_shadow_state(lhGrid,liBase)) set select_state of lhGrid item liBase to DFTRUE
+    If (Not((item_shadow_state(lhGrid,liBase)))) set select_state of lhGrid item liBase to DFTRUE
   loop
 end_procedure
 procedure Grid_RowDeselectAll global integer lhGrid
@@ -646,7 +646,7 @@ procedure Grid_RowDeselectAll global integer lhGrid
   decrement liMax
   for liRow from 0 to liMax
     get Grid_RowBaseItem lhGrid liRow to liBase
-    ifnot (item_shadow_state(lhGrid,liBase)) set select_state of lhGrid item liBase to DFFALSE
+    If (Not((item_shadow_state(lhGrid,liBase)))) set select_state of lhGrid item liBase to DFFALSE
   loop
 end_procedure
 procedure Grid_RowSelectInvert global integer lhGrid
@@ -656,7 +656,7 @@ procedure Grid_RowSelectInvert global integer lhGrid
   for liRow from 0 to liMax
     get Grid_RowBaseItem lhGrid liRow to liBase
     get select_state of lhGrid item liBase to liSelect
-    ifnot (item_shadow_state(lhGrid,liBase)) set select_state of lhGrid item liBase to (not(liSelect))
+    If (Not((item_shadow_state(lhGrid,liBase)))) set select_state of lhGrid item liBase to (not(liSelect))
   loop
 end_procedure
 procedure Grid_RowSelectCostum global integer lhGrid integer liGet
@@ -744,7 +744,7 @@ desktop_section
           move (rtrim(lsValue)) to lsValue
           move (length(lsValue)) to liWidth
           if (liWidth>integer(piWidth.i(self,liColumn))) set piWidth.i liColumn to liWidth
-          ifnot (StringIsNumber(lsValue,liDecSep)) set piRightAlign.i liColumn to DFFALSE
+          If (Not((StringIsNumber(lsValue,liDecSep)))) set piRightAlign.i liColumn to DFFALSE
         loop
       loop
       set phCurrentGrid to liWidth
@@ -767,7 +767,7 @@ function Grid_WriteToFile_Help global integer liFormat string lsValue integer li
     else move (pad(lsValue,liWidth)) to lsValue
   end
   if (liFormat=GD_COMMA) begin
-    if "," in lsValue begin
+    if (lsValue contains ",") begin
       move (replaces('"',lsValue,"'")) to lsValue
       move ('"'+lsValue+'"') to lsValue
     end
@@ -789,8 +789,8 @@ procedure Grid_WriteToFile global integer lhGrid integer liChannel integer liFor
     get Grid_DataWidth lhGrid liColumn to liWidth
     get piRightAlign.i of (Grid_WriteToFileColumnWidthArray(self)) liColumn to liRightAlign
     get Grid_WriteToFile_Help liFormat lsValue liWidth liRightAlign to lsValue
-    write channel liChannel (ToAnsi(lsValue))
-    if liColumn ne (liColumns-1) begin
+    write channel liChannel (Utf8ToAnsi(lsValue))
+    if (liColumn <> (liColumns-1)) begin
       if (liFormat=GD_FORMAT) write " "
       if (liFormat=GD_COMMA ) write ","
       if (liFormat=GD_TAB   ) write (character(8))
@@ -804,8 +804,8 @@ procedure Grid_WriteToFile global integer lhGrid integer liChannel integer liFor
       get Grid_DataWidth lhGrid liColumn to liWidth
       get piRightAlign.i of (Grid_WriteToFileColumnWidthArray(self)) liColumn to liRightAlign
       get Grid_WriteToFile_Help liFormat lsValue liWidth liRightAlign to lsValue
-      write channel liChannel (ToAnsi(lsValue))
-      if liColumn ne (liColumns-1) begin
+      write channel liChannel (Utf8ToAnsi(lsValue))
+      if (liColumn <> (liColumns-1)) begin
         if (liFormat=GD_FORMAT) write " "
         if (liFormat=GD_COMMA ) write ","
         if (liFormat=GD_TAB   ) write (character(8))
@@ -858,7 +858,7 @@ procedure Grid_DoWriteToFile global integer lhGrid
   get SEQ_ComposeAbsoluteFileName lsTempFileName "temp.txt" to lsTempFileName
 
   get SEQ_DirectOutput lsTempFileName to liChannel
-  if liChannel ge 0 begin
+  if (liChannel >= 0) begin
     send Grid_WriteToFile lhGrid liChannel GD_FORMAT
     send SEQ_CloseOutput liChannel
     runprogram BACKGROUND ("notepad "+lsTempFileName)
@@ -890,4 +890,3 @@ procedure Grid_AddRowToGrid global integer lhGrid integer liRow integer lhTarget
     set itemcolor           of lhTargetGrid item (liTargetBase+liItem) to (itemcolor(lhGrid,liBase+liItem))
   loop
 end_procedure
-

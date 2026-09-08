@@ -14,16 +14,16 @@ end_procedure
 function FLIST_CurrentFilelist global returns string
   string lsRval
   get_attribute DF_FILELIST_NAME to lsRval
-  move (ToOem(lsRval)) to lsRval
+  move (Utf8ToOem(lsRval)) to lsRval
   function_return lsRval
 end_function
 
 procedure FLIST_SetCurrentFilelist global string lsFileName
-  set_attribute DF_FILELIST_NAME to (ToAnsi(lsFileName))
+  set_attribute DF_FILELIST_NAME to (Utf8ToAnsi(lsFileName))
 end_procedure
 
 procedure FLIST_SetOpenPath global string lsPath
-  set_attribute DF_OPEN_PATH to (ToAnsi(lsPath))
+  set_attribute DF_OPEN_PATH to (Utf8ToAnsi(lsPath))
 end_procedure
 
 procedure FLIST_PushCurrentFilelist global
@@ -50,9 +50,9 @@ function FLIST_TemporaryEntry global integer liFile returns integer
     get_attribute DF_FILE_NEXT_EMPTY of liFile to liFile
     if liFile begin
       get_attribute DF_FILE_OPENED of liFile to lbOpened
-      ifnot lbOpened function_return liFile
+      If (Not(lbOpened)) function_return liFile
     end
-  until liFile eq 0
+  until (liFile = 0)
   function_return -1
 end_function
 
@@ -66,14 +66,14 @@ function FLIST_CreateEmptyFileList global string lsFileListPathAndName returns i
 
   if (liChannel>=0) begin
     if 1 begin
-      get_argument_size To liOrg      // Create the filelist. It has to be of size
-      set_argument_size 524277        // 32128, if it is any smaller errors occur
-      pad "" To lsFiller 524277       // when setting the filelist attributes.
+      // get_argument_size To liOrg      // Create the filelist. It has to be of size
+      // set_argument_size 524277        // 32128, if it is any smaller errors occur
+      Move (Pad("", 524277)) to lsFiller // when setting the filelist attributes.
       move (repeat(character(0),524277)) to lsFiller
       write "filelist.cfg"            // This has to be the first 12 characters
       write lsFiller                  //
       send SEQ_CloseOutput liChannel
-      set_argument_size liOrg         // Restore max argument size.
+      // set_argument_size liOrg         // Restore max argument size.
 //      set_attribute DF_FILELIST_NAME To lsFileListPathAndName // Setup the file list for DataFlex.
       send FLIST_SetCurrentFilelist lsFileListPathAndName
 
@@ -95,13 +95,13 @@ function FLIST_CreateEmptyFileList global string lsFileListPathAndName returns i
     //loop                                                    // the slots are used.
     end
     else begin
-      get_argument_size To liOrg      // Create the filelist. It has to be of size
-      set_argument_size 32117         // 32128, if it is any smaller errors occur
-      pad "" To lsFiller 32117        // when setting the filelist attributes.
+      // get_argument_size To liOrg      // Create the filelist. It has to be of size
+      // set_argument_size 32117         // 32128, if it is any smaller errors occur
+      Move (Pad("", 32117)) to lsFiller // when setting the filelist attributes.
       write "filelist.cfg"            // This has to be the first 12 characters
       write lsFiller                  //
       send SEQ_CloseOutput liChannel
-      set_argument_size liOrg         // Restore max argument size.
+      // set_argument_size liOrg         // Restore max argument size.
       set_attribute DF_FILELIST_NAME To lsFileListPathAndName // Setup the file list for DataFlex.
       for liCount from 1 to 250                               // Fill the filelist.
         set_attribute DF_FILE_ROOT_NAME    of liCount to ""   // Every slot must be

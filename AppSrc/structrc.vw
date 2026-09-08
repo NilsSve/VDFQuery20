@@ -1,4 +1,5 @@
 Use StrucTrc.utl // Object for tracing a restructure operation
+Use cCJGrid.pkg
 
 // 2013/10/27 Updated according til WvA's message: http://support.dataaccess.com/Forums/showthread.php?54843-DFMatrix-save-rst-trace-file-as-text&p=285202#post285202
 
@@ -7,9 +8,42 @@ activate_view Activate_RestructureTracer for oRestructureTracer
 object oRestructureTracer is a aps.View label "Trace restructure operation"
   set Border_Style to BORDER_THICK   // Make panel resizeable
   on_key kcancel send close_panel
-  object oLst is a cRSTraceList
+  object oLst is a cCJGrid
+      // TODO: oLst was a cRSTraceList - a subclass of List whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+      Set pbShowHeader to False   // single-column list (no column header)
     on_key kenter send display_definition
     set size to 150 400
+
+      Object oCol1 is a cCJGridColumn
+          Set piWidth to 100
+          Set psCaption to ""
+      End_Object
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow iCol1
+
+          Get piColumnId of oCol1 to iCol1
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Move someValue to TheData[iRow].sValue[iCol1]
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oBtn0 is a aps.Multi_Button // Wil
     on_item "Save trace as txt" send save_txt_trace to (oLst(self))

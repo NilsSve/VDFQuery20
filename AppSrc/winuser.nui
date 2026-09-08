@@ -9,13 +9,13 @@ Function User_Windows_User_Name global Returns String
     Pointer lpName_Addr lpLength_Addr
     Integer iRetval
 
-    Movestr (Repeat (Character (0), 255)) To sName
-    GetAddress Of sName To lpName_Addr // ok
-    Movestr (DwordToBytes (255)) To sLength
-    GetAddress Of sLength To lpLength_Addr // ok
+    Move (Repeat (Character (0), 255)) To sName
+    Move (AddressOf(sName)) to lpName_Addr // ok
+    Move (DwordToBytes (255)) To sLength
+    Move (AddressOf(sLength)) to lpLength_Addr // ok
 
-    Moveint (User_WNetGetUser (0, lpName_Addr, lpLength_Addr)) To iRetval
+    Move (User_WNetGetUser (0, lpName_Addr, lpLength_Addr)) To iRetval
 
-    If iRetval Eq 0 Function_Return (CString (sName))
+    If (iRetval = 0) Function_Return (CString (sName))
     Else Function_Return "User Unknown"
 End_Function // Network_User_Name

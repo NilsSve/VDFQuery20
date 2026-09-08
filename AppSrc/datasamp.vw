@@ -27,16 +27,16 @@ class cDisplayDataSamplerSet is a aps.Grid
     string rval#
 //    showln "sSortValue.ii " (string(column#)) " " (string(itm#))
     get value item itm# to rval#
-    if column# eq 0 begin
+    if (column# = 0) begin
       get piDataType to type#
-      if type# eq DF_BCD move (NumToStrR(rval#,8,23)) to rval#
-      if type# eq DF_DATE begin
+      if (type# = DF_BCD) move (NumToStrR(rval#,8,23)) to rval#
+      if (type# = DF_DATE) begin
         move (date(rval#)) to int#
         move (IntToStrR(int#,10)) to rval#
       end
       function_return rval#
     end
-    if column# eq 1 function_return (IntToStrR(rval#,10))
+    if (column# = 1) function_return (IntToStrR(rval#,10))
   end_function
   procedure sort_data.i integer column#
     send Grid_SortByColumn self column#
@@ -68,7 +68,7 @@ class cDisplayDataSamplerSet is a aps.Grid
     integer ch#
     string fn#
     move (SEQ_SelectOutFile("Save to text file","All (*.*)|*.*")) to fn#
-    if fn# ne "" begin
+    if (fn# <> "") begin
       move (SEQ_DirectOutput(fn#)) to ch#
       if ch# begin
         send seq_write to (piSet(self)) ch#

@@ -8,9 +8,9 @@ function StringIsDate global string lsValue integer liDateSep integer liFormat r
   string lsDateSep lsYear lsMonth lsDay
   move (trim(lsValue)) to lsValue
   move (length(lsValue)) to liLen
-  if liLen eq 0 function_return DFTRUE
+  if (liLen = 0) function_return DFTRUE
 
-  ifnot liDateSep begin
+  If (Not(liDateSep)) begin
     if (length(lsValue)=7) begin 
       move (append("0",lsValue)) to lsValue
     end
@@ -52,13 +52,13 @@ function StringIsDate global string lsValue integer liDateSep integer liFormat r
     move (ExtractWord(lsValue,lsDateSep,2)) to lsMonth
     move (ExtractWord(lsValue,lsDateSep,3)) to lsDay
   end
-  ifnot (StringIsInteger(lsDay)) begin 
+  If (Not((StringIsInteger(lsDay)))) begin
     function_return DFFALSE
   end
-  ifnot (StringIsInteger(lsMonth)) begin
+  If (Not((StringIsInteger(lsMonth)))) begin
     function_return DFFALSE
   end
-  ifnot (StringIsInteger(lsYear)) begin
+  If (Not((StringIsInteger(lsYear)))) begin
     function_return DFFALSE
   end
   function_return (DateIsLegalComponents(lsDay,lsMonth,lsYear))
@@ -101,12 +101,11 @@ function StringIsDateTime global string lsValue integer liDateSep integer liForm
       move (ExtractWord(lsTime,":",1)) to lsHour
       move (ExtractWord(lsTime,":",2)) to lsMinute
       move (ExtractWord(lsTime,":",3)) to lsSecond
-      ifnot (StringIsInteger(lsHour)) function_return DFFALSE
-      ifnot (StringIsInteger(lsMinute)) function_return DFFALSE
-      ifnot (StringIsInteger(lsSecond)) function_return DFFALSE
+      If (Not((StringIsInteger(lsHour)))) function_return DFFALSE
+      If (Not((StringIsInteger(lsMinute)))) function_return DFFALSE
+      If (Not((StringIsInteger(lsSecond)))) function_return DFFALSE
       if (integer(lsHour)<24 and integer(lsMinute)<60 and integer(lsSecond)<60) function_return (StringIsDate(lsDate,liDateSep,liFormat))
     end
   end
   function_return DFFALSE
 end_function
-

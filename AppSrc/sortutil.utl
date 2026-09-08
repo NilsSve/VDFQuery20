@@ -65,7 +65,7 @@ class cReIndexer is a cSetOfTables
   end_procedure
 
   function callback string sText integer iType returns integer
-    If iType eq DF_MESSAGE_WARNING Set piAux1.i (piCurrentRow(Self)) to 1
+    If (iType = DF_MESSAGE_WARNING) Set piAux1.i (piCurrentRow(Self)) to 1
 //  if (iType ge DF_MESSAGE_HEADING_1 and iType le DF_MESSAGE_HEADING_5) begin
 //  end
 //  else if iType eq DF_MESSAGE_PROGRESS_TITLE begin
@@ -86,8 +86,8 @@ class cReIndexer is a cSetOfTables
     move 20 to iFile
 
     move (DBMS_OpenFileAs(sRootName,iFile,DF_EXCLUSIVE,0)) to iOpen
-    if iOpen ne DBMS_DRIVER_ERROR begin
-      if iOpen eq DBMS_DRIVER_DATAFLEX begin // It must be a DataFlex file
+    if (iOpen <> DBMS_DRIVER_ERROR) begin
+      if (iOpen = DBMS_DRIVER_DATAFLEX) begin // It must be a DataFlex file
         get piSortOptions of (oSortProperties(self)) to iOptions
         get piCallbackObj to iCallbackObj
         send DoCaption to iCallbackObj sRootName

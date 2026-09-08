@@ -12,6 +12,7 @@ Use aps.pkg         // Auto Positioning and Sizing classes for VDF
 Use Fdx_Attr.nui // FDX compatible attribute functions
 Use Strings.nui  // String manipulation for VDF
 Use GridUtil.utl // Grid and List utilities (not for dbGrid's or Table's)
+Use cCJGrid.pkg
 
 // This are only declared if FDX.UTL has been included by the program source:
 register_procedure AttrType_Callback integer attrtype# integer msg# integer obj#
@@ -58,7 +59,7 @@ class cFdxGlobalAttrGrid is a aps.Grid
     move (oAttributeFilter(self)) to arr#
     get item_count of arr# to max#
     for itm# from 0 to (max#-1)
-      if (integer(value(arr#,itm#))) eq attr# function_return 1
+      if ((integer(value(arr#,itm#))) = attr#) function_return 1
     loop
     function_return 0
   end_function
@@ -83,8 +84,8 @@ class cFdxGlobalAttrGrid is a aps.Grid
     end
   end_procedure
   procedure fill_list_fdx_help integer oFDX# integer attr#
-    ifnot (iIgnoreAttribute(self,attr#)) begin
-      if attr# eq DF_OPEN_PATH send add_path_value (API_Attr_DisplayName(attr#)) (API_Attr_DisplayValueName(attr#,AttrValue_GLOBAL(oFDX#,attr#))) (FDX_OtherAttr_Value(oFDX#,OA_PATH_SEPARATOR))
+    If (Not((iIgnoreAttribute(self,attr#)))) begin
+      if (attr# = DF_OPEN_PATH) send add_path_value (API_Attr_DisplayName(attr#)) (API_Attr_DisplayValueName(attr#,AttrValue_GLOBAL(oFDX#,attr#))) (FDX_OtherAttr_Value(oFDX#,OA_PATH_SEPARATOR))
       else begin
         send add_item msg_none (MakeTitleNice(self,API_Attr_DisplayName(attr#)))
         send add_item msg_none (API_Attr_DisplayValueName(attr#,AttrValue_GLOBAL(oFDX#,attr#)))
@@ -92,8 +93,8 @@ class cFdxGlobalAttrGrid is a aps.Grid
     end
   end_procedure
   procedure fill_list_api_help integer attr#
-    ifnot (iIgnoreAttribute(self,attr#)) begin
-      if attr# eq DF_OPEN_PATH send add_path_value (API_Attr_DisplayName(attr#)) (API_Attr_DisplayValueName(attr#,API_AttrValue_GLOBAL(attr#))) (API_OtherAttr_Value(OA_PATH_SEPARATOR))
+    If (Not((iIgnoreAttribute(self,attr#)))) begin
+      if (attr# = DF_OPEN_PATH) send add_path_value (API_Attr_DisplayName(attr#)) (API_Attr_DisplayValueName(attr#,API_AttrValue_GLOBAL(attr#))) (API_OtherAttr_Value(OA_PATH_SEPARATOR))
       else begin
         send add_item msg_none (MakeTitleNice(self,API_Attr_DisplayName(attr#)))
         send add_item msg_none (API_Attr_DisplayValueName(attr#,API_AttrValue_GLOBAL(attr#)))
@@ -118,7 +119,32 @@ object oFdxModalDisplayGlobalAttributes is a aps.ModalPanel label "Global attrib
   on_key kcancel send close_panel
   set Border_Style to BORDER_THICK   // Make panel resizeable
   set Locate_Mode to CENTER_ON_SCREEN
-  object oLst is a cFdxGlobalAttrGrid
+  object oLst is a cCJGrid
+      // TODO: oLst was a cFdxGlobalAttrGrid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oBtn is a aps.Multi_Button
     on_item t.btn.close send close_panel

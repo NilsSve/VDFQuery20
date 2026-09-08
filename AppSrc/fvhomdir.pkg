@@ -146,15 +146,15 @@ procedure FastView_SetupHomeDirectory global returns integer
   if (liExists=SEQIT_NONE) begin
     if (MB_Verify4("FastView needs to create a folder for saving view definitions.","","The folder will be located under the 'data' folder at this location:",lsPath,DFTRUE)) begin
 
-      ifnot lbFastViewRootFolderExists begin // First we create the root folder if necessary-
-        get wvaWin32_CreateDirectory (ToAnsi(lsRootPath)) to lbCreateError
+      If (Not(lbFastViewRootFolderExists)) begin
+        get wvaWin32_CreateDirectory (Utf8ToAnsi(lsRootPath)) to lbCreateError
         if lbCreateError begin
           send obs "Sorry! Folder could not be created." lsPath "View definitions can not be saved to disk"
           function_return DFFALSE
         end
       end
 
-      get wvaWin32_CreateDirectory (ToAnsi(lsPath)) to lbCreateError
+      get wvaWin32_CreateDirectory (Utf8ToAnsi(lsPath)) to lbCreateError
       if lbCreateError begin
         send obs "Sorry! Folder could not be created." lsPath "View definitions can not be saved to disk."
         function_return DFFALSE
@@ -216,6 +216,7 @@ object oFastViewOpenFileSL is a aps.ModalPanel label "Open FastView definition"
   on_key ksave_record send close_panel_ok
   on_key kcancel send close_panel
   property integer piResult DFFALSE
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oLst is a aps.Grid
 //  send GridPrepare_AddCheckBoxColumn
     send GridPrepare_AddColumn "View title" AFT_ASCII30
@@ -388,7 +389,7 @@ object oFastViewSaveFileSL is a aps.ModalPanel
         else begin
           if (pos(".",lsFileName)) begin
             send WildCardMatchPrepare ("*."+lsExt)
-            ifnot (vdfq_WildCardMatch(lsFileName)) error 344 "Dots (.) are not allowed in file name"
+            If (Not((vdfq_WildCardMatch(lsFileName)))) error 344 "Dots (.) are not allowed in file name"
             else function_return DFTRUE
           end
           else begin
@@ -439,6 +440,7 @@ object oFastViewCollectionOpenSL is a aps.ModalPanel label "Open FastView collec
   on_key ksave_record send close_panel_ok
   on_key kcancel send close_panel
   property integer piResult DFFALSE
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oLst is a aps.Grid
     send GridPrepare_AddColumn "File name"  AFT_ASCII30
     send GridPrepare_AddColumn "Size"       AFT_NUMERIC4.0
@@ -601,4 +603,3 @@ function FastView_DirectOutput global string lsFile returns integer
   end
   function_return -1
 end_procedure
-

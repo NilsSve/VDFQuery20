@@ -91,7 +91,7 @@ procedure DFMatrix_NewFileInSelector global integer file#
 end_procedure
 procedure DFMatrix_CallBack_Selected_Files global integer msg# integer obj# integer selected# integer shaded# integer tmp#
   integer oLst# master#
-  if num_arguments gt 4 move tmp# to master#
+  if (num_arguments > 4) move tmp# to master#
   else move 0 to master#
   get DFMatrix_SelectorObject to oLst#
   send Callback_General to oLst# msg# obj# selected# shaded# master#
@@ -103,9 +103,9 @@ end_function
 
 function sFdxTitle.i global integer lhFDX returns string
   string str#
-  if (piDataOrigin(lhFDX)) eq FDX_EMPTY move "(empty)" to str#
+  if ((piDataOrigin(lhFDX)) = FDX_EMPTY) move "(empty)" to str#
   else begin
-    if (piDataOrigin(lhFDX)) eq FDX_REAL_WORLD begin
+    if ((piDataOrigin(lhFDX)) = FDX_REAL_WORLD) begin
       if (psFileName(lhFDX)<>"") move ("current ("+psFileName(lhFDX)+")") to str#
       else move "Current" to str#
     end
@@ -127,9 +127,9 @@ procedure DFMatrix_Update_App_Title global
   integer lhFDX
   string str#
   move (fdx.object_id(0)) to lhFDX
-  if (piDataOrigin(lhFDX)) eq FDX_EMPTY move " (empty)" to str#
+  if ((piDataOrigin(lhFDX)) = FDX_EMPTY) move " (empty)" to str#
   else begin
-    if (piDataOrigin(lhFDX)) eq FDX_REAL_WORLD begin
+    if ((piDataOrigin(lhFDX)) = FDX_REAL_WORLD) begin
       if (psFileName(lhFDX)<>"") move (", current ("+psFileName(lhFDX)+")") to str#
       else move " (current)" to str#
     end
@@ -273,10 +273,10 @@ end_procedure
 procedure DFMatrix_OpenDirectoryContents global
   integer lhFDX
   move (fdx.object_id(0)) to lhFDX
-  if (piDataOrigin(lhFDX)) ne FDX_EMPTY begin
+  if ((piDataOrigin(lhFDX)) <> FDX_EMPTY) begin
     send fdx.wait.on
-    if (piDataOrigin(lhFDX)) eq FDX_REAL_WORLD send Read_Directory_Contents to lhFDX
-    if (piDataOrigin(lhFDX)) eq FDX_READ_FROM_FILE send Read_Directory_Contents_From_File to lhFDX
+    if ((piDataOrigin(lhFDX)) = FDX_REAL_WORLD) send Read_Directory_Contents to lhFDX
+    if ((piDataOrigin(lhFDX)) = FDX_READ_FROM_FILE) send Read_Directory_Contents_From_File to lhFDX
     send fdx.wait.off
     send OnChangeFDX to (DFMatrix_Vw_Object_ID(WAY_DIRECTORY_CONTENTS_VW))
     send Activate_Directory_Contents
@@ -315,7 +315,7 @@ end_function
 procedure DFMatrix_PrimarySaveFdxAs global
   integer lhFDX
   move (fdx.object_id(0)) to lhFDX
-  if (piDataOrigin(lhFDX)) ne FDX_EMPTY begin
+  if ((piDataOrigin(lhFDX)) <> FDX_EMPTY) begin
     send fdx.entry_save_as 0
     send DFMatrix_Update_App_Title
   end
@@ -325,14 +325,14 @@ function DFMatrix_Vw_Active global integer who_are_you# returns integer
 end_function
 
 procedure DFMatrix_Transfer_Set global integer origin# integer target# integer intersection#
-  if target# eq WAY_TABLE_SELECTOR_VW begin
-    if origin# eq WAY_SET_OF_TABLES_VW begin
+  if (target# = WAY_TABLE_SELECTOR_VW) begin
+    if (origin# = WAY_SET_OF_TABLES_VW) begin
       send make_set_of_files to (oFdxSetOfTables(self)) (oAuxFdxSetOfTables(self))
     end
-    if origin# eq WAY_SET_OF_FIELDS_VW begin
+    if (origin# = WAY_SET_OF_FIELDS_VW) begin
       send make_set_of_files to (oFdxSetOfFields(self)) (oAuxFdxSetOfTables(self))
     end
-    if origin# eq WAY_SET_OF_INDICES_VW begin
+    if (origin# = WAY_SET_OF_INDICES_VW) begin
       send make_set_of_fields to (oFdxSetOfIndices(self)) (oAuxFdxSetOfFields(self))
       send make_set_of_files to (oAuxFdxSetOfFields(self)) (oAuxFdxSetOfTables(self))
     end
@@ -340,11 +340,11 @@ procedure DFMatrix_Transfer_Set global integer origin# integer target# integer i
     else send DoTableSelector_Union to (oAuxFdxSetOfTables(self))
     send Activate_Table_Selector
   end
-  if target# eq WAY_SET_OF_TABLES_VW begin
-    if origin# eq WAY_SET_OF_FIELDS_VW begin
+  if (target# = WAY_SET_OF_TABLES_VW) begin
+    if (origin# = WAY_SET_OF_FIELDS_VW) begin
       send make_set_of_files to (oFdxSetOfFields(self)) (oAuxFdxSetOfTables(self))
     end
-    if origin# eq WAY_SET_OF_INDICES_VW begin
+    if (origin# = WAY_SET_OF_INDICES_VW) begin
       send make_set_of_fields to (oFdxSetOfIndices(self)) (oAuxFdxSetOfFields(self))
       send make_set_of_files to (oAuxFdxSetOfFields(self)) (oAuxFdxSetOfTables(self))
     end
@@ -353,8 +353,8 @@ procedure DFMatrix_Transfer_Set global integer origin# integer target# integer i
     send update_display to (DFMatrix_Vw_Object_ID(WAY_SET_OF_TABLES_VW))
     send Activate_SetOfTables
   end
-  if target# eq WAY_SET_OF_FIELDS_VW begin
-    if origin# eq WAY_SET_OF_INDICES_VW begin
+  if (target# = WAY_SET_OF_FIELDS_VW) begin
+    if (origin# = WAY_SET_OF_INDICES_VW) begin
       send make_set_of_fields to (oFdxSetOfIndices(self)) (oAuxFdxSetOfFields(self))
     end
     if intersection# send DoInterSection.i to (oFdxSetOfFields(self)) (oAuxFdxSetOfFields(self))
@@ -422,7 +422,7 @@ class fdxrpt.ModalClient is a aps.ModalPanel
   end_procedure
   procedure end_construct_object
     forward send end_construct_object
-    ifnot (piDontRegister(self)) send fdx.add_report (piId(self)) (psTitle(self)) self (piPrecond(self))
+    If (Not((piDontRegister(self)))) send fdx.add_report (piId(self)) (psTitle(self)) self (piPrecond(self))
   end_procedure
   procedure DoDefaults
   end_procedure
@@ -485,6 +485,5 @@ end_function
 on_key key_ctrl+key_t send Request_Activate_Table_Selector
 procedure Request_Activate_Table_Selector
   send Focus_Analyze_Focus
-  ifnot (integer(Focus_Info(FOCUS_DEO_MODAL))) send Activate_Table_Selector
+  If (Not((integer(Focus_Info(FOCUS_DEO_MODAL))))) send Activate_Table_Selector
 end_procedure
-

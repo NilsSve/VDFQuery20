@@ -12,6 +12,7 @@ object oSmallDfmThings_Vw is a aps.View label "Miscellaneous"
       object oTestArray is a cCollateArray
         send fill_current_sort_order
       end_object
+      // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
       object oLst is a aps.Grid
         send GridPrepare_AddColumn "Order"     AFT_ASCII5
         send GridPrepare_AddColumn "ASCII"     AFT_ASCII5
@@ -45,13 +46,13 @@ object oSmallDfmThings_Vw is a aps.View label "Miscellaneous"
         end_procedure
 
         function iSpecialSortValueOnColumn.i integer column# returns integer
-          if column# eq 0 function_Return 1
-          if column# eq 1 function_Return 1
+          if (column# = 0) function_Return 1
+          if (column# = 1) function_Return 1
         end_function
 
         function sSortValue.ii integer column# integer itm# returns string
-          if column# eq 0 function_return (IntToStrR(value(self,itm#),3))
-          if column# eq 1 function_return (IntToStrR(value(self,itm#),3))
+          if (column# = 0) function_return (IntToStrR(value(self,itm#),3))
+          if (column# = 1) function_return (IntToStrR(value(self,itm#),3))
         end_function
 
         procedure sort_data.i integer column#

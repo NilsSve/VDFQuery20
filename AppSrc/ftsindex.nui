@@ -5,7 +5,7 @@ Use FTSWrdSp.nui // cFTS_WordSplitter class (to be used internally by cFreeText_
 Use Dates.nui    // Date routines (No User Interface)
 Use LogFile.nui  // Class for handling a log file (No User Interface)
 Use ItemProp.nui // ITEM_PROPERTY command for use within arrays
-Use Language     // Set default languange if not set by compiler command line
+Use Language.pkg     // Set default languange if not set by compiler command line
 
 Use FTSData.nui // cFTS_TableAccess class.
 
@@ -254,7 +254,7 @@ class cFTS_ResultBrowser is a cArray
          repeat
            readln liArticle
            move (seqeof) to lbSeqEof
-           ifnot lbSeqEof begin
+           If (Not(lbSeqEof)) begin
              set value item liLine to liArticle
              increment liLine
            end
@@ -305,7 +305,7 @@ class cFTS_ResultBrowser is a cArray
          decrement liResultCount
          for liLine from 0 to liResultCount
            readln liArticle
-           ifnot (SeqEof) set value item liLine to liArticle
+           If (Not((SeqEof))) set value item liLine to liArticle
          loop
 
          move "# articles in set" to lsValue
@@ -437,7 +437,7 @@ class cFTS_Indexer is a cArray
               clear liFileWord                               // clear FTWORD
               set_field_value liFileWord 2 to lsWord         // move lsWord to FTWORD.WORD
               vfind liFileWord 2 EQ                          // find eq FTWORD by index.2
-              ifnot (found) begin                            // ifnot (found) begin
+              If (Not((found))) begin
                 get !$.pnNextAvailableWordId to liWordID     //
                 set_field_value liFileWord 1 to liWordID     //   get !$.pnNextAvailableWordId to FTWORD.WORD_ID
                 set !$.pnNextAvailableWordId to (liWordID+1) //   set !$.pnNextAvailableWordId to (FTWORD.WORD_ID+1)
@@ -460,7 +460,7 @@ class cFTS_Indexer is a cArray
       clear liFile
       set_field_value liFile 1 to lnArticleId
       vfind liFile 1 EQ // find eq FTArticl by index.1
-      [found] delete liFile
+      If (found) delete liFile
 
       // Then delete all phrases:
       get piFile.i of (phTableAccessObject(self)) FTSTABLE_ARTPHR to liFile
@@ -508,9 +508,9 @@ class cFTS_Indexer is a cArray
     lock
 
       get !$.pbUpdating to lbAlreadyUpdating
-      ifnot lbAlreadyUpdating send DoBeginUpdate // Send DoBeginUpdate automatically if not part of a bigger update
+      If (Not(lbAlreadyUpdating)) send DoBeginUpdate
 
-      if lnArticleID le 0 error 843 "Article ID must be positive"
+      if (lnArticleID <= 0) error 843 "Article ID must be positive"
       // First we assign word ID's to the words in the article
       for liRow from 0 to liMax
         set piWordId.i of lhWordSplitter liRow to (DoIncrementWord(self,psWord.i(lhWordSplitter,liRow)))
@@ -526,20 +526,20 @@ class cFTS_Indexer is a cArray
           clear liArtPhrFile   //    clear FTArtPhr
           set_field_value liArtPhrFile 1 to lnArticleId  // move lnArticleID to FTArtPhr.ARTICLE_ID
           set_field_value liArtPhrFile 2 to (piWordId.i(lhWordSplitter,liRow)) // move (piWordId.i(lhWordSplitter,liRow)) to FTArtPhr.WORD_ID
-          if liRow le  liMax    set_field_value liArtPhrFile 3 to (piWordId.i(lhWordSplitter,liRow+1)) //if liRow le  liMax    move (piWordId.i(lhWordSplitter,liRow+1)) to FTArtPhr.WORD_ID_S1
-          if liRow le (liMax-1) set_field_value liArtPhrFile 4 to (piWordId.i(lhWordSplitter,liRow+2)) //if liRow le (liMax-1) move (piWordId.i(lhWordSplitter,liRow+2)) to FTArtPhr.WORD_ID_S2
-          if liRow le (liMax-2) set_field_value liArtPhrFile 5 to (piWordId.i(lhWordSplitter,liRow+3)) //if liRow le (liMax-2) move (piWordId.i(lhWordSplitter,liRow+3)) to FTArtPhr.WORD_ID_S3
-          if liRow le (liMax-3) set_field_value liArtPhrFile 6 to (piWordId.i(lhWordSplitter,liRow+4)) //if liRow le (liMax-3) move (piWordId.i(lhWordSplitter,liRow+4)) to FTArtPhr.WORD_ID_S4
-          if liRow le (liMax-4) set_field_value liArtPhrFile 7 to (piWordId.i(lhWordSplitter,liRow+5)) //if liRow le (liMax-4) move (piWordId.i(lhWordSplitter,liRow+5)) to FTArtPhr.WORD_ID_S5
+          if (liRow <= liMax) set_field_value liArtPhrFile 3 to (piWordId.i(lhWordSplitter,liRow+1)) //if liRow le  liMax    move (piWordId.i(lhWordSplitter,liRow+1)) to FTArtPhr.WORD_ID_S1
+          if (liRow <= (liMax-1)) set_field_value liArtPhrFile 4 to (piWordId.i(lhWordSplitter,liRow+2)) //if liRow le (liMax-1) move (piWordId.i(lhWordSplitter,liRow+2)) to FTArtPhr.WORD_ID_S2
+          if (liRow <= (liMax-2)) set_field_value liArtPhrFile 5 to (piWordId.i(lhWordSplitter,liRow+3)) //if liRow le (liMax-2) move (piWordId.i(lhWordSplitter,liRow+3)) to FTArtPhr.WORD_ID_S3
+          if (liRow <= (liMax-3)) set_field_value liArtPhrFile 6 to (piWordId.i(lhWordSplitter,liRow+4)) //if liRow le (liMax-3) move (piWordId.i(lhWordSplitter,liRow+4)) to FTArtPhr.WORD_ID_S4
+          if (liRow <= (liMax-4)) set_field_value liArtPhrFile 7 to (piWordId.i(lhWordSplitter,liRow+5)) //if liRow le (liMax-4) move (piWordId.i(lhWordSplitter,liRow+5)) to FTArtPhr.WORD_ID_S5
 
-          if liPhraseLength ge  7 if liRow le (liMax- 5) set_field_value liArtPhrFile  8 to (piWordId.i(lhWordSplitter,liRow+ 6))
-          if liPhraseLength ge  8 if liRow le (liMax- 6) set_field_value liArtPhrFile  9 to (piWordId.i(lhWordSplitter,liRow+ 7))
-          if liPhraseLength ge  9 if liRow le (liMax- 7) set_field_value liArtPhrFile 10 to (piWordId.i(lhWordSplitter,liRow+ 8))
-          if liPhraseLength ge 10 if liRow le (liMax- 8) set_field_value liArtPhrFile 11 to (piWordId.i(lhWordSplitter,liRow+ 9))
-          if liPhraseLength ge 11 if liRow le (liMax- 9) set_field_value liArtPhrFile 12 to (piWordId.i(lhWordSplitter,liRow+10))
-          if liPhraseLength ge 12 if liRow le (liMax-10) set_field_value liArtPhrFile 13 to (piWordId.i(lhWordSplitter,liRow+11))
-          if liPhraseLength ge 13 if liRow le (liMax-11) set_field_value liArtPhrFile 14 to (piWordId.i(lhWordSplitter,liRow+12))
-          if liPhraseLength ge 14 if liRow le (liMax-12) set_field_value liArtPhrFile 15 to (piWordId.i(lhWordSplitter,liRow+13))
+          if (liPhraseLength ge) 7 if (liRow <= (liMax- 5)) set_field_value liArtPhrFile 8 to (piWordId.i(lhWordSplitter,liRow+ 6))
+          if (liPhraseLength ge) 8 if (liRow <= (liMax- 6)) set_field_value liArtPhrFile 9 to (piWordId.i(lhWordSplitter,liRow+ 7))
+          if (liPhraseLength ge) 9 if (liRow <= (liMax- 7)) set_field_value liArtPhrFile 10 to (piWordId.i(lhWordSplitter,liRow+ 8))
+          if ((liPhraseLength >= 10) and (liRow <= (liMax- 8))) set_field_value liArtPhrFile 11 to (piWordId.i(lhWordSplitter,liRow+ 9))
+          if ((liPhraseLength >= 11) and (liRow <= (liMax- 9))) set_field_value liArtPhrFile 12 to (piWordId.i(lhWordSplitter,liRow+10))
+          if ((liPhraseLength >= 12) and (liRow <= (liMax-10))) set_field_value liArtPhrFile 13 to (piWordId.i(lhWordSplitter,liRow+11))
+          if ((liPhraseLength >= 13) and (liRow <= (liMax-11))) set_field_value liArtPhrFile 14 to (piWordId.i(lhWordSplitter,liRow+12))
+          if ((liPhraseLength >= 14) and (liRow <= (liMax-12))) set_field_value liArtPhrFile 15 to (piWordId.i(lhWordSplitter,liRow+13))
 
           saverecord liArtPhrFile
         End
@@ -548,7 +548,7 @@ class cFTS_Indexer is a cArray
         set_field_value liArtWrdFile 1 to lnArticleId // move lnArticleID to FTArtWrd.ARTICLE_ID
         set_field_value liArtWrdFile 2 to (piWordId.i(lhWordSplitter,liRow)) // move (piWordId.i(lhWordSplitter,liRow)) to FTArtWrd.WORD_ID
         vfind liArtWrdFile 1 EQ // find eq FTArtWrd by index.1
-        ifnot (found) saverecord liArtWrdFile // ifnot (found) saverecord FTArtWrd
+        If (Not((found))) saverecord liArtWrdFile
       loop
 
       // Finally save the article:
@@ -562,7 +562,7 @@ class cFTS_Indexer is a cArray
       set_field_value liArticlFile 7 to (sSysTime())  // INDEXED_TIME
       saverecord liArticlFile
 
-      ifnot lbAlreadyUpdating send DoEndUpdate
+      If (Not(lbAlreadyUpdating)) send DoEndUpdate
     unlock
   end_procedure
   procedure end_construct_object
@@ -572,4 +572,3 @@ class cFTS_Indexer is a cArray
     set phIndexerObject to lhSelf // This is resolved in the encapsulating cFTS_System object
   end_procedure
 end_class // cFTS_Indexer
-

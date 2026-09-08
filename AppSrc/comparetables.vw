@@ -1,5 +1,5 @@
 // Use CompareTables.vw // Compare table data
-Use Aps
+Use Aps.pkg
 Use CompareTables.nui // cCompareTableData class
 Use ObjGroup.utl // Defining groups of objects
 
@@ -185,6 +185,7 @@ object oCompareTableData_Wiz is a aps.WizardPanel label "Compare table data"
     send aps_goto_max_row
     send aps_make_row_space 10
 
+    // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddCheckBoxColumn, GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
     object oGrid is a aps.Grid
       send GridPrepare_AddCheckBoxColumn ""
       send GridPrepare_AddColumn "" AFT_ASCII15
@@ -375,6 +376,7 @@ DEFINE_OBJECT_GROUP OG_CompareTableDataView
 
     send aps_goto_max_row
 
+    // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddCheckBoxColumn, GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
     object oResultGrid is a aps.Grid
       send GridPrepare_AddCheckBoxColumn ""
       send GridPrepare_AddColumn "Index value" AFT_ASCII60
@@ -513,7 +515,7 @@ DEFINE_OBJECT_GROUP OG_CompareTableDataView
         integer liRval liColumns
         get Grid_Columns self to liColumns
         forward get msg_item_change liItm1 liItm2 to liRval
-        if (liItm1/liColumns) ne (liItm2/liColumns) send row_change (liItm1/liColumns) (liItm2/liColumns)
+        if ((liItm1/liColumns) <> (liItm2/liColumns)) send row_change (liItm1/liColumns) (liItm2/liColumns)
         procedure_return liRval
       end_procedure
 
@@ -551,6 +553,7 @@ DEFINE_OBJECT_GROUP OG_CompareTableDataView
     end_object
 
     send aps_goto_max_row
+    // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
     object oValueGrid is a aps.Grid
       set peAnchors to (anTop+anLeft+anRight+anBottom)
       send GridPrepare_AddColumn "Field name"    AFT_ASCII15
@@ -611,11 +614,11 @@ DEFINE_OBJECT_GROUP OG_CompareTableDataView
         else move (RGB_Compose(255,255,255)) to liColor1
         move liColor1 to liColor2
 
-        ifnot liRec1 begin
+        If (Not(liRec1)) begin
           move clBtnFace to liColor1
           move (RGB_Compose(255,255,255)) to liColor2
         end
-        ifnot liRec2 begin
+        If (Not(liRec2)) begin
           move (RGB_Compose(255,255,255)) to liColor1
           move clBtnFace to liColor2
         end
@@ -712,5 +715,3 @@ procedure Activate_CompareTables
     send destroy of lhComparer
   end
 end_procedure
-
-

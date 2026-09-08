@@ -136,7 +136,7 @@ class cDynamicTableAccess is a cArray
                   get_attribute DF_FILE_LOGICAL_NAME of liFile to lsFilelistValue
                   if (lowercase(lsFilelistValue)=lsLogName) function_return liFile
                 end
-              until liFile eq 0
+              until (liFile = 0)
               function_return -1
             end_function
 
@@ -163,9 +163,9 @@ class cDynamicTableAccess is a cArray
                 if liFile begin
                   //get_attribute DF_FILE_NEXT_OPENED of liFile to lbOpened
                   get_attribute DF_FILE_OPENED of liFile to lbOpened
-                  ifnot lbOpened function_return liFile
+                  If (Not(lbOpened)) function_return liFile
                 end
-              until liFile eq 0
+              until (liFile = 0)
               function_return -1
             end_function
 
@@ -248,12 +248,12 @@ class cDynamicTableAccess is a cArray
         // the case piOpenState.i should be set to -1.
         get psRootname.i liRow to lsRoot
         get DBMS_OpenFileAs lsRoot liFile liOpenMode (piOpenByIndex.i(self,liRow)) to liOpened
-        ifnot liOpened get DBMS_OpenFileAs (lsRoot+".int") liFile liOpenMode (piOpenByIndex.i(self,liRow)) to liOpened
+        If (Not(liOpened)) get DBMS_OpenFileAs (lsRoot+".int") liFile liOpenMode (piOpenByIndex.i(self,liRow)) to liOpened
 
         set piOpenState.i liRow to (if(liOpened,1,0))
       end
       else move 0 to liOpened
-      ifnot liOpened begin
+      If (Not(liOpened)) begin
         send DoCloseTables
         function_return 0 // error
       end
@@ -381,7 +381,7 @@ class cDynamicTableAccess is a cArray
         if liFile begin
           get_attribute DF_FILE_ROOT_NAME of liFile to lsRootName1
           get psRootname.i liRow to lsRootName2
-          ifnot (lowercase(DBMS_StripPathAndDriver(lsRootName1))=lowercase(lsRootName2)) move 0 to lbDrop
+          If (Not((lowercase(DBMS_StripPathAndDriver(lsRootName1))=lowercase(lsRootName2)))) move 0 to lbDrop
         end
       loop
       if lbDrop begin
@@ -447,7 +447,7 @@ class cDynamicTableAccess is a cArray
             procedure end_construct_object
               forward send end_construct_object
               if (pbOpenTablesOnDefine(self)) begin
-                ifnot (DoOpenTables(self)) send DeclareOpenError "Tables could not be opened (#)" // Open the tables
+                If (Not((DoOpenTables(self)))) send DeclareOpenError "Tables could not be opened (#)"
               end
             end_procedure
 

@@ -89,6 +89,7 @@
     object oTabs is a aps.TabDiaLog snap SL_RIGHT
       object oTab1 is a aps.TabPage label "Properties"
         set p_auto_column to 0
+        // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
         object oGrd is a aps.Grid
           send GridPrepare_AddColumn "Name" AFT_ASCII20
           send GridPrepare_AddColumn "Value" AFT_ASCII40
@@ -117,6 +118,7 @@
         end_object
       end_object
       object oTab2 is a aps.TabPage label "DD Values"
+        // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
         object oGrd is a aps.Grid
           send GridPrepare_AddColumn "Field" AFT_ASCII20
           send GridPrepare_AddColumn "Value" AFT_ASCII30
@@ -152,6 +154,7 @@
         end_object
       end_object
       object oTab3 is a aps.TabPage label "DEO objects"
+        // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
         object oGrd is a aps.Grid
           send GridPrepare_AddColumn "Name"    AFT_ASCII50
           send GridPrepare_AddColumn "Changed" AFT_ASCII4

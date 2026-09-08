@@ -11,13 +11,14 @@ desktop_section
 
     register_procedure UpdateButtonText
 
+    //TODO dfTimer->cTimer (skipped): Uses the Timer_Message/Timer_object dispatch - rewrite OnTimer by hand.
     object oTimer is a DFTimer
       set Auto_Start_State to TRUE //<- If this is set to TRUE to timer is activated when
       set Auto_Stop_State to TRUE  //   the applications start regardless of the oTimedObs "activeness".
       set Timer_Message to msg_UpdateButtonText
       set Timer_Object to self
       set Timeout to 1000 // Every second
-      //set Timer_Active_State to TRUE
+      //set pbEnabled to TRUE
     end_object
 
     object oText is a aps.TextEdit

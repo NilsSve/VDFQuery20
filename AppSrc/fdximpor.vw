@@ -201,7 +201,7 @@ object oFdxImport_Vw is a aps.View label "Import data from text file"
       procedure prompt
         string lsFileName
         get SEQ_SelectInFile "Select text data file" "Text files|*.txt|FDX data files|*.txd|All files|*.*" to lsFileName
-        if lsFileName ne "" set value item 0 to lsFileName
+        if (lsFileName <> "") set value item 0 to lsFileName
       end_procedure
       on_key kprompt send prompt
     end_object
@@ -234,7 +234,7 @@ object oFdxImport_Vw is a aps.View label "Import data from text file"
       procedure prompt
         string lsFileName
         get SEQ_SelectInFile "Select data file" "DataFlex data files|*.dat|Intermediate files|*.int" to lsFileName
-        if lsFileName ne "" set value item 0 to lsFileName
+        if (lsFileName <> "") set value item 0 to lsFileName
       end_procedure
       procedure OnChange
         send delete_data of (oTableDefaultValues(self))
@@ -347,10 +347,10 @@ object oFdxImport_Vw is a aps.View label "Import data from text file"
     set value of lhTableUpdateParameters item TUPD_SWITCH_INDEX_OFFLINE to (select_state(oCb5(lhGrp)))
     get current_radio of (oLockMode(lhGrp)) to liLM
 
-    if liLM eq 0 set value of lhTableUpdateParameters item TUPD_LOCK_MODE to TUPD_LOCK_MODE_OPEN_EXCLUSIVE
-    if liLM eq 1 set value of lhTableUpdateParameters item TUPD_LOCK_MODE to TUPD_LOCK_MODE_ONE_TRANSACTION
-    if liLM eq 2 set value of lhTableUpdateParameters item TUPD_LOCK_MODE to TUPD_LOCK_MODE_UNLOCK_EVERY
-    if liLM eq 3 set value of lhTableUpdateParameters item TUPD_LOCK_MODE to TUPD_LOCK_MODE_NO_LOCK
+    if (liLM = 0) set value of lhTableUpdateParameters item TUPD_LOCK_MODE to TUPD_LOCK_MODE_OPEN_EXCLUSIVE
+    if (liLM = 1) set value of lhTableUpdateParameters item TUPD_LOCK_MODE to TUPD_LOCK_MODE_ONE_TRANSACTION
+    if (liLM = 2) set value of lhTableUpdateParameters item TUPD_LOCK_MODE to TUPD_LOCK_MODE_UNLOCK_EVERY
+    if (liLM = 3) set value of lhTableUpdateParameters item TUPD_LOCK_MODE to TUPD_LOCK_MODE_NO_LOCK
 
     set value of lhTableUpdateParameters item TUPD_UNLOCK_COUNT to (value(oFrm(oLockMode(lhGrp)),0))
   end_procedure
@@ -360,7 +360,7 @@ object oFdxImport_Vw is a aps.View label "Import data from text file"
     get value of (oRootName(oGrp2(self))) item 0 to lsFileName
     if (lsFileName<>"") begin
       if (SEQ_FileExists(lsFileName)=SEQIT_FILE) begin
-        ifnot (DBMS_CanOpenFileAs(lsFileName,37)) begin
+        If (Not((DBMS_CanOpenFileAs(lsFileName,37)))) begin
           move "" to lsFileName
           send obs "Table can not be opened" ("("+lsFileName+")")
         end
@@ -406,7 +406,7 @@ object oFdxImport_Vw is a aps.View label "Import data from text file"
     end
 
     move (DBMS_OpenFileAs(lsTableName,37,DF_SHARE,0)) to liOpen
-    ifnot liOpen begin
+    If (Not(liOpen)) begin
       send obs "Table could not be opened"
       procedure_return
     end
@@ -474,7 +474,7 @@ object oFdxImport_Vw is a aps.View label "Import data from text file"
     end
 
     move (DBMS_OpenFileAs(lsTableName,37,DF_SHARE,0)) to liOpen
-    ifnot liOpen begin
+    If (Not(liOpen)) begin
       send obs "Table could not be opened"
       procedure_return
     end

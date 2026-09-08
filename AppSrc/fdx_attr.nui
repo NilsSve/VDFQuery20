@@ -86,7 +86,7 @@ function FDX_FindRootName global integer lhFDX string lsFindRootName integer liF
       get DBMS_StripPathAndDriver lsRootStripped to lsRootStripped
       if (lowercase(lsFindRootName)=lowercase(lsRootStripped)) function_return liFile
     end
-  until liFile eq 0
+  until (liFile = 0)
   function_return 0
 end_function
 function FDX_FindLogicalName global integer lhFDX string lsFindLogName integer liFile returns integer
@@ -97,7 +97,7 @@ function FDX_FindLogicalName global integer lhFDX string lsFindLogName integer l
       get FDX_AttrValue_FILELIST lhFDX DF_FILE_LOGICAL_NAME liFile to lsLogName
       if (lowercase(lsFindLogName)=lowercase(lsLogName)) function_return liFile
     end
-  until liFile eq 0
+  until (liFile = 0)
   function_return 0
 end_function
 

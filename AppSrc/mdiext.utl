@@ -33,7 +33,7 @@
 // ***********************************************************************
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use Dfmainbt.pkg  // Standard dfMain_ButtonBar (DAC)
@@ -210,7 +210,7 @@ class cAvailableFileObjects is an array
 
   procedure add_data_file_object integer file# integer msg# integer tmp_obj#
     integer obj#
-    if num_arguments gt 1 move tmp_obj# to obj#
+    if (num_arguments > 1) move tmp_obj# to obj#
     else move 0 to obj#
     set value item (file#*2)   to obj#
     set value item (file#*2+1) to msg#
@@ -243,7 +243,7 @@ end_object
 
 procedure Add_LinkView_File for cObject integer file# integer msg# integer tmp_obj#
   integer obj#
-  if num_arguments gt 2 move tmp_obj# to obj#
+  if (num_arguments > 2) move tmp_obj# to obj#
   else move self to obj#
   send add_data_file_object to (oAvailableFileViews(self)) file# msg# obj#
 end_procedure
@@ -252,12 +252,12 @@ register_function iLinkViewFile integer itm# returns integer
 procedure Activate_LinkView for cObject
   integer file# dm# obj# itm#
   move (focus(desktop)) to obj# // Which object has the focus?
-  if obj# gt desktop begin
+  if (obj# > desktop) begin
     get delegation_mode of obj# to dm# // Make sure that the object does not make
     set delegation_mode of obj# to no_delegate_or_error // noise when asked below.
     get current_item of obj# to itm#
     get iLinkViewFile of obj# itm# to file#
-    ifnot file# get data_file of obj# item itm# to file# // Get 'filenumber'
+    If (Not(file#)) get data_file of obj# item itm# to file#
     set delegation_mode of obj# to dm# // Restore delegation mode.
     send exec_data_file_object to (oAvailableFileViews(self)) file#
   end
@@ -270,12 +270,12 @@ end_procedure
 function Exists_LinkView returns integer
   integer rval# file# dm# obj# itm#
   move (focus(desktop)) to obj# // Which object has the focus?
-  if obj# gt desktop begin
+  if (obj# > desktop) begin
     get delegation_mode of obj# to dm# // Make sure that the object does not make
     set delegation_mode of obj# to no_delegate_or_error // noise when asked below.
     get current_item of obj# to itm#
     get iLinkViewFile of obj# itm# to file#
-    ifnot file# get data_file of obj# item current to file# // Get 'filenumber'
+    If (Not(file#)) get data_file of obj# item current to file#
     set delegation_mode of obj# to dm# // Restore delegation mode.
     get exists_data_file_object of (oAvailableFileViews(self)) file# to rval#
   end
@@ -328,7 +328,7 @@ move 0 to oToolBar#
  Class cSturesToolBar is a ToolBar
   Procedure construct_object
     forward send construct_object
-    ifnot oToolBar# move self to oToolBar#
+    If (Not(oToolBar#)) move self to oToolBar#
     property integer pImageList_Item_Count 0
     property integer pAutoShadow_State 1
 //    Set default_icons to (IDB_STANDARD IOR IDB_VIEW IOR IDB_LARGE)
@@ -342,7 +342,7 @@ move 0 to oToolBar#
 
   Procedure end_construct_object
     forward send end_construct_object
-    ifnot (item_count(self)) send Add_Standard_Toolbar_Buttons
+    If (Not((item_count(self)))) send Add_Standard_Toolbar_Buttons
     send Update_Toolbar_Shadow_States
   End_Procedure
 
@@ -352,7 +352,7 @@ move 0 to oToolBar#
   End_Procedure
 
   Procedure Add_Toolbar_Button integer ico# string Tip# string StHlp# integer msg# integer obj#
-    if num_arguments gt 4 send Add_button ico# msg# obj#
+    if (num_arguments > 4) send Add_button ico# msg# obj#
     else                  send Add_button ico# msg#
     send Add_ToolTip Tip#
     set  Status_Help To StHlp#
@@ -377,7 +377,7 @@ move 0 to oToolBar#
     integer ico#
     send ImageList_Add bmp#
     move (ICO_USER+pImageList_Item_Count(self)-1) to ico#
-    if num_arguments gt 4 send Add_Toolbar_Button ico# Tip# StHlp# msg# obj#
+    if (num_arguments > 4) send Add_Toolbar_Button ico# Tip# StHlp# msg# obj#
     else                  send Add_Toolbar_Button ico# Tip# StHlp# msg#
   End_Procedure
 
@@ -406,12 +406,12 @@ move 0 to oToolBar#
   End_Procedure
 End_Class
 
-#REPLACE FLDOPT_FIND     1
-#REPLACE FLDOPT_PROMPT   2
-#REPLACE FLDOPT_DATE     4
-#REPLACE FLDOPT_SAVE     8
-#REPLACE FLDOPT_DELETE  16
-#REPLACE FLDOPT_LINKVW  32
+Define FLDOPT_FIND   for 1
+Define FLDOPT_PROMPT for 2
+Define FLDOPT_DATE   for 4
+Define FLDOPT_SAVE   for 8
+Define FLDOPT_DELETE for 16
+Define FLDOPT_LINKVW for 32
 
 register_function iAllowRequestFind returns integer
 register_function iDisAllowRequestFind returns integer
@@ -431,7 +431,7 @@ function iFieldOptions.i integer obj# returns integer
   if tmp# move (rval#+FLDOPT_DATE) to rval#
   if (file#*fld#) begin
     if (integer(API_AttrValue_FILE(DF_FILE_OPENED,file#))) begin
-      ifnot not_findok# ifnot findok# get_attribute DF_FIELD_INDEX of file# fld# to findok#
+      If (Not(not_findok#)) ifnot findok# get_attribute DF_FIELD_INDEX of file# fld# to findok#
       if (should_save(obj#)) move (rval#+FLDOPT_SAVE) to rval#
       get server of obj# to svr#
       if svr# move (current_record(svr#)) to tmp#
@@ -453,7 +453,7 @@ Procedure Update_Toolbar_Shadow_States
   if oToolBar# begin
     if (pAutoShadow_State(oToolBar#)) begin
       move (focus(desktop)) to foc#
-      if foc# gt desktop get iFieldOptions.i foc# to opt#
+      if (foc# > desktop) get iFieldOptions.i foc# to opt#
       get item_count of oToolBar# to max#
       for itm# from 0 to (max#-1)
         get message of oToolBar# item itm# to msg#
@@ -498,14 +498,14 @@ class cViewPopupMenu is a ViewPopupMenu
      Forward Get message item itm# to rVal#
      // Apparantly global messages cannot be represented via the add_item
      // message. Therefore we have to do this:
-     if rval# gt 10000 move (rval#-65536) to rval#
+     if (rval# > 10000) move (rval#-65536) to rval#
      function_return rval#
   end_function
   procedure add_menu_item integer msg# string label# string status_help# integer tmp_aux#
     integer aux#
     if num_arguments begin
       send add_item msg# label#
-      if num_arguments gt 3 move tmp_aux# to aux#
+      if (num_arguments > 3) move tmp_aux# to aux#
       else move -1 to aux# // -1 will automatically get replaced with client_id
       set aux_value item (item_count(self)-1) to aux#
       set status_help item (item_count(self)-1) to status_help#

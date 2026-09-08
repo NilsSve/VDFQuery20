@@ -32,6 +32,7 @@ object oFTS_DropTablesWizard is a aps.WizardPanel label "Drop FTS tables"
       set Fontweight to 900
     end_object
     send aps_goto_max_row
+    // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
     object oExisting is a aps.Grid
       send GridPrepare_AddColumn "Prefix"                      AFT_ASCII6
       send GridPrepare_AddColumn "Existing sets of FTS tables" AFT_ASCII40
@@ -105,6 +106,7 @@ object oFTS_DropTablesWizard is a aps.WizardPanel label "Drop FTS tables"
     end_object
     send aps_goto_max_row
     send aps_make_row_space 5
+    // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
     object oGrid is a aps.Grid
       send GridPrepare_AddColumn "Table"             AFT_ASCII10
       send GridPrepare_AddColumn "User display name" AFT_ASCII32
@@ -268,6 +270,7 @@ object oFTS_CreateTablesWizard is a aps.WizardPanel label "Create FTS tables"
     end_object
     send aps_goto_max_row
     send aps_make_row_space 5
+    // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
     object oGrid is a aps.Grid
       send GridPrepare_AddColumn "Table name"        AFT_ASCII10
       send GridPrepare_AddColumn "User display name" AFT_ASCII32
@@ -526,4 +529,3 @@ end_object // oFTS_CreateTablesWizard
 procedure Popup_FTS_CreateTablesWizard
   send popup of oFTS_CreateTablesWizard
 end_procedure
-

@@ -60,7 +60,7 @@ class cSetOfFiles is a cArray
     string sName sExt
     get psFileName.i iItm to sName
     get psFileType.i iItm to sExt
-    if sExt eq "" function_return sName
+    if (sExt = "") function_return sName
     function_return (sName+"."+sExt)
   end_function
   function sFileNameIncPath.i integer iItm returns string
@@ -92,32 +92,32 @@ class cSetOfFiles is a cArray
     integer obj# max#
     integer row#
     string str#
-    if idx# ne (piOrdering(self)) begin
+    if (idx# <> (piOrdering(self))) begin
       set private.piOrdering to idx#
       move (oIndex(self)) to obj#
       send delete_data to obj#
       get row_count to max#
-      if idx# eq LF_ORDERING_NAME begin // psFileName.i
+      if (idx# = LF_ORDERING_NAME) begin // psFileName.i
         for row# from 0 to (max#-1)
           set value of obj# item row# to (uppercase(sFileName.i(self,row#))+pad(row#,6))
         loop
       end
-      if idx# eq LF_ORDERING_TYPE begin // psFileType.i
+      if (idx# = LF_ORDERING_TYPE) begin // psFileType.i
         for row# from 0 to (max#-1)
           set value of obj# item row# to (psFileType.i(self,row#)+pad(row#,6))
         loop
       end
-      if idx# eq LF_ORDERING_PATH begin // psFilePath.i
+      if (idx# = LF_ORDERING_PATH) begin // psFilePath.i
         for row# from 0 to (max#-1)
           set value of obj# item row# to (psFilePath.i(self,row#)+pad(row#,6))
         loop
       end
-      if idx# eq LF_ORDERING_SIZE begin // piFileSize.i
+      if (idx# = LF_ORDERING_SIZE) begin // piFileSize.i
         for row# from 0 to (max#-1)
           set value of obj# item row# to (RightShift(piFileSize.i(self,row#),12)+pad(row#,6))
         loop
       end
-      if idx# eq LF_ORDERING_TIME begin // pnFileTime.i
+      if (idx# = LF_ORDERING_TIME) begin // pnFileTime.i
         for row# from 0 to (max#-1)
           set value of obj# item row# to (RightShift(pnFileTime.i(self,row#),15)+pad(row#,6))
         loop
@@ -142,8 +142,8 @@ class cSetOfFiles is a cArray
 
   procedure AddSubDirectories_Help string fn# string path#
     if (fn#<>"[.]" and fn#<>"[..]") begin
-      replace "[" in fn# with ""
-      replace "]" in fn# with ""
+      Move (Replace("[", fn#, "")) to fn#
+      Move (Replace("]", fn#, "")) to fn#
       move (SEQ_ComposeAbsoluteFileName(path#,fn#)) to path#
       send push.s to (oDirStack(self)) path#
       send AddDir path#
@@ -166,7 +166,7 @@ class cSetOfFiles is a cArray
     integer row#
     string file_first_name#
     get row_count to row#
-    if "." in fn# move (StripFromLastOccurance(fn#,".")) to file_first_name#
+    if (fn# contains ".") move (StripFromLastOccurance(fn#,".")) to file_first_name#
     else move fn# to file_first_name#
     set psFileName.i row# to file_first_name#
     set psFilePath.i row# to path#
@@ -229,7 +229,7 @@ class cSetOfFiles is a cArray
   procedure SnapShot_Save string fn#
     integer ch#
     move (SEQ_DirectOutput(fn#)) to ch#
-    if ch# ge 0 begin
+    if (ch# >= 0) begin
       send Seq_Write ch#
       send SEQ_CloseOutput ch#
     end
@@ -237,7 +237,7 @@ class cSetOfFiles is a cArray
   procedure SnapShot_Load string fn#
     integer ch#
     move (SEQ_DirectInput(fn#)) to ch#
-    if ch# ge 0 begin
+    if (ch# >= 0) begin
       send Seq_Read ch#
       send SEQ_CloseInput ch#
     end
@@ -277,14 +277,14 @@ class cSetOfFiles is a cArray
     integer liChannel liSeqEof
     string lsLine
     get SEQ_DirectInput lsPrnFile to liChannel
-    if liChannel ge 0 begin
+    if (liChannel >= 0) begin
       repeat
         readln channel liChannel lsLine
         move (SeqEof) to liSeqEof
-        ifnot liSeqEof begin
+        If (Not(liSeqEof)) begin
           if (StringBeginsWith(lsLine,"INCLUDING FILE: ")) begin
-            replace "INCLUDING FILE: " in lsLine with ""
-            ifnot ".PKI" in lsLine send AddFirstOccuranceOfFile lsLine
+            Move (Replace("INCLUDING FILE: ", lsLine, "")) to lsLine
+            If (Not(lsLine contains ".PKI")) send AddFirstOccuranceOfFile lsLine
           end
         end
       until liSeqEof

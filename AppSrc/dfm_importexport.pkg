@@ -512,7 +512,7 @@ object DFM_IE_WorkHorse is a cArray
     set_attribute DF_DATE_FORMAT to DF_DATE_EUROPEAN
     set_attribute DF_DATE_SEPARATOR to 45     // -
     set_attribute DF_DECIMAL_SEPARATOR to 46  // .
-    set_date_attribute DATE4_STATE to 0
+    // set_date_attribute DATE4_STATE to 0 // no longer needed
 
 
     if lbErase get OpenAllTablesExclusive to lbOk
@@ -604,7 +604,7 @@ object DFM_IE_WorkHorse is a cArray
     set_attribute DF_DATE_FORMAT to liInteger1
     set_attribute DF_DATE_SEPARATOR to liInteger2
     set_attribute DF_DECIMAL_SEPARATOR to liInteger3
-    set_date_attribute DATE4_STATE to liInteger4
+    // set_date_attribute DATE4_STATE to liInteger4 // no longer needed
   end_procedure
 
 end_object // DFM_IE_WorkHorse

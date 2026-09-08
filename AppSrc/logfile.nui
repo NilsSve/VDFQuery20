@@ -45,9 +45,9 @@ class cLogFile is a cArray
     integer liExists
     if (SEQ_ExtractPathFromFileName(lsFileName)="") begin
       get SEQ_FileExists lsFileName to liExists
-      if liExists eq SEQIT_DIRECTORY error 123 "Illegal file name in cLogFile object"
+      if (liExists = SEQIT_DIRECTORY) error 123 "Illegal file name in cLogFile object"
       else begin
-        if liExists eq SEQIT_NONE get SEQ_TranslatePathToAbsolute lsFileName to lsFileName
+        if (liExists = SEQIT_NONE) get SEQ_TranslatePathToAbsolute lsFileName to lsFileName
         else get SEQ_ConvertToAbsoluteFileName lsFileName to lsFileName
       end
     end
@@ -57,7 +57,7 @@ class cLogFile is a cArray
             procedure DirectOutputHelp integer liAppend string lsFileName
               integer liChannel liWasCreated
               string lsFile
-              if NUM_ARGUMENTS eq 2 begin
+              if (NUM_ARGUMENTS = 2) begin
                 move lsFileName to lsFile
                 set psFileName to lsFile
               end
@@ -92,7 +92,7 @@ class cLogFile is a cArray
 
   procedure DeleteFile string lsFileName
     string lsFile
-    if NUM_ARGUMENTS eq 1 move lsFileName to lsFile
+    if (NUM_ARGUMENTS = 1) move lsFileName to lsFile
     else get psFileName to lsFile
     get SEQ_TranslatePathToAbsolute lsFile to lsFile
     erasefile lsFile
@@ -110,7 +110,7 @@ class cLogFile is a cArray
 
   procedure CloseOutput
     send OnLogFileClose
-    ifnot (piCloseOnWrite(self)) send SEQ_CloseOutput (prv.piChannel(self))
+    If (Not((piCloseOnWrite(self)))) send SEQ_CloseOutput (prv.piChannel(self))
     else send Seq_Release_Channel (prv.piChannel(self))
     set prv.piChannel to -1
   end_procedure
@@ -167,10 +167,10 @@ class cLogFile is a cArray
     if liCloseOnWrite Append_Output channel liChannel (psFileName(self))
 
     direct_input channel liAuxChannel ("image: "+string(liImg))
-    ifnot (SeqEof) readln channel liAuxChannel lsLine
+    If (Not((SeqEof))) readln channel liAuxChannel lsLine
     repeat
       move (SeqEof) to liSeqEof
-      ifnot liSeqEof begin
+      If (Not(liSeqEof)) begin
         writeln channel liChannel (rtrim(lsLine))
         readln channel liAuxChannel lsLine
       end
@@ -183,4 +183,3 @@ class cLogFile is a cArray
     send Seq_Release_Channel liAuxChannel
   end_procedure
 end_class // cLogFile
-

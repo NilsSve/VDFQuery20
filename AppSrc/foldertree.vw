@@ -51,6 +51,7 @@ object oFolderSizeGridPanel is a aps.ModalPanel label "Folder sizes (expanded as
   set locate_mode to CENTER_ON_SCREEN
   set Border_Style to BORDER_THICK   // Make panel resizeable
   on_key kcancel send close_panel
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oGrid is a aps.Grid
     set size to 200 0
     set peAnchors to (anTop+anLeft+anRight+anBottom)
@@ -398,5 +399,4 @@ send aps_SetMinimumDialogSize (oFolderSizeTreePanel(self)) // Set minimum size
 procedure activate_oFolderSizeTreePanel
   send popup of oFolderSizeTreePanel
 end_procedure
-
 

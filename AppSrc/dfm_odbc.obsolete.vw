@@ -25,6 +25,7 @@ object oODBCTableViewerView is a aps.View label "ODBC table viewer"
   end_object // oDataSourceSelector
   send aps_goto_max_row
 
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oTables is a aps.Grid
     set size to 200 0
     send GridPrepare_AddColumn "Table name" AFT_ASCII40

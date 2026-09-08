@@ -246,22 +246,22 @@ class cSetOfDirectories is a cArray
     integer liChannel liSeqEof liPos
     string lsLine
     get SEQ_DirectInput lsPrnFile to liChannel
-    if liChannel ge 0 begin
+    if (liChannel >= 0) begin
       send OnWait_On ("Scanning "+lsPrnFile)
       set pi.prv.SuspendSentinelUpdate to DFTRUE
       repeat
         readln channel liChannel lsLine
         move (SeqEof) to liSeqEof
-        ifnot liSeqEof begin
+        If (Not(liSeqEof)) begin
           if (StringBeginsWith(lsLine,"INCLUDING FILE: ")) begin
-            replace "INCLUDING FILE: " in lsLine with ""
+            Move (Replace("INCLUDING FILE: ", lsLine, "")) to lsLine
             move (pos("(",lsLine)) to liPos
             if liPos begin
               move (left(lsLine,liPos-1)) to lsLine
               move (trim(lsLine)) to lsLine
             end
-            ifnot ".PKI" in lsLine begin
-              ifnot ".PKD" in lsLine begin
+            If (Not(lsLine contains ".PKI")) begin
+              If (Not(lsLine contains ".PKD")) begin
                 send OnWait_SetText1 ("Locating "+lsLine)
                 send DoFindFileCallback lsLine lbFirstOnly liMsg liObj
               end
@@ -320,7 +320,7 @@ class cSetOfFilesNew is a cArray
     string sName sExt
     get psFileName.i liRow to sName
     get psFileType.i liRow to sExt
-    if sExt eq "" function_return sName
+    if (sExt = "") function_return sName
     function_return (sName+"."+sExt)
   end_function
   function iFindFile.ss string lsFileName string lsDir returns integer
@@ -347,7 +347,7 @@ class cSetOfFilesNew is a cArray
 //    procedure_return
     if (iFindFile.ss(self,lsFileName,lsDir)=-1) begin
       get row_count to liRow
-      if "." in lsFileName move (StripFromLastOccurance(lsFileName,".")) to lsFileRootName
+      if (lsFileName contains ".") move (StripFromLastOccurance(lsFileName,".")) to lsFileRootName
       else move lsFileName to lsFileRootName
       set psFileName.i liRow to lsFileRootName
       set psFilePath.i liRow to lsDir
@@ -359,17 +359,17 @@ class cSetOfFilesNew is a cArray
   end_procedure
   procedure DoSort integer liOrdering
     send ITMP_Sort_DoReset
-    if liOrdering eq SOF_ORDERING_NAME begin
+    if (liOrdering = SOF_ORDERING_NAME) begin
       send ITMP_Sort_DoAddSegment 0 DFTRUE
       send ITMP_Sort_DoAddSegment 1 DFTRUE
     end
-    if liOrdering eq SOF_ORDERING_TYPE begin
+    if (liOrdering = SOF_ORDERING_TYPE) begin
       send ITMP_Sort_DoAddSegment 1 DFTRUE
       send ITMP_Sort_DoAddSegment 0 DFTRUE
     end
-    if liOrdering eq SOF_ORDERING_PATH send ITMP_Sort_DoAddSegment 2 DFTRUE
-    if liOrdering eq SOF_ORDERING_SIZE send ITMP_Sort_DoAddSegment 3 DFFALSE
-    if liOrdering eq SOF_ORDERING_TIME send ITMP_Sort_DoAddSegment 4 DFFALSE
+    if (liOrdering = SOF_ORDERING_PATH) send ITMP_Sort_DoAddSegment 2 DFTRUE
+    if (liOrdering = SOF_ORDERING_SIZE) send ITMP_Sort_DoAddSegment 3 DFFALSE
+    if (liOrdering = SOF_ORDERING_TIME) send ITMP_Sort_DoAddSegment 4 DFFALSE
     send ITMP_Sort_DoSortData self
   end_procedure
   procedure DoFindFilesCompilerListing string lsPrnFile integer lbFirstOnly

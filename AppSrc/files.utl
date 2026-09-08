@@ -53,10 +53,10 @@
 //                           objects VDF 7 style.
 //
 //**********************************************************************
-use ui
+use ui.pkg
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
-  CompilerWarnings Suspend
+  // CompilerWarnings Suspend
 #ENDIF
 
 Use Files.nui    // Utilities for handling file related stuff
@@ -65,222 +65,222 @@ Use Strings.nui  // String manipulation for VDF
 Use Dates.nui    // Date manipulation for VDF
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes
 Use Version.nui
-Use Language
+Use Language.pkg
 
 Use wvaW32fh.pkg // Package by Wil van Antwerpen from www.vdf-guidance.com
 
 #IF LNG_DEFAULT=lng_dutch
- #REPLACE t.files.Overwrite        "Overschrijven"
- #REPLACE t.files.Append           "Toevoegen"
- #REPLACE t.files.Warning          "Waarschuwing"
- #REPLACE t.files.FileExists       "Bestandsnaam bestaat al! (#)"
- #REPLACE t.files.SelectDrive      "Selecteer drive"
- #REPLACE t.files.Directories      "Directories"
- #REPLACE t.files.Files            "Bestanden"
- #REPLACE t.files.IllegalFn        "Geen correcte bestandsnaam"
- #REPLACE t.files.FileNotSpec      "Bestandsnaam niet ingevuld!"
- #REPLACE t.files.StopRead         "Afbreken inlezen?"
- #REPLACE t.files.FileNotFound     "# niet gevonden!"
- #REPLACE t.files.SelectDir        "Selecteer directorie"
- #REPLACE t.files.SelectFile       "Selecteer bestand"
- #REPLACE t.files.PromptDirCreate1 "Directory bestaat niet!"                  // PvM
- #REPLACE t.files.PromptDirCreate2 "Wilt u de directory aanmaken?"            // PvM
- #REPLACE t.files.Error1           "Een bestand met deze naam bestaat al"     // PvM
- #REPLACE t.files.Error2           "Directory kan niet aangemaakt worden"     // PvM
- #REPLACE t.files.Error3           "Een directory moet aangegeven worden"     // PvM
- #REPLACE t.files.Error5           "Pad niet gevonden"                        // PvM
+ Define t.files.Overwrite      for "Overschrijven"
+ Define t.files.Append         for "Toevoegen"
+ Define t.files.Warning        for "Waarschuwing"
+ Define t.files.FileExists     for "Bestandsnaam bestaat al! (#)"
+ Define t.files.SelectDrive    for "Selecteer drive"
+ Define t.files.Directories    for "Directories"
+ Define t.files.Files          for "Bestanden"
+ Define t.files.IllegalFn      for "Geen correcte bestandsnaam"
+ Define t.files.FileNotSpec    for "Bestandsnaam niet ingevuld!"
+ Define t.files.StopRead       for "Afbreken inlezen?"
+ Define t.files.FileNotFound   for "# niet gevonden!"
+ Define t.files.SelectDir      for "Selecteer directorie"
+ Define t.files.SelectFile     for "Selecteer bestand"
+ Define t.files.PromptDirCreate1 for "Directory bestaat niet!"                  // PvM
+ Define t.files.PromptDirCreate2 for "Wilt u de directory aanmaken?"            // PvM
+ Define t.files.Error1         for "Een bestand met deze naam bestaat al"     // PvM
+ Define t.files.Error2         for "Directory kan niet aangemaakt worden"     // PvM
+ Define t.files.Error3         for "Een directory moet aangegeven worden"     // PvM
+ Define t.files.Error5         for "Pad niet gevonden"                        // PvM
 #ENDIF
 #IF LNG_DEFAULT=lng_spanish    // 03/10/2002 25/01/2004 Pepe Guimar∆es Moose Software  pg@moose-software.com
- #REPLACE t.files.Overwrite        "Sobreescribir"
- #REPLACE t.files.Append           "Agregar al final"
- #REPLACE t.files.Warning          "Precauci¢n"
- #REPLACE t.files.FileExists       "Archivo ya Existe"
- #REPLACE t.files.SelectDrive      "Unidades"
- #REPLACE t.files.Directories      "Directorios"
- #REPLACE t.files.Files            "Archivos"
- #REPLACE t.files.IllegalFn        "Nombre de Archivo no valido"
- #REPLACE t.files.FileNotSpec      "No se especific¢ Archivo"
- #REPLACE t.files.StopRead         "Parar lectura secuencial"
- #REPLACE t.files.FileNotFound     "# no se encontr¢"
- #REPLACE t.files.SelectDir        "Elegir directorio"
- #REPLACE t.files.SelectFile       "Elegir Archivo"
- #REPLACE t.files.PromptDirCreate1 "≠Carpeta inexistente!"
- #REPLACE t.files.PromptDirCreate2 "®Desea crear la carpeta?"
- #REPLACE t.files.Error1           "Ya existe un fichero con ese nombre"
- #REPLACE t.files.Error2           "No se pudo crear carpeta"
- #REPLACE t.files.Error3           "Tiene que especificar un nombre de carpeta"
- #REPLACE t.files.Error5           "Ruta (path) no encontrada"
+ Define t.files.Overwrite      for "Sobreescribir"
+ Define t.files.Append         for "Agregar al final"
+ Define t.files.Warning        for "Precauci¢n"
+ Define t.files.FileExists     for "Archivo ya Existe"
+ Define t.files.SelectDrive    for "Unidades"
+ Define t.files.Directories    for "Directorios"
+ Define t.files.Files          for "Archivos"
+ Define t.files.IllegalFn      for "Nombre de Archivo no valido"
+ Define t.files.FileNotSpec    for "No se especific¢ Archivo"
+ Define t.files.StopRead       for "Parar lectura secuencial"
+ Define t.files.FileNotFound   for "# no se encontr¢"
+ Define t.files.SelectDir      for "Elegir directorio"
+ Define t.files.SelectFile     for "Elegir Archivo"
+ Define t.files.PromptDirCreate1 for "≠Carpeta inexistente!"
+ Define t.files.PromptDirCreate2 for "®Desea crear la carpeta?"
+ Define t.files.Error1         for "Ya existe un fichero con ese nombre"
+ Define t.files.Error2         for "No se pudo crear carpeta"
+ Define t.files.Error3         for "Tiene que especificar un nombre de carpeta"
+ Define t.files.Error5         for "Ruta (path) no encontrada"
 #ENDIF
 #IF LNG_DEFAULT=lng_english
- #REPLACE t.files.Overwrite        "Overwrite"
- #REPLACE t.files.Append           "Append"
- #REPLACE t.files.Warning          "Warning"
- #REPLACE t.files.FileExists       "File name already exists! (#)"
- #REPLACE t.files.SelectDrive      "Select drive"
- #REPLACE t.files.Directories      "Directories"
- #REPLACE t.files.Files            "Files"
- #REPLACE t.files.IllegalFn        "Illegal file name"
- #REPLACE t.files.FileNotSpec      "File name not specified!"
- #REPLACE t.files.StopRead         "Stop sequential read?"
- #REPLACE t.files.FileNotFound     "# not found!"
- #REPLACE t.files.SelectDir        "Select directory"
- #REPLACE t.files.SelectFile       "Select file"
- #REPLACE t.files.PromptDirCreate1 "Folder does not exist!"
- #REPLACE t.files.PromptDirCreate2 "Do you want to create the folder?"
- #REPLACE t.files.Error1           "A file exists with the specified name"
- #REPLACE t.files.Error2           "Folder could not be created"
- #REPLACE t.files.Error3           "A folder name must be specified"
- #REPLACE t.files.Error5           "Path not found"
+ Define t.files.Overwrite      for "Overwrite"
+ Define t.files.Append         for "Append"
+ Define t.files.Warning        for "Warning"
+ Define t.files.FileExists     for "File name already exists! (#)"
+ Define t.files.SelectDrive    for "Select drive"
+ Define t.files.Directories    for "Directories"
+ Define t.files.Files          for "Files"
+ Define t.files.IllegalFn      for "Illegal file name"
+ Define t.files.FileNotSpec    for "File name not specified!"
+ Define t.files.StopRead       for "Stop sequential read?"
+ Define t.files.FileNotFound   for "# not found!"
+ Define t.files.SelectDir      for "Select directory"
+ Define t.files.SelectFile     for "Select file"
+ Define t.files.PromptDirCreate1 for "Folder does not exist!"
+ Define t.files.PromptDirCreate2 for "Do you want to create the folder?"
+ Define t.files.Error1         for "A file exists with the specified name"
+ Define t.files.Error2         for "Folder could not be created"
+ Define t.files.Error3         for "A folder name must be specified"
+ Define t.files.Error5         for "Path not found"
 #ENDIF
 #IF LNG_DEFAULT=lng_danish
- #REPLACE t.files.Overwrite        "Overskriv"
- #REPLACE t.files.Append           "Tilfõj"
- #REPLACE t.files.Warning          "Advarsel"
- #REPLACE t.files.FileExists       "Filnavn eksisterer allerede! (#)"
- #REPLACE t.files.SelectDrive      "Vëlg drev"
- #REPLACE t.files.Directories      "Mapper"
- #REPLACE t.files.Files            "Filer"
- #REPLACE t.files.IllegalFn        "Illegal file name"
- #REPLACE t.files.FileNotSpec      "Filnavn ikke specificeret!"
- #REPLACE t.files.StopRead         "Afbryd indlësningen?"
- #REPLACE t.files.FileNotFound     "# findes ikke!"
- #REPLACE t.files.SelectDir        "Vëlg bibliotek"
- #REPLACE t.files.SelectFile       "Vëlg fil"
- #REPLACE t.files.PromptDirCreate1 "Mappen findes ikke!"
- #REPLACE t.files.PromptDirCreate2 "Skal mappen oprettes?"
- #REPLACE t.files.Error1           "Der findes en fil med det angivne navn"
- #REPLACE t.files.Error2           "Mappen kunne ikke oprettes"
- #REPLACE t.files.Error3           "Der skal angives et mappenavn"
- #REPLACE t.files.Error5           "Sti ikke fundet"
+ Define t.files.Overwrite      for "Overskriv"
+ Define t.files.Append         for "Tilfõj"
+ Define t.files.Warning        for "Advarsel"
+ Define t.files.FileExists     for "Filnavn eksisterer allerede! (#)"
+ Define t.files.SelectDrive    for "Vëlg drev"
+ Define t.files.Directories    for "Mapper"
+ Define t.files.Files          for "Filer"
+ Define t.files.IllegalFn      for "Illegal file name"
+ Define t.files.FileNotSpec    for "Filnavn ikke specificeret!"
+ Define t.files.StopRead       for "Afbryd indlësningen?"
+ Define t.files.FileNotFound   for "# findes ikke!"
+ Define t.files.SelectDir      for "Vëlg bibliotek"
+ Define t.files.SelectFile     for "Vëlg fil"
+ Define t.files.PromptDirCreate1 for "Mappen findes ikke!"
+ Define t.files.PromptDirCreate2 for "Skal mappen oprettes?"
+ Define t.files.Error1         for "Der findes en fil med det angivne navn"
+ Define t.files.Error2         for "Mappen kunne ikke oprettes"
+ Define t.files.Error3         for "Der skal angives et mappenavn"
+ Define t.files.Error5         for "Sti ikke fundet"
 #ENDIF
 #IF LNG_DEFAULT=lng_swedish
- #REPLACE t.files.Overwrite        "Skriv îver"
- #REPLACE t.files.Append           "LÑgg till"
- #REPLACE t.files.Warning          "Advarsel"
- #REPLACE t.files.FileExists       "Filnavn eksisterer allerede! (#)"
- #REPLACE t.files.SelectDrive      "Select drive"
- #REPLACE t.files.Directories      "Directories"
- #REPLACE t.files.Files            "Files"
- #REPLACE t.files.IllegalFn        "Illegal file name"
- #REPLACE t.files.FileNotSpec      "Filnamn ej angivet!"
- #REPLACE t.files.StopRead         "Avbryt inlÑsningen?"
- #REPLACE t.files.FileNotFound     "# finns ej!"
- #REPLACE t.files.SelectDir        "VÑlg bibliotek"
- #REPLACE t.files.SelectFile       "VÑlg fil"
- #REPLACE t.files.PromptDirCreate1 "Folder does not exist!"
- #REPLACE t.files.PromptDirCreate2 "Do you want to create the folder?"
- #REPLACE t.files.Error1           "A file exists with the specified name"
- #REPLACE t.files.Error2           "Folder could not be created"
- #REPLACE t.files.Error3           "A folder name must be specified"
- #REPLACE t.files.Error5           "Path not found"
+ Define t.files.Overwrite      for "Skriv îver"
+ Define t.files.Append         for "LÑgg till"
+ Define t.files.Warning        for "Advarsel"
+ Define t.files.FileExists     for "Filnavn eksisterer allerede! (#)"
+ Define t.files.SelectDrive    for "Select drive"
+ Define t.files.Directories    for "Directories"
+ Define t.files.Files          for "Files"
+ Define t.files.IllegalFn      for "Illegal file name"
+ Define t.files.FileNotSpec    for "Filnamn ej angivet!"
+ Define t.files.StopRead       for "Avbryt inlÑsningen?"
+ Define t.files.FileNotFound   for "# finns ej!"
+ Define t.files.SelectDir      for "VÑlg bibliotek"
+ Define t.files.SelectFile     for "VÑlg fil"
+ Define t.files.PromptDirCreate1 for "Folder does not exist!"
+ Define t.files.PromptDirCreate2 for "Do you want to create the folder?"
+ Define t.files.Error1         for "A file exists with the specified name"
+ Define t.files.Error2         for "Folder could not be created"
+ Define t.files.Error3         for "A folder name must be specified"
+ Define t.files.Error5         for "Path not found"
 #ENDIF
 #IF LNG_DEFAULT=lng_norwegian   // 22.04.1999 torkild.resheim@emmaedb.no
- #REPLACE t.files.Overwrite        "Overskriv"
- #REPLACE t.files.Append           "Tilfõy"
- #REPLACE t.files.Warning          "Advarsel"
- #REPLACE t.files.FileExists       "Filnavn eksisterer allerede! (#)"
- #REPLACE t.files.SelectDrive      "Velg drev"
- #REPLACE t.files.Directories      "Kataloger"
- #REPLACE t.files.Files            "Filer"
- #REPLACE t.files.IllegalFn        "Ulovlig filnavn"
- #REPLACE t.files.FileNotSpec      "Filnavn ikke spesifisert!"
- #REPLACE t.files.StopRead         "Avbryt innlesningen?"
- #REPLACE t.files.FileNotFound     "# finnes ikke!"
- #REPLACE t.files.SelectDir        "Velg katalog"
- #REPLACE t.files.SelectFile       "Velg fil"
- #REPLACE t.files.PromptDirCreate1 "Folder does not exist!"
- #REPLACE t.files.PromptDirCreate2 "Do you want to create the folder?"
- #REPLACE t.files.Error1           "A file exists with the specified name"
- #REPLACE t.files.Error2           "Folder could not be created"
- #REPLACE t.files.Error3           "A folder name must be specified"
- #REPLACE t.files.Error5           "Path not found"
+ Define t.files.Overwrite      for "Overskriv"
+ Define t.files.Append         for "Tilfõy"
+ Define t.files.Warning        for "Advarsel"
+ Define t.files.FileExists     for "Filnavn eksisterer allerede! (#)"
+ Define t.files.SelectDrive    for "Velg drev"
+ Define t.files.Directories    for "Kataloger"
+ Define t.files.Files          for "Filer"
+ Define t.files.IllegalFn      for "Ulovlig filnavn"
+ Define t.files.FileNotSpec    for "Filnavn ikke spesifisert!"
+ Define t.files.StopRead       for "Avbryt innlesningen?"
+ Define t.files.FileNotFound   for "# finnes ikke!"
+ Define t.files.SelectDir      for "Velg katalog"
+ Define t.files.SelectFile     for "Velg fil"
+ Define t.files.PromptDirCreate1 for "Folder does not exist!"
+ Define t.files.PromptDirCreate2 for "Do you want to create the folder?"
+ Define t.files.Error1         for "A file exists with the specified name"
+ Define t.files.Error2         for "Folder could not be created"
+ Define t.files.Error3         for "A folder name must be specified"
+ Define t.files.Error5         for "Path not found"
 #ENDIF
 #IF LNG_DEFAULT=lng_german
- #REPLACE t.files.Overwrite        "öberschreiben"
- #REPLACE t.files.Append           "AnhÑngen"
- #REPLACE t.files.Warning          "Warnung"
- #REPLACE t.files.FileExists       "Bestand existiert bereits! (#)"
- #REPLACE t.files.SelectDrive      "Laufwerk auswÑhlen"
- #REPLACE t.files.Directories      "Ordner"
- #REPLACE t.files.Files            "Dateien"
- #REPLACE t.files.IllegalFn        "UngÅltiger Dateiname"
- #REPLACE t.files.FileNotSpec      "Kein Dateiname angegeben!"
- #REPLACE t.files.StopRead         "Sequentielles Lesen abbrechen?"
- #REPLACE t.files.FileNotFound     "# nicht gefunden!"
- #REPLACE t.files.SelectDir        "Auswahl Ordner"
- #REPLACE t.files.SelectFile       "Auswahl Datei"
- #REPLACE t.files.PromptDirCreate1 "Folder does not exist!"
- #REPLACE t.files.PromptDirCreate2 "Do you want to create the folder?"
- #REPLACE t.files.Error1           "A file exists with the specified name"
- #REPLACE t.files.Error2           "Folder could not be created"
- #REPLACE t.files.Error3           "A folder name must be specified"
- #REPLACE t.files.Error5           "Path not found"
+ Define t.files.Overwrite      for "öberschreiben"
+ Define t.files.Append         for "AnhÑngen"
+ Define t.files.Warning        for "Warnung"
+ Define t.files.FileExists     for "Bestand existiert bereits! (#)"
+ Define t.files.SelectDrive    for "Laufwerk auswÑhlen"
+ Define t.files.Directories    for "Ordner"
+ Define t.files.Files          for "Dateien"
+ Define t.files.IllegalFn      for "UngÅltiger Dateiname"
+ Define t.files.FileNotSpec    for "Kein Dateiname angegeben!"
+ Define t.files.StopRead       for "Sequentielles Lesen abbrechen?"
+ Define t.files.FileNotFound   for "# nicht gefunden!"
+ Define t.files.SelectDir      for "Auswahl Ordner"
+ Define t.files.SelectFile     for "Auswahl Datei"
+ Define t.files.PromptDirCreate1 for "Folder does not exist!"
+ Define t.files.PromptDirCreate2 for "Do you want to create the folder?"
+ Define t.files.Error1         for "A file exists with the specified name"
+ Define t.files.Error2         for "Folder could not be created"
+ Define t.files.Error3         for "A folder name must be specified"
+ Define t.files.Error5         for "Path not found"
 #ENDIF
 #IF LNG_DEFAULT=lng_portuguese  // by Claudio Rossoni (SP-Brasil)
- #REPLACE t.files.Overwrite        "Regravar"
- #REPLACE t.files.Append           "Acrescentar"
- #REPLACE t.files.Warning          "Atená∆o"
- #REPLACE t.files.FileExists       "Nome de arquivo j† existe! (#)"
- #REPLACE t.files.SelectDrive      "Selecione o drive"
- #REPLACE t.files.Directories      "Diret¢rios"
- #REPLACE t.files.Files            "Arquivos"
- #REPLACE t.files.IllegalFn        "Nome de arquivo inv†lido"
- #REPLACE t.files.FileNotSpec      "Nome do arquivo n∆o especificado!"
- #REPLACE t.files.StopRead         "Parar a leitura sequencial?"
- #REPLACE t.files.FileNotFound     "# n∆o encontrado!"
- #REPLACE t.files.SelectDir        "Selecione o diret¢rio"
- #REPLACE t.files.SelectFile       "Selecione o arquivo"
- #REPLACE t.files.PromptDirCreate1 "Folder does not exist!"
- #REPLACE t.files.PromptDirCreate2 "Do you want to create the folder?"
- #REPLACE t.files.Error1           "A file exists with the specified name"
- #REPLACE t.files.Error2           "Folder could not be created"
- #REPLACE t.files.Error3           "A folder name must be specified"
- #REPLACE t.files.Error5           "Path not found"
+ Define t.files.Overwrite      for "Regravar"
+ Define t.files.Append         for "Acrescentar"
+ Define t.files.Warning        for "Atená∆o"
+ Define t.files.FileExists     for "Nome de arquivo j† existe! (#)"
+ Define t.files.SelectDrive    for "Selecione o drive"
+ Define t.files.Directories    for "Diret¢rios"
+ Define t.files.Files          for "Arquivos"
+ Define t.files.IllegalFn      for "Nome de arquivo inv†lido"
+ Define t.files.FileNotSpec    for "Nome do arquivo n∆o especificado!"
+ Define t.files.StopRead       for "Parar a leitura sequencial?"
+ Define t.files.FileNotFound   for "# n∆o encontrado!"
+ Define t.files.SelectDir      for "Selecione o diret¢rio"
+ Define t.files.SelectFile     for "Selecione o arquivo"
+ Define t.files.PromptDirCreate1 for "Folder does not exist!"
+ Define t.files.PromptDirCreate2 for "Do you want to create the folder?"
+ Define t.files.Error1         for "A file exists with the specified name"
+ Define t.files.Error2         for "Folder could not be created"
+ Define t.files.Error3         for "A folder name must be specified"
+ Define t.files.Error5         for "Path not found"
 #ENDIF
 #If LNG_DEFAULT=lng_french
- #Replace t.files.Overwrite        "Remplace"
- #Replace t.files.Append           "Ajoute"
- #Replace t.files.Warning          "Attention"
- #Replace t.files.FileExists       "Le fichier existe dÇjÖ ! (#)"
- #Replace t.files.SelectDrive      "SÇlection du disque"
- #Replace t.files.Directories      "RÇpertoires"
- #Replace t.files.Files            "Fichiers"
- #Replace t.files.IllegalFn        "Nom de fichier incorrect"
- #Replace t.files.FileNotSpec      "Nom de fichier manquant!"
- #Replace t.files.StopRead         "Arràt de la lecture?"
- #Replace t.files.FileNotFound     "# non trouvÇ!"
- #Replace t.files.SelectDir        "SÇlection du rÇpertoire"
- #Replace t.files.SelectFile       "SÇlection du fichier"
- #REPLACE t.files.PromptDirCreate1 "Folder does not exist!"
- #REPLACE t.files.PromptDirCreate2 "Do you want to create the folder?"
- #REPLACE t.files.Error1           "A file exists with the specified name"
- #REPLACE t.files.Error2           "Folder could not be created"
- #REPLACE t.files.Error3           "A folder name must be specified"
- #REPLACE t.files.Error5           "Path not found"
+ Define t.files.Overwrite      for "Remplace"
+ Define t.files.Append         for "Ajoute"
+ Define t.files.Warning        for "Attention"
+ Define t.files.FileExists     for "Le fichier existe dÇjÖ ! (#)"
+ Define t.files.SelectDrive    for "SÇlection du disque"
+ Define t.files.Directories    for "RÇpertoires"
+ Define t.files.Files          for "Fichiers"
+ Define t.files.IllegalFn      for "Nom de fichier incorrect"
+ Define t.files.FileNotSpec    for "Nom de fichier manquant!"
+ Define t.files.StopRead       for "Arràt de la lecture?"
+ Define t.files.FileNotFound   for "# non trouvÇ!"
+ Define t.files.SelectDir      for "SÇlection du rÇpertoire"
+ Define t.files.SelectFile     for "SÇlection du fichier"
+ Define t.files.PromptDirCreate1 for "Folder does not exist!"
+ Define t.files.PromptDirCreate2 for "Do you want to create the folder?"
+ Define t.files.Error1         for "A file exists with the specified name"
+ Define t.files.Error2         for "Folder could not be created"
+ Define t.files.Error3         for "A folder name must be specified"
+ Define t.files.Error5         for "Path not found"
 #ENDIF
 #IF LNG_DEFAULT=lng_italian	// by Paolo Zanni (Italia)
- #REPLACE t.files.Overwrite   	"Sovrascrive"
- #REPLACE t.files.Append      	"Aggiunge"
- #REPLACE t.files.Warning     	"Attenzione"
- #REPLACE t.files.FileExists  	"Il File esiste gia'! (#)"
- #REPLACE t.files.SelectDrive 	"Seleziona Drive"
- #REPLACE t.files.Directories 	"Directory"
- #REPLACE t.files.Files       	"File"
- #REPLACE t.files.IllegalFn   	"Nome File non valido"
- #REPLACE t.files.FileNotSpec  	"Nome File mancante!"
- #REPLACE t.files.StopRead     	"Stop sequential read?"
- #REPLACE t.files.FileNotFound 	"# non trovato!"
- #REPLACE t.files.SelectDir    	"Seleziona directory"
- #REPLACE t.files.SelectFile   	"Seleziona file"
- #REPLACE t.files.PromptDirCreate1 "La cartella non esiste!"
- #REPLACE t.files.PromptDirCreate2 "Vuoi creare la cartella?"
- #REPLACE t.files.Error1           "File gia' esistente con questo nome"
- #REPLACE t.files.Error2           "La cartella non puÚ essere creata"
- #REPLACE t.files.Error3           "Indicare il nome della cartella"
- #REPLACE t.files.Error5           "Percorso non trovato"
+ Define t.files.Overwrite  for "Sovrascrive"
+ Define t.files.Append     for "Aggiunge"
+ Define t.files.Warning    for "Attenzione"
+ Define t.files.FileExists for "Il File esiste gia'! (#)"
+ Define t.files.SelectDrive for "Seleziona Drive"
+ Define t.files.Directories for "Directory"
+ Define t.files.Files      for "File"
+ Define t.files.IllegalFn  for "Nome File non valido"
+ Define t.files.FileNotSpec for "Nome File mancante!"
+ Define t.files.StopRead    for "Stop sequential read?"
+ Define t.files.FileNotFound for "# non trovato!"
+ Define t.files.SelectDir   for "Seleziona directory"
+ Define t.files.SelectFile  for "Seleziona file"
+ Define t.files.PromptDirCreate1 for "La cartella non esiste!"
+ Define t.files.PromptDirCreate2 for "Vuoi creare la cartella?"
+ Define t.files.Error1         for "File gia' esistente con questo nome"
+ Define t.files.Error2         for "La cartella non puÚ essere creata"
+ Define t.files.Error3         for "Indicare il nome della cartella"
+ Define t.files.Error5         for "Percorso non trovato"
 #ENDIF
 
-Use File_Dlg   // DAC package
+Use File_Dlg.pkg   // DAC package
 integer oSEQ_OpenFlDlg# oSEQ_SaveFlDlg#
 //  move 0 to oSEQ_OpenFlDlg#
 //  move 0 to oSEQ_SaveFlDlg#
@@ -347,18 +347,35 @@ end_procedure
 
 //declare C structure struct_browseinfo
 //as documented in MSDN under Windows Shell API
-Type tFilesBrowseInfo
-  Field tFilesBrowseInfo.hWndOwner      as handle
-  Field tFilesBrowseInfo.pIDLRoot       as Pointer
-  Field tFilesBrowseInfo.pszDisplayName as Pointer
-  Field tFilesBrowseInfo.lpszTitle      as Pointer
-  Field tFilesBrowseInfo.ulFlags        as dWord
-  Field tFilesBrowseInfo.lpfnCallback   as Pointer
-  Field tFilesBrowseInfo.lParam         as dWord
-  Field tFilesBrowseInfo.iImage         as dWord
-End_Type  // tFilesBrowseInfo
+Struct tFilesBrowseInfo
+    handle hWndOwner
+    Pointer pIDLRoot
+    Pointer pszDisplayName
+    Pointer lpszTitle
+    dWord ulFlags
+    Pointer lpfnCallback
+    dWord lParam
+    dWord iImage
+End_Struct
 
+// Type tFilesBrowseInfo
+//   Field tFilesBrowseInfo.hWndOwner      as handle
+//   Field tFilesBrowseInfo.pIDLRoot       as Pointer
+//   Field tFilesBrowseInfo.pszDisplayName as Pointer
+//   Field tFilesBrowseInfo.lpszTitle      as Pointer
+//   Field tFilesBrowseInfo.ulFlags        as dWord
+//   Field tFilesBrowseInfo.lpfnCallback   as Pointer
+//   Field tFilesBrowseInfo.lParam         as dWord
+//   Field tFilesBrowseInfo.iImage         as dWord
+// End_Type  // tFilesBrowseInfo
+
+#IFDEF IS$WIN64
+External_Function FilesSHBrowseForFolder "SHBrowseForFolder" shell32.dll ;
+    pointer lpdWordx ;
+    Returns Pointer
+#ELSE
 External_Function FilesSHBrowseForFolder   "SHBrowseForFolder"   shell32.dll pointer lpdWordx returns dWord
+#ENDIF
 External_Function FilesSHGetPathFromIDList "SHGetPathFromIDList" shell32.dll pointer pidList pointer lpBuffer returns dWord
 External_Function FilesCoTaskMemFree       "CoTaskMemFree"       ole32.dll   pointer pv returns Integer
 
@@ -369,8 +386,8 @@ External_Function FilesCoTaskMemFree       "CoTaskMemFree"       ole32.dll   poi
    Pointer psString
    integer iVoid bIsCString
    Move (ascii(Right(sString,1))=0) to bIsCString
-   If Not bISCString Append sString (character(0))
-   GetAddress Of sString To psString
+   If (Not(bISCString)) Append sString (character(0))
+   Move (AddressOf(sString)) to psString
    if bToAnsi Move (OEMToANSI(psString,psString)) To iVoid
    else       Move (ANSItoOEM(psString,psString)) To iVoid
    Function_Return (if(bIsCString, sString, cstring(sString)))
@@ -379,26 +396,28 @@ External_Function FilesCoTaskMemFree       "CoTaskMemFree"       ole32.dll   poi
 
 // returns folder name if a folder was selected, otherwise returns ""
 function SEQ_SelectDirectory global string lsCaption returns string
-  string sFolder sBrowseInfo sTitle sRval
+  string sFolder sTitle sRval
+  tFilesBrowseInfo sBrowseInfo
+  tFilesBrowseInfo sBrowseInfoEmpty
   pointer lpItemIdList lpsFolder lpsBrowseInfo lpsTitle
   integer iFolderSelected iObj iRetval
 
   // fill string variable with null characters
-  ZeroType tFilesBrowseInfo to sBrowseInfo
+  Move sBrowseInfoEmpty to sBrowseInfo
 
   if (lsCaption<>"") begin
     move (ConvertChar(1,lsCaption)) to sTitle // toAnsi
-    GetAddress of sTitle to lpsTitle
-    put lpsTitle to sBrowseInfo at tFilesBrowseInfo.lpszTitle
+    Move (AddressOf(sTitle)) to lpsTitle
+    Move lpsTitle to sBrowseInfo.lpszTitle
   end
 
-  put (window_handle(focus(desktop))) to sBrowseInfo at tFilesBrowseInfo.hWndOwner
+  Move (window_handle(focus(desktop))) to sBrowseInfo.hWndOwner
 
-  GetAddress of sBrowseInfo to lpsBrowseInfo
+  Move (AddressOf(sBrowseInfo)) to lpsBrowseInfo
 
   // null 128 chars into var (make space)
   move (repeat(character(0), 128)) to sFolder
-  GetAddress of sFolder to lpsFolder
+  Move (AddressOf(sFolder)) to lpsFolder
 
   // select folder
   move (FilesSHBrowseForFolder(lpsBrowseInfo)) to lpItemIdList
@@ -426,7 +445,7 @@ class aps.SelectDirForm is a aps.Form
   Procedure Prompt
     string sDir
     move (SEQ_SelectDirectory(pSelectDialogCaption(self))) to sDir
-    if sDir ne "" begin
+    if (sDir <> "") begin
       set Value item 0 to sDir
       send OnDirectorySelected
     end
@@ -449,7 +468,7 @@ class aps.dbSelectDirForm is a aps.dbForm
   Procedure Prompt
     string sDir
     move (SEQ_SelectDirectory(pSelectDialogCaption(self))) to sDir
-    if sDir ne "" begin
+    if (sDir <> "") begin
       set changed_value item 0 to sDir
       send OnDirectorySelected
     end
@@ -470,7 +489,7 @@ class aps.SelectFileForm is a aps.Form
   Procedure Prompt
     string fn#
     get SEQ_SelectInFile (pSelectDialogCaption(self)) (psFileMask(self)) to fn#
-    if fn# ne ""  set Value item 0 to fn#
+    if (fn# <> "") set Value item 0 to fn#
   End_Procedure
   procedure form_button_notification integer itm#
     send prompt
@@ -579,7 +598,7 @@ object oFn_Exists is a aps.ModalPanel label t.files.Warning
     set value of (oMsg(self)) to (replace("#",t.files.FileExists,file_name#))
     send popup
     get pResult to rval#
-    if rval# eq 3 move 0 to rval#
+    if (rval# = 3) move 0 to rval#
     function_return rval#
   end_function
 end_object
@@ -646,30 +665,52 @@ define xFOF_FILESONLY         for |CI$0080  // on *.*, do only files
 define xFOF_SIMPLEPROGRESS    for |CI$0100  // means don't show names of files
 define xFOF_NOCONFIRMMKDIR    for |CI$0200  // don't confirm making any needed dirs
 
-Type tFILES_SHFILEOPSTRUCT
-  Field files_hWnd                   as Handle
-  Field files_wFunc                  as Integer
-  Field files_pFrom                  as Pointer
-  Field files_pTo                    as Pointer
-  Field files_fFlags                 as Short
-  Field files_fAnyOperationsAborted  as Short
-  Field files_hNameMappings          as Pointer
-  Field files_lpszProgressTitle      as Pointer // only used if xFOF_SIMPLEPROGRESS
-End_Type
+Struct tFILES_SHFILEOPSTRUCT
+    Handle files_hWnd
+    Integer files_wFunc
+    Pointer files_pFrom
+    Pointer files_pTo
+    Short files_fFlags
+    Short files_fAnyOperationsAborted
+    Pointer files_hNameMappings
+    Pointer files_lpszProgressTitle  // only used if xFOF_SIMPLEPROGRESS
+End_Struct
 
+// Type tFILES_SHFILEOPSTRUCT
+//   Field files_hWnd                   as Handle
+//   Field files_wFunc                  as Integer
+//   Field files_pFrom                  as Pointer
+//   Field files_pTo                    as Pointer
+//   Field files_fFlags                 as Short
+//   Field files_fAnyOperationsAborted  as Short
+//   Field files_hNameMappings          as Pointer
+//   Field files_lpszProgressTitle      as Pointer // only used if xFOF_SIMPLEPROGRESS
+// End_Type
+
+// [DFRefactor] ANSI and wide side by side - the compiler picks (DataFlex 26 and later is Unicode).
+// Same DataFlex name on both arms, so no call site changes. A buffer handed to the wide
+// entry is WString, not String - check the ones that pass raw memory.
+#IF (!@ < 260)
 External_Function FILES_SHFileOperation "SHFileOperationA" Shell32.dll ;
         pointer lpFileOp returns integer
+#ELSE
+External_Function FILES_SHFileOperation "SHFileOperationW" Shell32.dll ;
+    pointer lpFileOp ;
+    Returns integer
+#ENDIF
 
 procedure SEQ_DeleteFileToBin global string fn#
-  string  strFileOpt
+  Integer iVoid
+  tFILES_SHFILEOPSTRUCT strFileOpt
+  tFILES_SHFILEOPSTRUCT strFileOptEmpty
   Pointer lpFileOpt lpFileName
-  ZeroType tFILES_SHFILEOPSTRUCT to strFileOpt
-  Put xFO_DELETE to strFileOpt at files_wFunc
-  GetAddress of fn# to lpFileName
-  Put lpFileName to strFileOpt at files_pFrom
-  Put (xFOF_SILENT ior xFOF_NOCONFIRMATION ior xFOF_ALLOWUNDO) to strFileOpt at files_fFlags
-  GetAddress of strFileOpt to lpFileOpt
-  Move (FILES_SHFileOperation(lpFileOpt)) to strmark
+  Move strFileOptEmpty to strFileOpt
+  Move xFO_DELETE to strFileOpt.files_wFunc
+  Move (AddressOf(fn#)) to lpFileName
+  Move lpFileName to strFileOpt.files_pFrom
+  Move (xFOF_SILENT ior xFOF_NOCONFIRMATION ior xFOF_ALLOWUNDO) to strFileOpt.files_fFlags
+  Move (AddressOf(strFileOpt)) to lpFileOpt
+  Move (FILES_SHFileOperation(lpFileOpt)) to iVoid
 end_procedure
 
 class cSEQ_FileReader is a TS_TimeEstimator
@@ -703,13 +744,13 @@ class cSEQ_FileReader is a TS_TimeEstimator
 
     get pChannel to ch#
     get pFileName to fn#
-    trim fn# to fn#
-    if fn# eq "" send obs t.files.FileNotSpec
+    Move (Trim(fn#)) to fn#
+    if (fn# = "") send obs t.files.FileNotSpec
     direct_input channel ch# fn#
-    [ SeqEof] move 0 to fn_ok#
-    [~SeqEof] move 1 to fn_ok#
+    If (SeqEof) move (0) to fn_ok#
+    If (Not(SeqEof)) move (1) to fn_ok#
     close_input
-    ifnot fn_ok# begin
+    If (Not(fn_ok#)) begin
       send obs (replace("#",t.files.FileNotFound,fn#))
       function_return 0
     end
@@ -767,16 +808,16 @@ class cSEQ_FileReader is a TS_TimeEstimator
 
   procedure run string fn#
     integer finish# ch# PrevPos#
-    if Num_Arguments gt 0 set pFileName to fn#
+    if (Num_Arguments > 0) set pFileName to fn#
     if (iDirect_Input(self)) begin
       get pChannel to ch#
       send read_begin
       get msg_read_header to finish#
-      ifnot finish# begin
+      If (Not(finish#)) begin
         repeat
           set pRejectRecord to false
           get msg_read_one to finish#
-          ifnot finish# begin
+          If (Not(finish#)) begin
             get_channel_position ch# to PrevPos#
             set pPrevPos to PrevPos#
             set pReadCount to (pReadCount(self)+1)
@@ -794,13 +835,23 @@ class cSEQ_FileReader is a TS_TimeEstimator
 end_class // cSEQ_FileReader
 
 define xMAX_PATH for 200
+// [DFRefactor] ANSI and wide side by side - the compiler picks (DataFlex 26 and later is Unicode).
+// Same DataFlex name on both arms, so no call site changes. A buffer handed to the wide
+// entry is WString, not String - check the ones that pass raw memory.
+#IF (!@ < 260)
 External_function Files_GetWindowsDirectory "GetWindowsDirectoryA" kernel32.dll Pointer lpBuffer Integer nSize returns integer
+#ELSE
+External_function Files_GetWindowsDirectory "GetWindowsDirectoryW" kernel32.dll ;
+    Pointer lpBuffer ;
+    Integer nSize ;
+    Returns integer
+#ENDIF
 function SEQ_WindowsDirectory global returns string
   string sVal
   integer iGrb
   pointer pVal
-  ZeroString xMAX_PATH to sVal
-  GetAddress of sVal to pVal
+  Move (ZeroString(xMAX_PATH)) to sVal
+  Move (AddressOf(sVal)) to pVal
   move (Files_GetWindowsDirectory(pVal, xMAX_PATH)) to iGrb
  function_return sVal
 end_function
@@ -849,7 +900,7 @@ function SEQ_ValidateFolder global string lsFolder integer liAllowCreate integer
             if (liAllowCreate=VALIDFOLDER_CREATE_PROMPT) get MB_Verify4 t.files.PromptDirCreate1 ("("+lsFolder+")") t.files.PromptDirCreate2 "" 1 to lbCreate
             else move 1 to lbCreate
             if lbCreate begin
-              get wvaWin32_CreateDirectory (ToAnsi(lsFolder)) to liGarbage
+              get wvaWin32_CreateDirectory (Utf8ToAnsi(lsFolder)) to liGarbage
               get SEQ_FileExists lsFolder to liExists // Does the folder exist now?
               if (liExists=SEQIT_DIRECTORY) move VALIDFOLDER_EXISTS to liError
               else move VALIDFOLDER_CREATION_FAILED to liError
@@ -862,7 +913,7 @@ function SEQ_ValidateFolder global string lsFolder integer liAllowCreate integer
       end
     end
   end
-  ifnot lbNoErrorMsg begin
+  If (Not(lbNoErrorMsg)) begin
     get SEQ_ValidateFolder_ErrorText liError to lsError
     if (liError=VALIDFOLDER_NAME_IS_FILE)          send obs lsError lsFolder
     if (liError=VALIDFOLDER_CREATION_FAILED)       send obs lsError lsFolder
@@ -872,5 +923,3 @@ function SEQ_ValidateFolder global string lsFolder integer liAllowCreate integer
   end
   function_return liError
 end_function // SEQ_ValidateFolder
-
-

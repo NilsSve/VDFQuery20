@@ -1,6 +1,6 @@
 // Use QryFldSl.pkg // cFieldInf.Table_List and cFieldInf.Field_List classes
 
-Use FieldInf     // Global field info objects and abstract field types
+Use FieldInf.pkg     // Global field info objects and abstract field types
 Use Fdx2.utl     // FDX aware object for displaying a table definition
 
 use aps.pkg
@@ -151,7 +151,7 @@ class cFieldInf.Field_List is a aps.list
                   get item_count to liMax
                   for liItem from 0 to (liMax-1)
                     get aux_value item liItem to fld#
-                    if fld# lt 256 begin
+                    if (fld# < 256) begin
                       if liType get FieldInf_FieldLabel_Long liFile fld# to lsValue
                       else get_attribute DF_FIELD_NAME of liFile fld# to lsValue
                       set value item liItem to lsValue
@@ -211,7 +211,7 @@ class cFieldInf.Field_List is a aps.list
          get_attribute DF_FIELD_NAME of liFile liField to lsValue
          move (FieldInf_FieldType(liFile,liField)) to liType
          if ((priv.pbDisplayOverlaps(self) or liType<>DF_OVERLAP) and liType<>DF_BINARY) begin
-           ifnot (StringBeginsWith(lsValue,"@")) begin
+           If (Not((StringBeginsWith(lsValue,"@")))) begin
              if (bIncludeField(self,liFile,liField)) begin
                send add_item MSG_OnFieldSelect ""
                set aux_value item (item_count(self)-1) to liField
@@ -227,4 +227,3 @@ class cFieldInf.Field_List is a aps.list
      function_return (aux_value(self,current_item(self)))
    end_function
 end_class // cFieldInf.Field_List
-

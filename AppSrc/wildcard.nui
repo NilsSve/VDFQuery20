@@ -132,15 +132,15 @@ class cWildCardMatcher is a cArray
     move "" to lsItem
     for liPos from 1 to liLen
       move (mid(lsMask,1,liPos)) to lsChar
-      if lsChar eq "*" begin
-        if lsItem ne "" begin
+      if (lsChar = "*") begin
+        if (lsItem <> "") begin
           send add_row WCAS_CONSTANT lsItem
           move "" to lsItem
         end
         send add_row WCAS_ASTERISK ""
       end
-      else if lsChar eq "?" begin
-        if lsItem ne "" begin
+      else if (lsChar = "?") begin
+        if (lsItem <> "") begin
           send add_row WCAS_CONSTANT lsItem
           move "" to lsItem
         end
@@ -148,31 +148,31 @@ class cWildCardMatcher is a cArray
       end
       else move (lsItem+lsChar) to lsItem
     loop
-    if lsItem ne "" send add_row WCAS_CONSTANT lsItem
+    if (lsItem <> "") send add_row WCAS_CONSTANT lsItem
     send DoFindShortCuts
   end_procedure
   function iMatch.is integer liRow string lsTestValue returns integer
     integer lsMax liType liLen liPos
     string lsItem
     get row_count to lsMax
-    if liRow ge lsMax begin
+    if (liRow >= lsMax) begin
       if (lsTestValue="") function_return 1
       function_return 0
     end
     get piType.i liRow to liType
-    if liType eq WCAS_CONSTANT begin // constant
-      if (length(lsTestValue)) eq 0 function_return 0
+    if (liType = WCAS_CONSTANT) begin // constant
+      if ((length(lsTestValue)) = 0) function_return 0
       get psValue.i liRow to lsItem
       move (length(lsItem)) to liLen
-      if lsItem eq (left(lsTestValue,liLen)) function_return (iMatch.is(self,liRow+1,StringRightBut(lsTestValue,liLen)))
+      if (lsItem = (left(lsTestValue,liLen))) function_return (iMatch.is(self,liRow+1,StringRightBut(lsTestValue,liLen)))
       function_return 0
     end
-    if liType eq WCAS_QUESTIONMARK begin // ?
-      if (length(lsTestValue)) eq 0 function_return 0
+    if (liType = WCAS_QUESTIONMARK) begin // ?
+      if ((length(lsTestValue)) = 0) function_return 0
       function_return (iMatch.is(self,liRow+1,StringRightBut(lsTestValue,1)))
     end
-    if liType eq WCAS_ASTERISK begin // *
-      if liRow eq (lsMax-1) function_return 1
+    if (liType = WCAS_ASTERISK) begin // *
+      if (liRow = (lsMax-1)) function_return 1
       move (length(lsTestValue)) to liLen
       for liPos from 0 to liLen
         if (iMatch.is(self,liRow+1,StringRightBut(lsTestValue,liPos))) function_return 1
@@ -184,27 +184,27 @@ class cWildCardMatcher is a cArray
     integer liAltStrategy liAltStrategyRejectOnly
     get piAltStrategy to liAltStrategy
     get piAltStrategyRejectOnly to liAltStrategyRejectOnly
-    if liAltStrategy eq WCAS_ALWAYS_TRUE function_return DFTRUE
-    if liAltStrategy eq WCAS_EQUAL       function_return (lsTestValue=psAltStrategyLeftValue(self))
-    if liAltStrategy eq WCAS_LEFT_MATCH begin
+    if (liAltStrategy = WCAS_ALWAYS_TRUE) function_return DFTRUE
+    if (liAltStrategy = WCAS_EQUAL) function_return (lsTestValue=psAltStrategyLeftValue(self))
+    if (liAltStrategy = WCAS_LEFT_MATCH) begin
       if liAltStrategyRejectOnly begin
-        ifnot (StringBeginsWith(lsTestValue,psAltStrategyLeftValue(self))) function_return DFFALSE
+        If (Not((StringBeginsWith(lsTestValue,psAltStrategyLeftValue(self))))) function_return DFFALSE
       end
       else function_return (StringBeginsWith(lsTestValue,psAltStrategyLeftValue(self)))
     end
-    if liAltStrategy eq WCAS_RIGHT_MATCH begin
+    if (liAltStrategy = WCAS_RIGHT_MATCH) begin
       if liAltStrategyRejectOnly begin
-        ifnot (StringEndsWith(lsTestValue,psAltStrategyRightValue(self))) function_return DFFALSE
+        If (Not((StringEndsWith(lsTestValue,psAltStrategyRightValue(self))))) function_return DFFALSE
       end
       else function_return (StringEndsWith(lsTestValue,psAltStrategyRightValue(self)))
     end
-    if liAltStrategy eq WCAS_LEFT_AND_RIGHT_MATCH begin
+    if (liAltStrategy = WCAS_LEFT_AND_RIGHT_MATCH) begin
       if liAltStrategyRejectOnly begin
-        ifnot (StringBeginsWith(lsTestValue,psAltStrategyLeftValue(self)) and StringEndsWith(lsTestValue,psAltStrategyRightValue(self))) function_return DFFALSE
+        If (Not((StringBeginsWith(lsTestValue,psAltStrategyLeftValue(self)) and StringEndsWith(lsTestValue,psAltStrategyRightValue(self))))) function_return DFFALSE
       end
       else function_return (StringBeginsWith(lsTestValue,psAltStrategyLeftValue(self)) and StringEndsWith(lsTestValue,psAltStrategyRightValue(self)))
     end
-    if liAltStrategy eq WCAS_CONTAINS begin
+    if (liAltStrategy = WCAS_CONTAINS) begin
       function_return (lsTestValue contains psAltStrategyLeftValue(self))
     end
     function_return (iMatch.is(self,0,lsTestValue))

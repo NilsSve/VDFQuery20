@@ -16,44 +16,44 @@ Use buttons.utl
 Use cProcessStatusPanel.pkg
 
 #IF LNG_DEFAULT=LNG_DUTCH
- #REPLACE t.Wait.Question      "Vraag"
- #REPLACE t.Wait.Cancel        "Operatie afbreken?"
+ Define t.Wait.Question    for "Vraag"
+ Define t.Wait.Cancel      for "Operatie afbreken?"
 #ENDIF
 #IF LNG_DEFAULT=LNG_SPANISH // 03/10/2002 25/01/2004 Pepe Guimar∆es Moose Software  pg@moose-software.com
- #REPLACE t.Wait.Question      "Pregunta"
- #REPLACE t.Wait.Cancel        "®Cancelar Operaci¢n?"
+ Define t.Wait.Question    for "Pregunta"
+ Define t.Wait.Cancel      for "®Cancelar Operaci¢n?"
 #ENDIF
 #IF LNG_DEFAULT=LNG_ENGLISH
- #REPLACE t.Wait.Question      "Question"
- #REPLACE t.Wait.Cancel        "Cancel operation?"
+ Define t.Wait.Question    for "Question"
+ Define t.Wait.Cancel      for "Cancel operation?"
 #ENDIF
 #IF LNG_DEFAULT=LNG_DANISH
- #REPLACE t.Wait.Question      "SpõrgsmÜl"
- #REPLACE t.Wait.Cancel        "ùnsker du at afbryde?"
+ Define t.Wait.Question    for "SpõrgsmÜl"
+ Define t.Wait.Cancel      for "ùnsker du at afbryde?"
 #ENDIF
 #IF LNG_DEFAULT=LNG_SWEDISH
- #REPLACE t.Wait.Question      "Question"
- #REPLACE t.Wait.Cancel        "Cancel operation?"
+ Define t.Wait.Question    for "Question"
+ Define t.Wait.Cancel      for "Cancel operation?"
 #ENDIF
 #IF LNG_DEFAULT=LNG_NORWEGIAN   // 22.04.1999 torkild.resheim@emmaedb.no
- #REPLACE t.Wait.Question      "SpõrsmÜl"
- #REPLACE t.Wait.Cancel        "Avbryt jobben?"
+ Define t.Wait.Question    for "SpõrsmÜl"
+ Define t.Wait.Cancel      for "Avbryt jobben?"
 #ENDIF
 #IF LNG_DEFAULT=LNG_GERMAN
- #REPLACE t.Wait.Question      "Frage"
- #REPLACE t.Wait.Cancel        "Verarbeitung abbrechen?"
+ Define t.Wait.Question    for "Frage"
+ Define t.Wait.Cancel      for "Verarbeitung abbrechen?"
 #ENDIF
 #IF LNG_DEFAULT=LNG_PORTUGUESE
- #REPLACE t.Wait.Question      "Confirme"
- #REPLACE t.Wait.Cancel        "Cancelar operaá∆o?"
+ Define t.Wait.Question    for "Confirme"
+ Define t.Wait.Cancel      for "Cancelar operaá∆o?"
 #ENDIF
 #If LNG_DEFAULT=LNG_FRENCH // by Arnaud Mallick (Fr) (Arnaud.mallick@wanadoo.fr)
- #Replace t.Wait.Question      "Question"
- #Replace t.Wait.Cancel        "Annuler opÇration?"
+ Define t.Wait.Question    for "Question"
+ Define t.Wait.Cancel      for "Annuler opÇration?"
 #ENDIF
 #IF LNG_DEFAULT=LNG_ITALIAN // 16/10/2002 Paolo Zanni CO.AS.CO.
- #REPLACE t.Wait.Question      "Conferma"
- #REPLACE t.Wait.Cancel        "Annulla operazione?"
+ Define t.Wait.Question    for "Conferma"
+ Define t.Wait.Cancel      for "Annulla operazione?"
 #ENDIF
 
 class cBatchCompanion is a cProcessStatusPanel

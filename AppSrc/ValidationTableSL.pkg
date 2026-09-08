@@ -10,6 +10,7 @@ object oValtable_Sellist is a aps.ModalPanel
   on_key kcancel send close_panel
   property integer pbResult
 
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oGrid is a aps.Grid
     send GridPrepare_AddColumn "" AFT_ASCII40
     send GridPrepare_Apply self

@@ -8,6 +8,7 @@ Use Files.utl    // Utilities for handling file related stuff
 Use SetDir.pkg   // cSetOfDirectories class
 Use Masks_DF.nui // DataFlex related file masks
 Use Strings.nui
+Use cCJGrid.pkg
 
 
 // ******************************************************************
@@ -47,16 +48,43 @@ activate_view Activate_FindFileResultVw for oNewFindFileResultVw
 object oNewFindFileResultVw is a aps.View label "Find file, result"
   on_key kuser send Activate_SetDirTestVw
   on_key kcancel send close_panel
-  object oLst is a cSetOfFilesListNew
+  object oLst is a cCJGrid
+      // TODO: oLst was a cSetOfFilesListNew - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 200 0
     set piSOF_Object to (oSetOfFilesNew(self))
+
     procedure OnListFilled integer liFileCount number lnBytes
-      send total_display (SEQ_FileSizeToString(lnBytes)+" in "+string(liFileCount)+" files")
+//      send total_display (SEQ_FileSizeToString(lnBytes)+" in "+string(liFileCount)+" files")
     end_procedure
+
     procedure DoReset
       forward send DoReset
-      send Activate_SetDirTestVw
+//      send Activate_SetDirTestVw
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   send aps_goto_max_row
 
@@ -102,15 +130,39 @@ object oNewFindFileVw is a aps.View label "Find file"
   on_key kcancel send close_panel
   object oLstHeader is a aps.Textbox label "Folders in search path"
   end_object
-  object oLst is a cSetOfDirectoriesList snap SL_DOWN
+  object oLst is a cCJGrid
+      // TODO: oLst was a cSetOfDirectoriesList - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
     set size to 170 0
     set piSetOfDirectoriesObject to (oSetOfDirectories(self))
     register_object oLstTotal
-    set Horz_Scroll_Bar_Visible_State to false
 
     procedure OnListChanged integer liItems
       set value of (oLstTotal(self)) to ("  "+string(liItems)+" folders")
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
   object oLstTotal is a aps.Textbox label "  0 folders         "
   end_object
@@ -145,7 +197,7 @@ object oNewFindFileVw is a aps.View label "Find file"
     get phoWorkspace of ghoApplication To lhoWorkSpace
     if (DFMatrix_WorkSpaceLoaded()) move (psDfPath(lhoWorkSpace)) to lsPath
     else move (API_AttrValue_GLOBAL(DF_OPEN_PATH)) to lsPath // Oem fixed!
-    move (ToOem(lsPath)) to lsPath
+    move (Utf8ToOem(lsPath)) to lsPath
 #ELSE
     move (API_AttrValue_GLOBAL(DF_OPEN_PATH)) to lsPath
 #ENDIF
@@ -258,7 +310,7 @@ object oNewFindFileVw is a aps.View label "Find file"
     integer lbFirstOnly
     string lsPrnFile
     get SEQ_SelectFile "Select compiler listing file" "Compiler listing (*.prn)|*.PRN|Precompile listing (*.prp)|*.PRP" to lsPrnFile
-    if lsPrnFile ne "" begin
+    if (lsPrnFile <> "") begin
       get select_state of (oFirstOccuranceOnly(self)) to lbFirstOnly
       send DoFindFilesCompilerListing to (oSetOfFilesNew(self)) lsPrnFile lbFirstOnly
       send Activate_FindFileResultVwReFill
@@ -277,4 +329,3 @@ object oNewFindFileVw is a aps.View label "Find file"
     send aps_auto_size_container
   end_procedure
 end_object // oNewFindFileVw
-

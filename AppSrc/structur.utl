@@ -129,9 +129,12 @@ end_desktop_section
        send WriteLn to lhStructure_LogFile ("    "+lsError2)
        if (lsValue1<>"" or lsValue2<>"") begin
          send WriteLn to lhStructure_LogFile "  While executing this instruction:"
-         if lsValue1 ne "" send WriteLn to lhStructure_LogFile ("    "+lsValue1)
-         if lsValue2 ne "" send WriteLn to lhStructure_LogFile ("    "+lsValue2)
-         if Struc$ErrDescr ne "" send WriteLn to lhStructure_LogFile ("    "+Struc$ErrDescr)
+         if (lsValue1 <> "") ;
+	   send WriteLn to lhStructure_LogFile ("    "+lsValue1)
+         if (lsValue2 <> "") ;
+	   send WriteLn to lhStructure_LogFile ("    "+lsValue2)
+         if (Struc$ErrDescr <> "") ;
+	   send WriteLn to lhStructure_LogFile ("    "+Struc$ErrDescr)
        end
        send popup
        set error_processing_state to DFFALSE
@@ -141,10 +144,10 @@ end_desktop_section
      //*** Build complete error description from Flexerrs and user error message.
      function Error_Description integer liError string lsErrMsg returns string
        string lsFullErrorText
-       trim lsErrMsg to lsErrMsg
+       Move (Trim(lsErrMsg)) to lsErrMsg
        move (trim(error_text(DESKTOP,liError))) to lsFullErrorText
-       if lsErrMsg ne "" begin
-         if ((lsFullErrorText ne "") AND error_text_available(DESKTOP,liError)) append lsFullErrorText " " lsErrMsg
+       if (lsErrMsg <> "") begin
+         if ((lsFullErrorText <> "") AND error_text_available(DESKTOP,liError)) append lsFullErrorText " " lsErrMsg
          else move lsErrMsg to lsFullErrorText
        end
        function_return lsFullErrorText
@@ -169,7 +172,7 @@ procedure DFMatrixError_On global // Set error trapping mode to DFMatrix
   #IF Structur$ErrorTrapping // Defined in Structur.nui
     integer lhObj
     move (oStructureError(self)) to lhObj
-    if Error_Object_Id ne lhObj begin
+    if (Error_Object_Id <> lhObj) begin
       set piOriginalErrorObject of lhObj to Error_Object_Id
       move lhObj to Error_Object_Id
     end
@@ -179,7 +182,7 @@ procedure DFMatrixError_Off global // Set error trapping mode back to normal
   #IF Structur$ErrorTrapping // Defined in Structur.nui
     integer lhObj
     move (oStructureError(self)) to lhObj
-    if Error_Object_Id eq lhObj get piOriginalErrorObject of lhObj to Error_Object_Id
+    if (Error_Object_Id = lhObj) get piOriginalErrorObject of lhObj to Error_Object_Id
   #ENDIF
 end_procedure
 
@@ -197,23 +200,31 @@ end_enumeration_list
     property string psMostRecentProgressTitle ""
     set allow_cancel_state to false
     function callback string lsText integer liType returns integer
-      if liType eq DF_MESSAGE_HEADING_1 send batch_update lsText
-      else if liType eq DF_MESSAGE_PROGRESS_TITLE begin
+      if (liType = DF_MESSAGE_HEADING_1) ;
+        send batch_update lsText
+      else if (liType = DF_MESSAGE_PROGRESS_TITLE) begin
         set psMostRecentProgressTitle to (lsText+": ")
         send batch_update2 lsText
       end
-      else if liType eq DF_MESSAGE_PROGRESS_VALUE send batch_update2 lsText (psMostRecentProgressTitle(self)+replace(",",lsText," of "))
+      else if (liType = DF_MESSAGE_PROGRESS_VALUE) ;
+        send batch_update2 lsText (psMostRecentProgressTitle(self)+replace(",",lsText," of "))
       else begin
-        if liType eq DF_MESSAGE_HEADING_2 send batch_update3 lsText ("HDR2: "+lsText)
-        else if liType eq DF_MESSAGE_HEADING_3 send batch_update3 ("HDR3: "+lsText)
-        else if liType eq DF_MESSAGE_HEADING_4 send batch_update3 ("HDR4: "+lsText)
-        else if liType eq DF_MESSAGE_HEADING_5 send batch_update3 ("HDR5: "+lsText)
-        else if liType eq DF_MESSAGE_WARNING   begin
+        if (liType = DF_MESSAGE_HEADING_2) ;
+	  send batch_update3 lsText ("HDR2: "+lsText)
+        else if (liType = DF_MESSAGE_HEADING_3) ;
+	  send batch_update3 ("HDR3: "+lsText)
+        else if (liType = DF_MESSAGE_HEADING_4) ;
+	  send batch_update3 ("HDR4: "+lsText)
+        else if (liType = DF_MESSAGE_HEADING_5) ;
+	  send batch_update3 ("HDR5: "+lsText)
+        else if (liType = DF_MESSAGE_WARNING) begin
           send batch_update3 ("WARN: "+lsText)
           send WriteLnError to (oStructure_LogFile(self)) ("  Warning: "+lsText)
         end
-        else if liType eq DF_MESSAGE_TEXT      send batch_update3 ("      "+lsText)
-        else send batch_update3 ("????: "+lsText)
+        else if (liType = DF_MESSAGE_TEXT) ;
+	  send batch_update3 ("      "+lsText)
+        else ;
+	  send batch_update3 ("????: "+lsText)
       end
       function_return 0 // Continue please
     end_function
@@ -264,7 +275,7 @@ function sRSErr_Text.i global integer op# returns string
   function_return "Undefined error"
 end_function
 
-#REPLACE GENERIC_FIELD_MAXIMUM 255
+Define GENERIC_FIELD_MAXIMUM for 255
 
 // This class is used for setting FILE attribute DF_FILE_RECORD_LENGTH. I would
 // agree if you argue that it seems gross overkill to handle this with an
@@ -319,8 +330,10 @@ class cPostponedFieldSettings is a cArray
       get_attribute DF_INDEX_NUMBER_SEGMENTS of liFile index# to max_seg#
       for segment# from 1 to max_seg#
         get_attribute DF_INDEX_SEGMENT_FIELD of liFile index# segment# to seg_field#
-        if seg_field# eq field# function_return 1
-        if (integer(FDX_AttrValue_SPECIAL1(0,DF_FIELD_OVERLAP,liFile,field#,seg_field#))) function_return 1
+        if (seg_field# = field#) ;
+	  function_return 1
+        if (integer(FDX_AttrValue_SPECIAL1(0,DF_FIELD_OVERLAP,liFile,field#,seg_field#))) ;
+	  function_return 1
       loop
     end
     else begin
@@ -402,7 +415,8 @@ class cFieldNameRepair is an cArray
     integer max# row#
     get row_count to max#
     for row# from 0 to (max#-1)
-      if (psTempName.i(self,row#)) eq tempname# function_return (psRealName.i(self,row#))
+      if ((psTempName.i(self,row#)) = tempname#) ;
+        function_return (psRealName.i(self,row#))
     loop
     function_return ""
   end_function
@@ -410,7 +424,8 @@ class cFieldNameRepair is an cArray
     integer max# row#
     get row_count to max#
     for row# from 0 to (max#-1)
-      if (psRealName.i(self,row#)) eq realname# function_return (psTempName.i(self,row#))
+      if ((psRealName.i(self,row#)) = realname#) ;
+        function_return (psTempName.i(self,row#))
     loop
     function_return ""
   end_function
@@ -433,21 +448,24 @@ class cFieldNameRepair is an cArray
       move (root#+".tag") to root#
       //send obs "sRootInclPath" root#
       move (SEQ_DirectInput(root#)) to ch#
-      if ch# ge 0 begin
+      if (ch# >= 0) begin
         move (oTagFileArray(self)) to arr#
         send delete_data to arr#
         repeat
           move (SEQ_ReadLn(ch#)) to name#
-          if name# ne "" set value of arr# item (item_count(arr#)) to name#
-        until name# eq ""
+          if (name# <> "") ;
+	    set value of arr# item (item_count(arr#)) to name#
+        until (name# = "")
         send SEQ_CloseInput ch#
         move (SEQ_DirectOutput(root#)) to ch#
         get item_count of arr# to max#
         for itm# from 0 to (max#-1)
           move (value(arr#,itm#)) to name#
           get sRealName.s name# to real_name#
-          if real_name# ne "" writeln real_name#
-          else writeln name#
+          if (real_name# <> "") ;
+	    writeln real_name#
+          else ;
+	    writeln name#
         loop
         send SEQ_CloseOutput ch#
       end
@@ -484,9 +502,12 @@ class cBleedingOldFieldNumbers is a cArray // Godammit!
   procedure create_field integer field#
     integer append#
     move 0 to append#
-    ifnot field# move 1 to append#
-    if field# gt (item_count(self)) move 1 to append#
-    if append# set value item (item_count(self)) to 0
+    If (Not(field#)) ;
+      move 1 to append#
+    if (field# > (item_count(self))) ;
+      move 1 to append#
+    if append# ;
+      set value item (item_count(self)) to 0
     else begin
       send insert_item field#
       set value item field# to 0
@@ -497,7 +518,8 @@ class cBleedingOldFieldNumbers is a cArray // Godammit!
     get item_count to max#
     for itm# from 1 to (max#-1)
       get value item itm# to field#
-      if old_field# eq field# function_return itm#
+      if (old_field# = field#) ;
+        function_return itm#
     loop
     function_return -1
   end_function
@@ -568,14 +590,16 @@ class cBasicRestructurer is a cArray
   procedure CreateField integer field# string name# integer type#
     integer liFile WasIRightOrWasIRight# InitialNumberOfFields#
     integer liFieldNameAlreadyExists
-    ifnot (piIgnoreTheRestState(self)) begin
+    If (Not((piIgnoreTheRestState(self)))) begin
       get piFileHandle to liFile
-      if field# gt (field_count(self)) move 0 to field# // Append
+      if (field# > (field_count(self))) ;
+        move 0 to field# // Append
       get piInitialNumberOfFields to InitialNumberOfFields#
       ErrorTrapping.create_field liFile at field#
       send create_field to (oOldFieldNumbersRepair(self)) field#
       // If fieldname begins with "@" we have to cheat
-      if "@"      in    name# move (sAddField.s(oFieldNameRepair(self),name#)) to name#
+      if (name# contains "@") ;
+        move (sAddField.s(oFieldNameRepair(self),name#)) to name#
       // If fieldname begins with "FIELD" we have to cheat
       if (StringBeginsWith(name#,"FIELD")) move (sAddField.s(oFieldNameRepair(self),name#)) to name#
       // If fieldname already exists (but we intend to create the other field later) we have to cheat
@@ -591,17 +615,19 @@ class cBasicRestructurer is a cArray
   procedure CreateField_OldNumber integer old_number# string name# integer type#
     integer field#
     get iFindFieldOldNumber.i old_number# to field#
-    if field# ne -1 send CreateField field# name# type#
-    else error 667 ("Old number not found ("+string(old_number#)+")")
+    if (field# <> -1) ;
+      send CreateField field# name# type#
+    else ;
+      error 667 ("Old number not found ("+string(old_number#)+")")
   end_procedure
 
   procedure AppendField string name# integer type#
-    ifnot (piIgnoreTheRestState(self)) ;
+    If (Not((piIgnoreTheRestState(self)))) ;
       send CreateField 0 name# type#
   end_procedure
   procedure DeleteField integer field#
     integer liFile
-    ifnot (piIgnoreTheRestState(self)) begin
+    If (Not((piIgnoreTheRestState(self)))) begin
       get piFileHandle to liFile
       ErrorTrapping.delete_field liFile field#
       send delete_field to (oOldFieldNumbersRepair(self)) field#
@@ -612,13 +638,15 @@ class cBasicRestructurer is a cArray
   procedure DeleteField_OldNumber integer old_number#
     integer field#
     get iFindFieldOldNumber.i old_number# to field#
-    if field# ne -1 send DeleteField field#
-    else error 668 ("Old number not found ("+string(old_number#)+")")
+    if (field# <> -1) ;
+      send DeleteField field#
+    else ;
+      error 668 ("Old number not found ("+string(old_number#)+")")
   end_procedure
 
   procedure DeleteIndex integer idx#
     integer liFile segments#
-    ifnot (piIgnoreTheRestState(self)) begin
+    If (Not(piIgnoreTheRestState(self))) begin
       get piFileHandle to liFile
       get_attribute DF_INDEX_NUMBER_SEGMENTS of liFile idx# to segments#
       // We have to check if there are any segments in the index before we
@@ -640,7 +668,7 @@ class cBasicRestructurer is a cArray
     get piFileHandle to liFile
     error 673 ("An error occured while re-structuring file number "+string(liFile)+". Program will abort.")
     send structure_abort
-    system
+    Abort
   end_procedure
   procedure structure_start
     integer liFile
@@ -649,7 +677,7 @@ class cBasicRestructurer is a cArray
       move self to cRestructurer#  // Make global integer cRestructurer# point to this object
       set private.piOrigOnError to |VI31     // If an error occurs while restructuring we must abort the
       on error gosub cRestructurer_Error     // re-structuring AND the program
-      indicate err false                     // This just needs to be done (can't remember why)
+      Move (false) to err // This just needs to be done (can't remember why)
     end
     send delete_data to (oPostponedFileSettings(self))
     send delete_data to (oPostponedFieldSettings(self))
@@ -665,7 +693,7 @@ class cBasicRestructurer is a cArray
   end_procedure
   procedure SetProgressMode integer mode#
     // Possible values for mode# are: RS_PG_DEFAULT RS_PG_NONE RS_PG_LEAVE_ON RS_PG_OFF
-    if mode# eq RS_PG_OFF begin
+    if (mode# = RS_PG_OFF) begin
       send deactivate_display to (oStructureWait(self))
       set piProgressMode to RS_PG_DEFAULT
     end
@@ -685,7 +713,7 @@ class cBasicRestructurer is a cArray
     get_attribute DF_FILE_PHYSICAL_NAME of liFile to physical_name#
     send execute to (oPostponedFileSettings(self)) physical_name#
     send execute to (oPostponedFieldSettings(self)) physical_name#
-    if wmode# ne RS_PG_NONE begin
+    if (wmode# <> RS_PG_NONE) begin
       send activate_title to callback_obj# physical_name#
       structure_end liFile DF_STRUCTEND_OPT_NONE "." callback_obj# // (pRestuctOpt(self)) (pTempDir(self)) (pCallBackObj(self))
     end
@@ -716,10 +744,13 @@ class cBasicRestructurer is a cArray
 
         get DBMS_OpenFileAs physical_name# lhSortHandle DF_EXCLUSIVE 0 to lbOpen
         if lbOpen begin
-          if wmode# ne RS_PG_NONE sort lhSortHandle '' (DF_SORT_OPTION_BAD_DATA_FILE ior DF_SORT_OPTION_DUP_DATA_FILE) callback_obj#
-          else sort lhSortHandle '' (DF_SORT_OPTION_BAD_DATA_FILE ior DF_SORT_OPTION_DUP_DATA_FILE)
+          if (wmode# <> RS_PG_NONE) ;
+	    sort lhSortHandle '' (DF_SORT_OPTION_BAD_DATA_FILE ior DF_SORT_OPTION_DUP_DATA_FILE) callback_obj#
+          else ;
+	    sort lhSortHandle '' (DF_SORT_OPTION_BAD_DATA_FILE ior DF_SORT_OPTION_DUP_DATA_FILE)
         end
-        else send WriteLnError to (oStructure_LogFile(self)) "  Table could not be opened for reindexing!"
+        else ;
+	  send WriteLnError to (oStructure_LogFile(self)) "  Table could not be opened for reindexing!"
 //      if (FDX_SetOfIndices(0,lhSortHandle,DF_INDEX_TYPE_ONLINE)+FDX_SetOfIndices(0,lhSortHandle,DF_INDEX_TYPE_BATCH)) ne "" begin
 //        if wmode# ne RS_PG_NONE sort lhSortHandle '' (DF_SORT_OPTION_BAD_DATA_FILE ior DF_SORT_OPTION_DUP_DATA_FILE) callback_obj#
 //        else sort lhSortHandle '' (DF_SORT_OPTION_BAD_DATA_FILE ior DF_SORT_OPTION_DUP_DATA_FILE)
@@ -734,7 +765,8 @@ class cBasicRestructurer is a cArray
 
     send CloseOutput to (oStructure_LogFile(self)) // Structure_End
 
-    if wmode# eq RS_PG_DEFAULT send deactivate_display to callback_obj#
+    if (wmode# = RS_PG_DEFAULT) ;
+      send deactivate_display to callback_obj#
   end_procedure
 
   procedure SetFileAttr integer attr# string value#
@@ -743,8 +775,9 @@ class cBasicRestructurer is a cArray
       error 674 "Sorry, no SETFILEATTR while in probe mode"
       procedure_return
     end
-    ifnot (piIgnoreTheRestState(self)) begin
-      if attr# eq DF_FILE_RECORD_LENGTH send postponed_setting to (oPostponedFileSettings(self)) attr# value#
+    If (Not(piIgnoreTheRestState(self))) begin
+      if (attr# = DF_FILE_RECORD_LENGTH) ;
+        send postponed_setting to (oPostponedFileSettings(self)) attr# value#
       else begin
         get piFileHandle to liFile
         //send obs "SET FileAttribute of" liFile (API_Attr_Name(attr#)) value#
@@ -759,19 +792,23 @@ class cBasicRestructurer is a cArray
       error 675 "Sorry, no SETFIELDATTR while in probe mode"
       procedure_return
     end
-    ifnot (piIgnoreTheRestState(self)) begin
-      if attr# eq DF_FIELD_NAME begin
-        if "@" in value# move (sAddField.s(oFieldNameRepair(self),value#)) to value#
-        if (StringBeginsWith(value#,"FIELD")) move (sAddField.s(oFieldNameRepair(self),value#)) to value#
+    If (Not((piIgnoreTheRestState(self)))) begin
+      if (attr# = DF_FIELD_NAME) begin
+        if (value# contains "@") ;
+	  move (sAddField.s(oFieldNameRepair(self),value#)) to value#
+        if (StringBeginsWith(value#,"FIELD")) ;
+	  move (sAddField.s(oFieldNameRepair(self),value#)) to value#
       end
-      if attr# eq DF_FIELD_INDEX begin
+      if (attr# = DF_FIELD_INDEX) begin
         // We postpone main index setting until the very end. Then we are
         // sure that the relevant index is present
-        if field# eq IMPLICIT_FIELD get private.piCurrentField to field#
+        if (field# = IMPLICIT_FIELD) ;
+	  get private.piCurrentField to field#
         send postponed_setting to (oPostponedFieldSettings(self)) attr# field# value#
       end
       else begin
-        if field# eq IMPLICIT_FIELD get private.piCurrentField to field#
+        if (field# = IMPLICIT_FIELD) ;
+	  get private.piCurrentField to field#
         get piFileHandle to liFile
         ErrorTrapping.set_attribute attr# of liFile field# to value#
         send NotifyTracer RSOP_SETFIELDATTR attr# field# 0 0 value#
@@ -787,7 +824,8 @@ class cBasicRestructurer is a cArray
     get_attribute DF_FILE_NUMBER_FIELDS of liFile to max#
     for field# from 1 to max#
       get_attribute DF_FIELD_OLD_NUMBER of liFile field# to test#
-      if test# eq old_number# function_return field#
+      if (test# = old_number#) ;
+        function_return field#
     loop
     function_return -1
   end_function
@@ -799,14 +837,16 @@ class cBasicRestructurer is a cArray
     // First we look for the name passed:
     for field# from 1 to max#
       get_attribute DF_FIELD_NAME of liFile field# to test_name#
-      if test_name# eq name# function_return field#
+      if (test_name# = name#) ;
+        function_return field#
     loop
     // If not found we now see if it helps to translate it:
     get sTempName.s of (oFieldNameRepair(self)) name# to name#
-    if name# ne "" begin
+    if (name# <> "") begin
       for field# from 1 to max#
         get_attribute DF_FIELD_NAME of liFile field# to test_name#
-        if test_name# eq name# function_return field#
+        if (test_name# = name#) ;
+	  function_return field#
       loop
     end
     function_return -1
@@ -815,15 +855,19 @@ class cBasicRestructurer is a cArray
     integer field#
     error 678 "Procedure SetFieldAttr_OldNumber in STRUCTUR.UTL) was called"
     get iFindFieldOldNumber.i old_number# to field#
-    if field# ne -1 send SetFieldAttr attr# field# value#
-    else error 669 ("Old number not found ("+string(old_number#)+")")
+    if (field# <> -1) ;
+      send SetFieldAttr attr# field# value#
+    else ;
+      error 669 ("Old number not found ("+string(old_number#)+")")
   end_procedure
   procedure SetFieldAttr_ByName integer attr# string name# string value#
     integer field#
-    ifnot (piIgnoreTheRestState(self)) begin
+    If (Not((piIgnoreTheRestState(self)))) begin
       get iFindFieldName.s name# to field#
-      if field# ne -1 send SetFieldAttr attr# field# value#
-      else error 670 ("Field name not found ("+name#+")")
+      if (field# <> -1) ;
+        send SetFieldAttr attr# field# value#
+      else ;
+        error 670 ("Field name not found ("+name#+")")
     end
   end_procedure
   procedure SetIndexAttr_Help integer index#
@@ -835,8 +879,9 @@ class cBasicRestructurer is a cArray
     move index# to index_handle#
     repeat
       ErrorTrapping.create_index liFile at index_handle#
-      if index_handle# ne index# set value of arr# item index_handle# to 1
-    until index_handle# eq index#
+      if (index_handle# <> index#) ;
+        set value of arr# item index_handle# to 1
+    until (index_handle# = index#)
     get item_count of arr# to max#
     for index# from 0 to (max#-1)
       if (integer(value(arr#,index#))) ErrorTrapping.delete_index liFile index#
@@ -849,12 +894,13 @@ class cBasicRestructurer is a cArray
       error 676 "Sorry, not while in probe mode"
       procedure_return
     end
-    ifnot (piIgnoreTheRestState(self)) begin
+    If (Not((piIgnoreTheRestState(self)))) begin
       if (attr#=DF_INDEX_NUMBER_SEGMENTS and integer(value#)=0) send DeleteIndex index#
       else begin
         get piFileHandle to liFile
         get_attribute DF_INDEX_NUMBER_SEGMENTS of liFile index# to segments#
-        ifnot segments# send SetIndexAttr_Help index# // create_index liFile at index#
+        If (Not(segments#)) ;
+	  send SetIndexAttr_Help index#
         ErrorTrapping.set_attribute attr# of liFile index# to value#
         send NotifyTracer RSOP_SETINDEXATTR attr# 0 index# 0 value#
       end
@@ -866,9 +912,9 @@ class cBasicRestructurer is a cArray
       error 677 "Sorry, not while in probe mode"
       procedure_return
     end
-    ifnot (piIgnoreTheRestState(self)) begin
+    If (Not((piIgnoreTheRestState(self)))) begin
       get piFileHandle to liFile
-      if attr# eq DF_INDEX_SEGMENT_CASE begin
+      if (attr# = DF_INDEX_SEGMENT_CASE) begin
         get_attribute DF_INDEX_SEGMENT_FIELD of liFile index# seg# to field#
         get_attribute DF_FIELD_TYPE of liFile field# to type#
         if (type#<>DF_ASCII and integer(value#)=DF_CASE_IGNORED) procedure_return // We only do this for ASCII fields
@@ -888,7 +934,8 @@ class cBasicRestructurer is a cArray
   function GetFieldAttr integer attr# integer field# returns string
     integer liFile
     string value#
-    if field# eq IMPLICIT_FIELD get private.piCurrentField to field#
+    if (field# = IMPLICIT_FIELD) ;
+      get private.piCurrentField to field#
     get piFileHandle to liFile
     get_attribute attr# of liFile field# to value#
     function_return value#
@@ -979,7 +1026,8 @@ class cBasicRestructurer is a cArray
     move (DBMS_OpenFileAs(fn#,liFile,DF_EXCLUSIVE,0)) to rval#
     if rval# begin
       //move (rval#=DBMS_DRIVER_DATAFLEX) to rval# // Only DataFlex files
-      ifnot rval# close liFile
+      If (Not(rval#)) ;
+        close liFile
     end
     if rval# begin
       send AppendOutput to (oStructure_LogFile(self))
@@ -987,7 +1035,8 @@ class cBasicRestructurer is a cArray
       move (fn#+".dat") to fn#
       move (SEQ_ExtractPathFromFileName(fn#)) to path#
       set psDatFileName to (SEQ_RemovePathFromFileName(fn#))
-      if path# eq "" move (SEQ_FindFileAlongDFPath(fn#)) to path#
+      if (path# = "") ;
+        move (SEQ_FindFileAlongDFPath(fn#)) to path#
       set psDatFilePath to path#
       send structure_start
     end
@@ -1000,11 +1049,13 @@ class cBasicRestructurer is a cArray
     integer rval#
     string fn# path#
     move (DBMS_IsOpenFile(liFile)) to rval#
-    if rval# ifnot (integer(API_AttrValue_FILE(DF_FILE_OPEN_MODE,liFile))=DF_EXCLUSIVE) move 0 to rval#
-    ifnot rval# move (DBMS_OpenFile(liFile,DF_EXCLUSIVE,0)) to rval#
+    if rval# If (Not((integer(API_AttrValue_FILE(DF_FILE_OPEN_MODE,liFile))=DF_EXCLUSIVE))) move 0 to rval#
+    If (Not(rval#)) ;
+      move (DBMS_OpenFile(liFile,DF_EXCLUSIVE,0)) to rval#
     if rval# begin
       //move (rval#=DBMS_DRIVER_DATAFLEX) to rval# // Only DataFlex files
-      ifnot rval# close liFile
+      If (Not(rval#)) ;
+        close liFile
     end
     if rval# begin
       move (API_AttrValue_FILELIST(DF_FILE_ROOT_NAME,liFile)) to fn#
@@ -1013,7 +1064,8 @@ class cBasicRestructurer is a cArray
       move (fn#+".dat") to fn#
       move (SEQ_ExtractPathFromFileName(fn#)) to path#
       set psDatFileName to (SEQ_RemovePathFromFileName(fn#))
-      if path# eq "" move (SEQ_FindFileAlongDFPath(fn#)) to path#
+      if (path# = "") ;
+        move (SEQ_FindFileAlongDFPath(fn#)) to path#
       set psDatFilePath to path#
       send structure_start
     end
@@ -1037,13 +1089,13 @@ class cBasicRestructurer is a cArray
     send reset.is 0 lsRoot
     set psDatFileName to (SEQ_RemovePathFromFileName(lsRoot)+".dat")
     set psDatFilePath to (SEQ_ExtractPathFromFileName(lsRoot))
-    if (SEQ_FileExists(ToAnsi(lsRoot)+".dat")=SEQIT_NONE) begin
+    if (SEQ_FileExists(Utf8ToAnsi(lsRoot)+".dat")=SEQIT_NONE) begin
     //send obs "psDatFileName" (psDatFileName(self)) "psDatFilePath" (psDatFilePath(self))
       send structure_start
       send SetFileAttr DF_FILE_MAX_RECORDS   10000 // Set up a few default values
       send SetFileAttr DF_FILE_MULTIUSER     DF_FILE_USER_MULTI
       send SetFileAttr DF_FILE_REUSE_DELETED DF_FILE_DELETED_REUSE
-      send SetFileAttr DF_FILE_PHYSICAL_NAME (ToAnsi(lsRoot))
+      send SetFileAttr DF_FILE_PHYSICAL_NAME (Utf8ToAnsi(lsRoot))
       function_return 0 // 0 means OK
     end
     send WriteLnError to (oStructure_LogFile(self)) ("  Cannot create existing file "+lsRoot+".dat")
@@ -1075,7 +1127,8 @@ class cBasicRestructurer is a cArray
     move (replace(".dat",root#,"")) to root#
     move (replace(".DAT",root#,"")) to root#
     get psDatFilePath to path#
-    if path# ne "" move (SEQ_ComposeAbsoluteFileName(path#,root#)) to root#
+    if (path# <> "") ;
+      move (SEQ_ComposeAbsoluteFileName(path#,root#)) to root#
     function_return root#
   end_function
 end_class // cBasicRestructurer
@@ -1135,8 +1188,10 @@ end_procedure
 //> Lets the changes that you have made so far take effect.
 procedure RS_Structure_End global integer liForceExtraSort
   integer liDoSort
-  if num_arguments gt 0 move liForceExtraSort to liDoSort
-  else move DFFALSE to liDoSort
+  if (num_arguments > 0) ;
+    move liForceExtraSort to liDoSort
+  else ;
+    move DFFALSE to liDoSort
   set private.piSortOnEndStructure of oRestructurer# to liDoSort
   send Structure_End to oRestructurer#
   set private.piSortOnEndStructure of oRestructurer# to DFFALSE
@@ -1232,4 +1287,3 @@ end_function
 function RS_GetFileListAttr global integer attr# returns string
   function_return (GetFileListAttr(oRestructurer#,attr#))
 end_function
-

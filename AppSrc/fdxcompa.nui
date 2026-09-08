@@ -104,7 +104,7 @@ class cFdxTheseNamesAreTheSame is a cArray // Private class
         readln channel liChannel lsName1
         readln lsName2
         move (seqeof) to lbEof
-        ifnot lbEof begin
+        If (Not(lbEof)) begin
           get row_count to liRow
           set psName1.i liRow to lsName1
           set psName2.i liRow to lsName2
@@ -165,16 +165,16 @@ class cFdxFieldAttrCompare is a cItemBasedCompare
     string name1# name2#
     // First ask the explicit field pairing object:
     get iSameField.ii of (oFdxTheseFieldsAreTheSame(self)) field1# field2# to rval#
-    if rval# eq FIELDSTHESAME_MAYBE begin
+    if (rval# = FIELDSTHESAME_MAYBE) begin
       // Then ask the explicit field dispairing object:
       get iSameField.ii of (oFdxTheseFieldsAreNotTheSame(self)) field1# field2# to rval#
-      if rval# eq FIELDSTHESAME_MAYBE begin
+      if (rval# = FIELDSTHESAME_MAYBE) begin
         // If no definate answers, we have to try and figure it out:
         get FDX_AttrValue_FIELD (piFDX1(self)) DF_FIELD_NAME (piFile1(self)) field1# to name1#
         get FDX_AttrValue_FIELD (piFDX2(self)) DF_FIELD_NAME (piFile2(self)) field2# to name2#
         // Then ask the implicit field pairing object:
         get iSameName.ss of (oFdxTheseNamesAreTheSame(self)) name1# name2# to rval#
-        if rval# eq FIELDSTHESAME_MAYBE begin
+        if (rval# = FIELDSTHESAME_MAYBE) begin
           // As a last resort we ask if the field names are identical
           if (Uppercase(name1#)=Uppercase(name2#)) move FIELDSTHESAME_YES to rval#
         end
@@ -197,7 +197,7 @@ class cFdxFieldAttrCompare is a cItemBasedCompare
       send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_TYPE          field1# name# (FDX_AttrValue_FIELD(piFDX2(self),DF_FIELD_TYPE         ,piFile2(self),field2#))
       send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_LENGTH        field1# name# (FDX_AttrValue_FIELD(piFDX2(self),DF_FIELD_LENGTH       ,piFile2(self),field2#))
     end
-    if type# ne DF_DATE begin // Only interfere with field length if not a DATE field
+    if (type# <> DF_DATE) begin // Only interfere with field length if not a DATE field
       if (iIsChangedField.iii(self,DF_FIELD_LENGTH       ,field1#,field2#)) begin
         send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_LENGTH        field1# name# (FDX_AttrValue_FIELD(piFDX2(self),DF_FIELD_LENGTH       ,piFile2(self),field2#))
       end
@@ -215,7 +215,7 @@ class cFdxFieldAttrCompare is a cItemBasedCompare
       send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_INDEX         field1# name# (FDX_AttrValue_FIELD(piFDX2(self),DF_FIELD_INDEX        ,piFile2(self),field2#))
     end
     if (iIsChangedField.iii(self,DF_FIELD_OFFSET       ,field1#,field2#)) begin
-      if type# eq DF_OVERLAP ;
+      if (type# = DF_OVERLAP) ;
         send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_OFFSET      field1# name# (FDX_AttrValue_FIELD(piFDX2(self),DF_FIELD_OFFSET       ,piFile2(self),field2#))
     end
     if (iIsChangedField.iii(self,DF_FIELD_NAME         ,field1#,field2#)) begin
@@ -227,7 +227,7 @@ class cFdxFieldAttrCompare is a cItemBasedCompare
   procedure item_not_matched1 integer field# integer info#
     integer identity_field#
     get FDX_AttrValue_FILE (piFDX1(self)) DF_FILE_RECORD_IDENTITY (piFile1(self)) to identity_field#
-    if field# ne identity_field# begin
+    if (field# <> identity_field#) begin
       // Field on left side not matched => We must delete it:
       send add_field_instruction INSTR_TYPE_DELETE 0 field# (FDX_AttrValue_FIELD(piFDX1(self),DF_FIELD_NAME,piFile1(self),field#)) ""
       send NoteFieldDeleted field#
@@ -249,7 +249,7 @@ class cFdxFieldAttrCompare is a cItemBasedCompare
     get piFDX2 to oFDX#
     get piFile2 to file#
     get FDX_AttrValue_FILE oFDX# DF_FILE_RECORD_IDENTITY file# to identity_field#
-    if field# ne identity_field# begin
+    if (field# <> identity_field#) begin
       move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_NAME,file#,field#)) to name#
       move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_TYPE         ,file#,field#)) to type#
       move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_LENGTH       ,file#,field#)) to length#
@@ -259,20 +259,20 @@ class cFdxFieldAttrCompare is a cItemBasedCompare
       move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_INDEX        ,file#,field#)) to index#
       move (FDX_AttrValue_FIELD(oFDX#,DF_FIELD_OFFSET       ,file#,field#)) to offset#
   //  if info# ne -1 begin
-        if info# eq -2 begin
+        if (info# = -2) begin
           send add_field_instruction INSTR_TYPE_APPEND DF_FIELD_NAME 0 "" name#
           move 0 to field#
         end
         else send add_field_instruction INSTR_TYPE_CREATE DF_FIELD_NAME field# "" name#
         send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_TYPE          field# name# type#
-        if type# ne DF_DATE begin
+        if (type# <> DF_DATE) begin
           send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_LENGTH        field# name# length#
           send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_PRECISION     field# name# precision#
         end
         send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_RELATED_FILE  field# name# rfile#
         send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_RELATED_FIELD field# name# rfield#
         send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_INDEX         field# name# index#
-        if type# eq DF_OVERLAP send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_OFFSET field# name# offset#
+        if (type# = DF_OVERLAP) send add_field_instruction INSTR_TYPE_EDIT DF_FIELD_OFFSET field# name# offset#
         send add_field_map to (oFdxFieldMap(self)) 0 field#
   //  end
   //  else send obs "Info er sgu' -1" name#
@@ -359,7 +359,7 @@ class cFdxIndexAttrCompare is a cArray
         for index# from 1 to 16
           get FDX_AttrValue_INDEX fdx# DF_INDEX_NUMBER_SEGMENTS file# index# to seg_max#
           for segment# from 1 to seg_max#
-            if (FDX_AttrValue_IDXSEG(fdx#,DF_INDEX_SEGMENT_FIELD,file#,index#,segment#)) eq field# set piIndexDirty.i index# to 1
+            if ((FDX_AttrValue_IDXSEG(fdx#,DF_INDEX_SEGMENT_FIELD,file#,index#,segment#)) = field#) set piIndexDirty.i index# to 1
           loop
         loop
       end
@@ -374,7 +374,7 @@ class cFdxIndexAttrCompare is a cArray
       for segment# from 1 to max_segment#
         move (FDX_AttrValue_IDXSEG(oFDX#,DF_INDEX_SEGMENT_FIELD,file#,index#,segment#)) to field#
         move (rval#+string(field#)) to rval#
-        if segment# ne max_segment# move (rval#+" ") to rval#
+        if (segment# <> max_segment#) move (rval#+" ") to rval#
       loop
     end
     function_return rval# // This value is only used for comparing
@@ -387,8 +387,8 @@ class cFdxIndexAttrCompare is a cArray
       move (FDX_AttrValue_INDEX(oFDX#,DF_INDEX_NUMBER_SEGMENTS,file#,index#)) to max_segment#
       for segment# from 1 to max_segment#
         move (FDX_AttrValue_IDXSEG(oFDX#,DF_INDEX_SEGMENT_DIRECTION,file#,index#,segment#)) to dir#
-        if dir# eq DF_ASCENDING  move (rval#+"+") to rval#
-        if dir# eq DF_DESCENDING move (rval#+"-") to rval#
+        if (dir# = DF_ASCENDING) move (rval#+"+") to rval#
+        if (dir# = DF_DESCENDING) move (rval#+"-") to rval#
       loop
     end
     function_return rval# // This value is only used for comparing
@@ -401,8 +401,8 @@ class cFdxIndexAttrCompare is a cArray
       move (FDX_AttrValue_INDEX(oFDX#,DF_INDEX_NUMBER_SEGMENTS,file#,index#)) to max_segment#
       for segment# from 1 to max_segment#
         move (FDX_AttrValue_IDXSEG(oFDX#,DF_INDEX_SEGMENT_CASE,file#,index#,segment#)) to case#
-        if case# eq DF_CASE_USED    move (rval#+"x") to rval#
-        if case# eq DF_CASE_IGNORED move (rval#+"X") to rval#
+        if (case# = DF_CASE_USED) move (rval#+"x") to rval#
+        if (case# = DF_CASE_IGNORED) move (rval#+"X") to rval#
       loop
     end
     function_return rval# // This value is only used for comparing
@@ -414,8 +414,8 @@ class cFdxIndexAttrCompare is a cArray
     for pos# from 1 to len#
       move (mid(dir1#,1,pos#)) to char1#
       move (mid(dir2#,1,pos#)) to char2#
-      if char1# ne char2# begin
-        if char2# eq "-" move DF_DESCENDING to value#
+      if (char1# <> char2#) begin
+        if (char2# = "-") move DF_DESCENDING to value#
         else move DF_ASCENDING to value#
         send add_indexseg_instruction INSTR_TYPE_EDIT DF_INDEX_SEGMENT_DIRECTION index# pos# value#
       end
@@ -428,8 +428,8 @@ class cFdxIndexAttrCompare is a cArray
     for pos# from 1 to len#
       move (mid(case1#,1,pos#)) to char1#
       move (mid(case2#,1,pos#)) to char2#
-      if char1# ne char2# begin
-        if char2# eq "X" move DF_CASE_IGNORED to value#
+      if (char1# <> char2#) begin
+        if (char2# = "X") move DF_CASE_IGNORED to value#
         else move DF_CASE_USED to value#
         send add_indexseg_instruction INSTR_TYPE_EDIT DF_INDEX_SEGMENT_CASE index# pos# value#
       end
@@ -441,7 +441,7 @@ class cFdxIndexAttrCompare is a cArray
     move (piFDX2(self)) to oFDX#
     move (piFile2(self)) to file#
     move (FDX_AttrValue_INDEX(oFDX#,DF_INDEX_NUMBER_SEGMENTS,file#,index#)) to max_segment#
-    if max_segment# eq 0 begin // Delete index
+    if (max_segment# = 0) begin // Delete index
       send add_index_instruction INSTR_TYPE_DELETE DF_INDEX_NUMBER_SEGMENTS index# 0
     end
     else begin // Edit or create index
@@ -464,7 +464,7 @@ class cFdxIndexAttrCompare is a cArray
     get sIndex_Fields.iii (piFDX1(self)) (piFile1(self)) index# to fields1#
     get sIndex_Fields.iii (piFDX2(self)) (piFile2(self)) index# to fields2#
     if (fields1#=fields2#) begin // At least the fields are identical
-      ifnot (piIndexDirty.i(self,index#)) begin // No segments have been deleted as a consequence of field deletions
+      If (Not((piIndexDirty.i(self,index#)))) begin
         // Compare directions:
         get sIndex_Direction.iii (piFDX1(self)) (piFile1(self)) index# to comp_val1#
         get sIndex_Direction.iii (piFDX2(self)) (piFile2(self)) index# to comp_val2#
@@ -473,10 +473,10 @@ class cFdxIndexAttrCompare is a cArray
         get sIndex_CaseUsed.iii (piFDX1(self)) (piFile1(self)) index# to comp_val1#
         get sIndex_CaseUsed.iii (piFDX2(self)) (piFile2(self)) index# to comp_val2#
         send Make_CaseUsed index# comp_val1# comp_val2#
-        if fields2# ne "" begin
+        if (fields2# <> "") begin
           move (FDX_AttrValue_INDEX(piFDX1(self),DF_INDEX_TYPE,piFile1(self),index#)) to type1#
           move (FDX_AttrValue_INDEX(piFDX2(self),DF_INDEX_TYPE,piFile2(self),index#)) to type2#
-          if type1# ne type2# send add_index_instruction INSTR_TYPE_EDIT DF_INDEX_TYPE index# type2#
+          if (type1# <> type2#) send add_index_instruction INSTR_TYPE_EDIT DF_INDEX_TYPE index# type2#
         end
       end
       else send Make_Index index#
@@ -663,7 +663,7 @@ class cFdxTableCompare is an cArray
     get piFile1 to file1#
     get piFile2 to file2#
     if (file1#+file2#) begin
-      if file2# ne 0 begin
+      if (file2# <> 0) begin
         get piFDX2 to lhFDX2
         if (liCompareMode=FDXCOMP_MODE_FILELIST or liCompareMode=FDXCOMP_MODE_ALL) begin
           // Check filelist parameters:
@@ -704,7 +704,7 @@ class cFdxTableCompare is an cArray
           else move PGM_TYPE_EMPTY to pgm_type#
         end
         else begin
-          if file1# eq 0 begin
+          if (file1# = 0) begin
             if (liCompareMode=FDXCOMP_MODE_FILELIST) move PGM_TYPE_FILELIST to pgm_type#
             else move PGM_TYPE_CREATE to pgm_type#
           end
@@ -731,10 +731,10 @@ end_desktop_section
 //> holds the instructions to restructure the data definition
 function iFdxCompareTables.iiiiii global integer lhPgmObj integer lhFdx1 integer liFile1 integer lhFdx2 integer liFile2 integer liCompareMode returns integer
   integer lhTableCompare
-  ifnot lhPgmObj get iCreateFdxRestructureProgram to lhPgmObj
+  If (Not(lhPgmObj)) get iCreateFdxRestructureProgram to lhPgmObj
   send reset to lhPgmObj
   set piFile of lhPgmObj to liFile1
-  ifnot (iCanOpen.i(lhFdx1,liFile1)) begin
+  If (Not((iCanOpen.i(lhFdx1,liFile1)))) begin
     set psRootName of lhPgmObj to (FDX_AttrValue_FILELIST(lhFdx2,DF_FILE_ROOT_NAME,liFile2))
     move 0 to liFile1 // This signals a creation
   end
@@ -755,7 +755,7 @@ end_function
 function Fdx_GenerateFieldNameChanges global integer lhFDX1 integer liFile1 integer lhFDX2 integer liFile2 string lsDir returns integer
   integer liChannel liField liMax lbChanges liGarbage
   string lsOutFileName lsName1 lsName2
-  ifnot (liFile1*liFile2) function_return 0
+  If (Not((liFile1*liFile2))) function_return 0
   if (FDX_AttrValue_FILE(lhFdx1,DF_FILE_NUMBER_FIELDS,liFile1)=FDX_AttrValue_FILE(lhFdx2,DF_FILE_NUMBER_FIELDS,liFile2)) begin
 
     move (FDX_AttrValue_FILE(lhFdx1,DF_FILE_NUMBER_FIELDS,liFile1)) to liMax
@@ -778,7 +778,7 @@ function Fdx_GenerateFieldNameChanges global integer lhFDX1 integer liFile1 inte
         end
       loop
       send SEQ_CloseOutput liChannel
-      ifnot lbChanges begin
+      If (Not(lbChanges)) begin
         get SEQ_EraseFile lsOutFileName to liGarbage
         //delete the file
       end
@@ -844,4 +844,3 @@ end_function
 //  close file#
 //  function_return rval#
 //end_function
-

@@ -5,10 +5,12 @@ Use TextData.nui // cTextDataReader class
 Use GridUtil.utl // Grid and List utilities (not for dbGrid's or Table's)
 Use MsgBox.utl   // obs procedure
 Use Files.utl    // Utilities for handling file related stuff (No User Interface)
+Use cCJGrid.pkg
 
 object oTextDataDecisionLogPanel is a aps.ModalPanel label "Decision log"
   set locate_mode to CENTER_ON_SCREEN
   on_key kcancel send close_panel
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oLst is a aps.Grid
     send GridPrepare_AddColumn "Line"      AFT_NUMERIC6.0
     send GridPrepare_AddColumn "Column"    AFT_NUMERIC4.0
@@ -25,10 +27,10 @@ object oTextDataDecisionLogPanel is a aps.ModalPanel label "Decision log"
       send Grid_SortByColumn self column#
     end_procedure
     function iSpecialSortValueOnColumn.i integer column# returns integer
-      if column# le 1 function_return 1
+      if (column# <= 1) function_return 1
     end_function
     function sSortValue.ii integer column# integer itm# returns string
-      if column# le 1 function_return (IntToStrR(value(self,itm#),6))
+      if (column# <= 1) function_return (IntToStrR(value(self,itm#),6))
     end_function
     procedure sort_data
       integer cc#
@@ -77,6 +79,7 @@ end_procedure
 object oTextDataParamListPanel is a aps.ModalPanel label "Text data parameters"
   set locate_mode to CENTER_ON_SCREEN
   on_key kcancel send close_panel
+  // TODO (DFRefactor): NOT converted - no column definitions (Set Form_Width / Set Header_Label) in the object, so its columns come from somewhere this converter cannot read: a helper command, a subclass, or code outside the object. Left as written; its object-level Send lines (GridPrepare_AddColumn, GridPrepare_Apply) may be where they are defined; its Add_Item fill would have been mapped onto columns that do not exist
   object oLst is a aps.Grid
     send GridPrepare_AddColumn "Parameter" AFT_ASCII30
     send GridPrepare_AddColumn "Value"     AFT_ASCII30
@@ -274,8 +277,8 @@ object oTextDataDisplay1st10Lines is a aps.ModalPanel label "First 32K"
             move DFTRUE to lbSeqEof
             set label of lhParent to (lsFileName+" (First 32K)")
           end
-          ifnot lbSeqEof begin
-            ifnot lbOEM get ToOEM lsLine to lsLine
+          If (Not(lbSeqEof)) begin
+            If (Not(lbOEM)) Move (Utf8ToOEM(lsLine)) to lsLine
             set value item liItm to lsLine
             increment liItm
           end
@@ -341,21 +344,21 @@ object oTextDataProperties is a aps.ModalPanel label "Import file properties"
       end_procedure
       procedure set TheValue string lsValue
         set value of (oFieldDelimiterExplicit(self)) item 0 to ""
-        if lsValue eq ";" set Combo_Current_Aux_Value to 1
-        else if lsValue eq "," set Combo_Current_Aux_Value to 2
-        else if lsValue eq (character(8)) set Combo_Current_Aux_Value to 3
+        if (lsValue = ";") set Combo_Current_Aux_Value to 1
+        else if (lsValue = ",") set Combo_Current_Aux_Value to 2
+        else if (lsValue = (character(8))) set Combo_Current_Aux_Value to 3
         else begin
           set value of (oFieldDelimiterExplicit(self)) item 0 to lsValue
-          if lsValue eq ";" set Combo_Current_Aux_Value to 4
+          if (lsValue = ";") set Combo_Current_Aux_Value to 4
         end
       end_procedure
       function TheValue returns string
         integer liAux
         get Combo_Current_Aux_Value to liAux
-        if liAux eq 1 function_return ";"
-        if liAux eq 2 function_return ","
-        if liAux eq 3 function_return (character(8))
-        if liAux eq 4 function_return (value(oFieldDelimiterExplicit(self),0))
+        if (liAux = 1) function_return ";"
+        if (liAux = 2) function_return ","
+        if (liAux = 3) function_return (character(8))
+        if (liAux = 4) function_return (value(oFieldDelimiterExplicit(self),0))
       end_function
     end_object
     object oFieldDelimiterExplicit is a aps.Form abstract AFT_ASCII1 snap SL_RIGHT
@@ -375,19 +378,19 @@ object oTextDataProperties is a aps.ModalPanel label "Import file properties"
       end_procedure
       procedure set TheValue string lsValue
         set value of (oQuoteCharExplicit(self)) item 0 to ""
-        if lsValue eq '"' set Combo_Current_Aux_Value to 1
-        else if lsValue eq "'" set Combo_Current_Aux_Value to 2
+        if (lsValue = '"') set Combo_Current_Aux_Value to 1
+        else if (lsValue = "'") set Combo_Current_Aux_Value to 2
         else begin
           set value of (oQuoteCharExplicit(self)) item 0 to lsValue
-          if lsValue eq ";" set Combo_Current_Aux_Value to 3
+          if (lsValue = ";") set Combo_Current_Aux_Value to 3
         end
       end_procedure
       function TheValue returns string
         integer liAux
         get Combo_Current_Aux_Value to liAux
-        if liAux eq 1 function_return '"'
-        if liAux eq 2 function_return "'"
-        if liAux eq 3 function_return (value(oQuoteCharExplicit(self),0))
+        if (liAux = 1) function_return '"'
+        if (liAux = 2) function_return "'"
+        if (liAux = 3) function_return (value(oQuoteCharExplicit(self),0))
       end_function
     end_object
     object oQuoteCharExplicit is a aps.Form abstract AFT_ASCII1 snap SL_RIGHT
@@ -401,14 +404,14 @@ object oTextDataProperties is a aps.ModalPanel label "Import file properties"
       send combo_add_item ". (period)" 1
       send combo_add_item ", (comma)"  2
       procedure set TheValue string lsValue
-        if lsValue eq "." set Combo_Current_Aux_Value to 1
-        if lsValue eq "," set Combo_Current_Aux_Value to 2
+        if (lsValue = ".") set Combo_Current_Aux_Value to 1
+        if (lsValue = ",") set Combo_Current_Aux_Value to 2
       end_procedure
       function TheValue returns string
         integer liAux
         get Combo_Current_Aux_Value to liAux
-        if liAux eq 1 function_return "."
-        if liAux eq 2 function_return ","
+        if (liAux = 1) function_return "."
+        if (liAux = 2) function_return ","
       end_function
     end_object
     object oDateSeparatorChar is a aps.ComboFormAux abstract AFT_ASCII15 label "Date separator:"
@@ -417,16 +420,16 @@ object oTextDataProperties is a aps.ModalPanel label "Import file properties"
       send combo_add_item "- (hyphen)"  2
       send combo_add_item ". (period)"  3
       procedure set TheValue string lsValue
-        if lsValue eq "/" set Combo_Current_Aux_Value to 1
-        if lsValue eq "-" set Combo_Current_Aux_Value to 2
-        if lsValue eq "." set Combo_Current_Aux_Value to 3
+        if (lsValue = "/") set Combo_Current_Aux_Value to 1
+        if (lsValue = "-") set Combo_Current_Aux_Value to 2
+        if (lsValue = ".") set Combo_Current_Aux_Value to 3
       end_procedure
       function TheValue returns string
         integer liAux
         get Combo_Current_Aux_Value to liAux
-        if liAux eq 1 function_return "/"
-        if liAux eq 2 function_return "-"
-        if liAux eq 3 function_return "."
+        if (liAux = 1) function_return "/"
+        if (liAux = 2) function_return "-"
+        if (liAux = 3) function_return "."
       end_function
     end_object
     object oDateFormat is a aps.ComboFormAux abstract AFT_ASCII15 label "Date format:"
@@ -435,16 +438,16 @@ object oTextDataProperties is a aps.ModalPanel label "Import file properties"
       send combo_add_item "mm dd yyyy"  DF_DATE_USA
       send combo_add_item "yyyy mm dd"  DF_DATE_MILITARY
       procedure set TheValue string lsValue
-        if lsValue eq DF_DATE_EUROPEAN set Combo_Current_Aux_Value to DF_DATE_EUROPEAN
-        if lsValue eq DF_DATE_USA      set Combo_Current_Aux_Value to DF_DATE_USA
-        if lsValue eq DF_DATE_MILITARY set Combo_Current_Aux_Value to DF_DATE_MILITARY
+        if (lsValue = DF_DATE_EUROPEAN) set Combo_Current_Aux_Value to DF_DATE_EUROPEAN
+        if (lsValue = DF_DATE_USA) set Combo_Current_Aux_Value to DF_DATE_USA
+        if (lsValue = DF_DATE_MILITARY) set Combo_Current_Aux_Value to DF_DATE_MILITARY
       end_procedure
       function TheValue returns string
         integer liAux
         get Combo_Current_Aux_Value to liAux
-        if liAux eq DF_DATE_EUROPEAN function_return DF_DATE_EUROPEAN
-        if liAux eq DF_DATE_USA      function_return DF_DATE_USA
-        if liAux eq DF_DATE_MILITARY function_return DF_DATE_MILITARY
+        if (liAux = DF_DATE_EUROPEAN) function_return DF_DATE_EUROPEAN
+        if (liAux = DF_DATE_USA) function_return DF_DATE_USA
+        if (liAux = DF_DATE_MILITARY) function_return DF_DATE_MILITARY
       end_function
     end_object
 
@@ -496,7 +499,7 @@ object oTextDataProperties is a aps.ModalPanel label "Import file properties"
     procedure prompt
       string lsFileName
       get SEQ_SelectInFile "Select text data file" "Text files|*.txt|All files|*.*" to lsFileName
-      if lsFileName ne "" begin
+      if (lsFileName <> "") begin
         set value item 0 to lsFileName
         send DoFindFirst
       end
@@ -537,11 +540,37 @@ object oTextDataProperties is a aps.ModalPanel label "Import file properties"
 
   send aps_goto_max_row
 
-  object oProbeGrid is a cTextDataProbeGrid
+  object oProbeGrid is a cCJGrid
+      // TODO: oProbeGrid was a cTextDataProbeGrid - a subclass of Grid whose own behaviour this cCJGrid does not inherit; port it here, or subclass cCJGrid the same way.
+
     procedure fill_list.iis integer liAction integer lhParamList string lsFileName
       forward send fill_list.iis liAction lhParamList lsFileName
-      send DoUpdateLabel to oGridLabel (piCurrentRowStartedInLine(oTextDataReader(self)))
+//      send DoUpdateLabel to oGridLabel (piCurrentRowStartedInLine(oTextDataReader(self)))
     end_procedure
+
+      Procedure LoadData
+          tDataSourceRow[] TheData TheDataEmpty
+          Integer iRow
+
+          Move 0 to iRow
+
+          // TODO: Populate this grid with data. Loop and fill TheData, e.g.:
+          //   Increment iRow
+
+          If (iRow <> 0) Begin
+              Send ReInitializeData TheData False
+              Send MoveToFirstRow
+          End
+          Else Begin
+              Send InitializeData TheDataEmpty
+          End
+      End_Procedure
+
+      Procedure Activating
+          Forward Send Activating
+          Send LoadData
+      End_Procedure
+
   end_object
 
   procedure DoRefreshGrid integer liAction
@@ -692,4 +721,3 @@ end_object
 procedure Popup_TextDataProperties global string lsFileName integer lhTextDataReader
   send popup.si to (oTextDataProperties(self)) lsFileName lhTextDataReader
 end_procedure
-
