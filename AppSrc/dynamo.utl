@@ -14,6 +14,11 @@ Use APS.pkg           // Auto Positioning and Sizing classes for VDF
 Use Set.utl       // cArray, cSet and cStack classes
 Use Classes.nui   // Class characteristics
 Use Createobj.nui // Function create_object_within_parent
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+CompilerWarnings Suspend
+
 
 class dnm.Button is a aps.Button
   procedure construct_object

@@ -2563,6 +2563,11 @@ Object Main is a Panel
     // Dragable objects
     // *********************************************************************
     use diagram.nui
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+CompilerWarnings Suspend
+
     activate_view run_test31 for oGraphExample31
     object oGraphExample31 is a aps.view label "Dragable objects (31)"
       on_key KCANCEL send close_panel

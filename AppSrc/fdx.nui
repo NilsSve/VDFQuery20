@@ -18,6 +18,11 @@ Use DBMS.nui     // Basic DBMS functions
 Use Dates.nui    // Date manipulation for VDF and DF3.2
 Use Strings.nui  // String manipulation for VDF
 Use Mapper.nui   // Classes for (field) mapping
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+CompilerWarnings Suspend
+
 
 define FILELIST_MAX_ENTRY   for 4095
 define t.fdx.attr_not_avail for "ATTRIBUTE NOT AVAILABLE"

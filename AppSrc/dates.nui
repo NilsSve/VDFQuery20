@@ -26,6 +26,12 @@ Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, c
 Use Strings.nui  // String manipulation for VDF (No User Interface)
 Use ErrorHnd.nui // cErrorHandlerRedirector class and oErrorHandlerQuiet object (No User Interface)
 Use tWinStructs.pkg // tWinSystemTime (the SYSTEMTIME struct DataFlex ships)
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+// Reaches one package first, which is therefore compiled quietly too: Datadict.pkg
+CompilerWarnings Suspend
+
 
 // Påske søndag: Forårsjævndøgn -> Fuldmåne -> Søndag
 

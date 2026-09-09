@@ -61,6 +61,12 @@ Use FdxField.utl // FDX Field things
 Use Dates.nui    // Date routines (No User Interface)
 Use Output.utl   // Sequential output to whatever
 Use ErrorHnd.nui // cErrorHandlerRedirector class and oErrorHandlerQuiet object (No User Interface)
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+// Reaches one package first, which is therefore compiled quietly too: aps.pkg (this package's own file)
+CompilerWarnings Suspend
+
 //  Use LogFile.nui  // Class for handling a log file (No User Interface)
 //
 //  object oVMLogFile is a cLogFile

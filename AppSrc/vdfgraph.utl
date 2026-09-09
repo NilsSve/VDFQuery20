@@ -158,6 +158,12 @@ Function Grph_OemToChar Global String OemStr Returns String
 End_Function
 
 Use version.nui
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+// Reaches one package first, which is therefore compiled quietly too: cWinControl.pkg
+CompilerWarnings Suspend
+
 
 Define GRAPH$TEST for 0
 #COMMAND GRAPH$SHOWLN

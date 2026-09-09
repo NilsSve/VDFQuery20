@@ -22,6 +22,12 @@ Use Seq_Chnl.pkg     // Defines global sequential device management operations (
 Use Language.pkg // Default language setup
 Use API_Attr.nui // Functions for querying API attributes (No User Interface)
 Use Strings.nui  // String manipulation for VDF (No User Interface)
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+// Reaches one package first, which is therefore compiled quietly too: aps.pkg and file_dlg.pkg (aps.pkg is this package's own file)
+CompilerWarnings Suspend
+
 
 // ===========================================================================
 //          LANGUAGE DEPENDANT TEXT CONSTANTS

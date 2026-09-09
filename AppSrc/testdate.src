@@ -12,6 +12,11 @@ Use VdfBase.pkg
 
 Use aps.pkg        // Auto Position and Sizing classes for Visual DataFlex
 Use Dates.utl  // Date functions
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+CompilerWarnings Suspend
+
 
 on_key key_ctrl+key_d send request_popup to (popup_calendar(self))
 

@@ -27,6 +27,11 @@ Use Dynamo.utl   // Dynamic creation of objects for VDF
 Use DataView.utl // Classes for analyzing index definitions
 Use Buttons.utl  // Button texts
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes (No User Interface)
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+CompilerWarnings Suspend
+
 
 // define AUTOPRMT$DEBUG
 

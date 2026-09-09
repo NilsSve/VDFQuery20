@@ -53,6 +53,12 @@ Define hlpid.VdfQuery for 5000
  Define ALIGN_LEFT  for 0
  DEFINE ALIGN_RIGHT for 1
 #ENDIF
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+// Reaches one package first, which is therefore compiled quietly too: Query.nui (this package's own file)
+CompilerWarnings Suspend
+
 
 // *** A few functions ****************************************************
 

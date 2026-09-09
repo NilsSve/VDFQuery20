@@ -1,3 +1,8 @@
+// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
+// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
+// and ends with this file; it sits below the Use block so nothing above it is affected.
+CompilerWarnings Suspend
+
 // Use Createobj.nui // Function create_object_within_parent
 //
 // This function will create an object of class liClass as if it was nested
