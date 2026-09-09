@@ -363,7 +363,9 @@ function DBMS_TablePath global integer liFile returns string
   function_return lsRval
 end_function
 
-Use WinBase.pkg
+// DF26: winbase.pkg is obsolete and can simply be REMOVED - its functionality moved into the runtime,
+// so this is a deletion rather than a class rewrite. Kept commented as a record.
+// Use WinBase.pkg
 // This one probably requires the file to open?
 function DBMS_Rootname_Path global integer liFile returns string
   integer liType

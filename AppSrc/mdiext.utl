@@ -36,6 +36,13 @@
   // CompilerWarnings Suspend
 #ENDIF
 
+// DF26: deliberately ABOVE the Use lines below, unlike this package's other Suspend directives.
+// The obsolete DataFlex packages they pull in report 4536 while DataFlex's own files compile, so
+// nothing placed after the Use can reach them. Their classes are what this package subclasses and
+// will not be lifted, so those messages are permanent and un-actionable. A consuming workspace
+// loses those compiler rows too; Deep Scan still reports this folder as library code.
+CompilerWarnings Suspend
+
 Use Dfmainbt.pkg  // Standard dfMain_ButtonBar (DAC)
 Use Dfmainst.pkg  // Standard Status bar class (DAC)
 Use fieldinf.pkg  // Global field info objects

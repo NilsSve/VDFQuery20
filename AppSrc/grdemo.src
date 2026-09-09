@@ -4,6 +4,13 @@ Use aps.pkg         // Auto Positioning and Sizing classes for VDF
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
   // CompilerWarnings Suspend
 #ENDIF
+// DF26: deliberately ABOVE the Use lines below, unlike this package's other Suspend directives.
+// The obsolete DataFlex packages they pull in report 4536 while DataFlex's own files compile, so
+// nothing placed after the Use can reach them. Their classes are what this package subclasses and
+// will not be lifted, so those messages are permanent and un-actionable. A consuming workspace
+// loses those compiler rows too; Deep Scan still reports this folder as library code.
+CompilerWarnings Suspend
+
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>170) // If 17.1 or higher
     Set_StrictEval to True // Make the runtime check for un-managed string eval's
@@ -2563,11 +2570,6 @@ Object Main is a Panel
     // Dragable objects
     // *********************************************************************
     use diagram.nui
-// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
-// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
-// and ends with this file; it sits below the Use block so nothing above it is affected.
-CompilerWarnings Suspend
-
     activate_view run_test31 for oGraphExample31
     object oGraphExample31 is a aps.view label "Dragable objects (31)"
       on_key KCANCEL send close_panel

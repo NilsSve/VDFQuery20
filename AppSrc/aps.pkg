@@ -88,6 +88,13 @@ Use cTextEdit.pkg
   // CompilerWarnings Suspend
 #ENDIF
 
+// DF26: deliberately ABOVE the Use lines below, unlike this package's other Suspend directives.
+// The obsolete DataFlex packages they pull in report 4536 while DataFlex's own files compile, so
+// nothing placed after the Use can reach them. Their classes are what this package subclasses and
+// will not be lifted, so those messages are permanent and un-actionable. A consuming workspace
+// loses those compiler rows too; Deep Scan still reports this folder as library code.
+CompilerWarnings Suspend
+
 Use Dftxtwin.pkg // dbedit
 Use Dfsellst.pkg // dbList
 Use Dftable.pkg  // dbGrid
@@ -137,11 +144,6 @@ Define APS$SPOOKY_WIDTH_CORR    for 1 // Add to field width if 4N0. Spooky indee
 
   Use Files.nui
 #ENDIF
-// DF26: the obsolete-construct warnings below are deliberate. VDFQuery20 is a migration aid
-// and is not developed further, so they are noise rather than a worklist. Suspend is one-way
-// and ends with this file; it sits below the Use block so nothing above it is affected.
-CompilerWarnings Suspend
-
 
 // Relative location of objects:
 define SL_DOWN                             for -1

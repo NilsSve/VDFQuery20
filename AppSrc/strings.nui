@@ -556,7 +556,9 @@ end_function
 // If function ConvertChar is not already defined we define it here:
 #IFDEF get_ConvertChar
 #ELSE
- use WinBase.pkg
+ // DF26: winbase.pkg is obsolete and can simply be REMOVED - its functionality moved into the runtime,
+ // so this is a deletion rather than a class rewrite. Kept commented as a record.
+ // use WinBase.pkg
  Function ConvertChar Global integer bToAnsi String sString Returns String
    pointer psString
    integer iVoid bIsCString
