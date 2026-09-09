@@ -136,7 +136,7 @@ end_function
 
 if dfFalse begin
   DBMS_OpenError: move DBMS_DRIVER_ERROR to windowindex // DBMS_DRIVER_ERROR is 0
-  return
+  Gosub_Return
 end
 
 //> This function is used to find out if a file is currently open. If not

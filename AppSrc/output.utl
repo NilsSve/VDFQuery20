@@ -349,7 +349,7 @@ define FILEEXISTS_PROMPT    for 3 // Ask the operator
 //          BASIC OUTPUT CLASS
 // ===========================================================================
 
-indicator output$move_up?
+boolean   output$move_up
 string    output$code
 string    output$symbollist 255
 integer   output$idx
@@ -360,8 +360,8 @@ integer   seq.object#
   #REPLACE code_symbol!1 !2
   #REPLACE codebuild!Zt !2
   define idx!1
-  [ output$move_up?] if output$idx eq idx!1 move gl_code!1 to output$code
-  [~output$move_up?] if output$idx eq idx!1 move output$code to gl_code!1
+  if (output$move_up and (output$idx = idx!1)) move gl_code!1 to output$code
+  if (not(output$move_up) and (output$idx = idx!1)) move output$code to gl_code!1
 #ENDCOMMAND
 
 goto output$skip_definition
@@ -400,7 +400,7 @@ output$code_move:
     output.define_code _pos_pop         "<POP>"
     #REPLACE output$max_code (!Zt -1)
   End_Enumeration_List
-return
+Gosub_Return
 output$skip_definition:
 
 #COMMAND BUILD_CODE_SYMBOLS
@@ -418,12 +418,12 @@ BUILD_CODE_SYMBOLS
 #POP E$
 
 procedure output.get_code integer code#
-  indicate output$move_up? true
+  move true to output$move_up
   move code# to output$idx
   gosub output$code_move
 end_procedure
 procedure output.set_code integer code#
-  indicate output$move_up? false
+  move false to output$move_up
   move code# to output$idx
   gosub output$code_move
 end_procedure
@@ -903,20 +903,33 @@ class cBasicSequentialOutput is a cArray
     send output_image_help img# 0
   end_procedure
 
-  procedure output_image_wrap integer img# // Won't work! (BLANKFORM img#)
-    send output_image_help img# 0
-    !A [] $20A img#
-    indicate copy_122 as [ |122]
-    send output_image img#
-    !A [not copy_122] $1C4 img#
-    !A [not copy_122] $20A img#
-    indicate copy_122 as [ |122]
-    [not copy_122] repeat
-      send output_image img#
-      !A [] $20A img#
-      indicate copy_122 as [ |122]
-    [not copy_122] loop
-  end_procedure
+  // COMMENTED OUT 2026-09-09 - unreachable, and DF1-era machine code besides.
+  //
+  // Nothing sends output_image_wrap. Its only mention anywhere is inside the SEQ.OUTPUT_WRAP macro
+  // body further down this file, and nothing in the workspace invokes THAT macro - so its body is
+  // never expanded and this procedure is never reached. Its author had already recorded the verdict
+  // on the declaration line: "Won't work! (BLANKFORM img#)".
+  //
+  // The !A lines are inline DataFlex 1 machine-code opcodes, and the indicator work around them was
+  // the last use of the obsolete Indicate command and bracket-indicator expressions left in this
+  // workspace - five compiler warnings (4538) for code that cannot run. Commented rather than
+  // deleted so it stays readable and can be restored in one edit; anything restoring it needs the
+  // SEQ.OUTPUT_WRAP macro to gain a caller too, and needs the opcodes rewritten as ordinary code.
+  //
+  // procedure output_image_wrap integer img# // Won't work! (BLANKFORM img#)
+  //   send output_image_help img# 0
+  //   !A [] $20A img#
+  //   indicate copy_122 as [ |122]
+  //   send output_image img#
+  //   !A [not copy_122] $1C4 img#
+  //   !A [not copy_122] $20A img#
+  //   indicate copy_122 as [ |122]
+  //   [not copy_122] repeat
+  //     send output_image img#
+  //     !A [] $20A img#
+  //     indicate copy_122 as [ |122]
+  //   [not copy_122] loop
+  // end_procedure
 
   procedure write.i string str# integer do_headers#
     integer header_img# subheader_img# onceonly_img# pagecount# pageend#

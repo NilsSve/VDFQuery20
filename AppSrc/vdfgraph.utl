@@ -340,20 +340,20 @@ if DFFALSE begin // Do not execution this on program start up.
       move (DeleteObject(gr$hCurrentTemp)) to gr$Void
       graph_res$showln ("DeleteObject 2 "+string(gr$Void))
     end
-  return
+  Gosub_Return
   vdfgraph$DeletePreviousTTFont:
     if (gr$hCurrentTTFont <> 0) begin
       move (SelectObject(gr$hCurrentDC,gr$PreviousFont)) to gr$Void
       move (DeleteObject(gr$hCurrentTTFont)) to gr$Void
       graph_res$showln ("DeleteObject 6 "+string(gr$Void))
     end
-  return
+  Gosub_Return
   vdfgraph$PreparePoint:
     gosub vdfgraph$Update_GDI_Objects
     get value of gr$CPU$RAM item gr$CPU$PC to gr$CoordXY1#
     gosub vdfgraph$ConvertToGUI1
     increment gr$CPU$PC
-  return
+  Gosub_Return
   vdfgraph$Prepare2Points:
     gosub vdfgraph$Update_GDI_Objects
     get value of gr$CPU$RAM item gr$CPU$PC to gr$CoordXY1#
@@ -362,17 +362,17 @@ if DFFALSE begin // Do not execution this on program start up.
     get value of gr$CPU$RAM item gr$CPU$PC to gr$CoordXY2#
     increment gr$CPU$PC
     gosub vdfgraph$ConvertToGUI2
-  return
+  Gosub_Return
   vdfgraph$ConvertToGui1:
     move (integer(hi(gr$CoordXY1#)*gr$GuiSizeX#/gr$X_Range)+gr$GuiOffsetX#*65536+(low(gr$CoordXY1#)*gr$GuiSizeY#/gr$Y_Range)+gr$GuiOffsetY#) to gr$CoordXY1#
-  return
+  Gosub_Return
   vdfgraph$ConvertToGui2:
     move (integer(hi(gr$CoordXY2#)*gr$GuiSizeX#/gr$X_Range)+gr$GuiOffsetX#*65536+(low(gr$CoordXY2#)*gr$GuiSizeY#/gr$Y_Range)+gr$GuiOffsetY#) to gr$CoordXY2#
-  return
+  Gosub_Return
   vdfgraph$ConvertToVirtual:
     if (gr$CoordXY1# < 0) move 0 to gr$CoordXY1#
     move (integer(hi(gr$CoordXY1#)-gr$GuiOffsetX#*gr$X_Range/gr$GuiSizeX#)*65536+(low(gr$CoordXY1#)-gr$GuiOffsetY#*gr$Y_Range/gr$GuiSizeY#)) to gr$CoordXY1#
-  return
+  Gosub_Return
 end
 
 #COMMAND vdfgraph$Procedure_OneArg
@@ -1961,7 +1961,7 @@ if dfFalse begin // Do not execution this on program start up.
     move (gr$yHiValue-gr$yConvValue*gr$yFactor+gr$xCoordMin) to gr$yConvValueTemp
     move (gr$xConvValue-gr$xLowValue*gr$xFactor+gr$yCoordMin) to gr$yConvValue
     move gr$yConvValueTemp to gr$xConvValue
-  return
+  Gosub_Return
 end
 
 object oGridStyles is an array

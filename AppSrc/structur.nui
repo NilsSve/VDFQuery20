@@ -42,7 +42,7 @@ integer cRestructurer#
 if dfFalse begin
   cRestructurer_Error:
     send structure_error to cRestructurer#
-  return
+  Gosub_Return
 end
 
 enumeration_list

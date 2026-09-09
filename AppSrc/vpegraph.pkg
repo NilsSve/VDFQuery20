@@ -17,13 +17,13 @@ If (found and (Not(found))) begin
       send vpe_SetHatchColor to oVPE# gr$FillColor
       move 0 to gr$BrushDirty
     end
-  return
+  Gosub_Return
   vpegraph$PreparePoint:
     gosub vpegraph$Update_GDI_Objects
     get value of gr$CPU$RAM item gr$CPU$PC to gr$CoordXY1#
     gosub vdfgraph$ConvertToGUI1
     increment gr$CPU$PC
-  return
+  Gosub_Return
   vpegraph$Prepare2Points:
     gosub vpegraph$Update_GDI_Objects
     get value of gr$CPU$RAM item gr$CPU$PC to gr$CoordXY1#
@@ -32,7 +32,7 @@ If (found and (Not(found))) begin
     get value of gr$CPU$RAM item gr$CPU$PC to gr$CoordXY2#
     increment gr$CPU$PC
     gosub vdfgraph$ConvertToGUI2
-  return
+  Gosub_Return
 end
 
 class VpeGraphicArea is a GraphicArea

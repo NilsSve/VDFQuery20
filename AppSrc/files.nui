@@ -564,7 +564,7 @@ end_function
 
 If (found and (Not(found))) begin // Sneaky way of skipping code
   files.no$err: // This serves as an empty low-level error handler routine
-  return
+  Gosub_Return
 end
 
 //> Function SEQ_FileModTime returns the last modified stamp of a file
