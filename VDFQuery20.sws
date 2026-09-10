@@ -10,7 +10,7 @@
     "df": 26.0,
     "package": {
         "df-min": 26.0,
-        "version": "20.0.0"
+        "version": "20.1.0"
     },
     "projects": [
         "dbquery.src",
