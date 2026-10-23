@@ -3,7 +3,7 @@
         {
             "source": "https://github.com/NilsSve/Library-vwin32fh.git",
             "sws": "StudioLibrary/vWin32fh-Library-DF26.0.sws",
-            "version": "5432741c37c80be755e78f5f9d45ba8329fddcaf"
+            "version": "^1.0.0"
         }
     ],
     "description": "VDFQuery for DataFlex 26: Sture Andersen's DataFlex 20 port of the legacy VDFQuery library, kept as a migration aid. This fork ships no vwin32fh copy of its own and depends on the vwin32fh package instead.",
