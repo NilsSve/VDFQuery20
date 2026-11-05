@@ -15,43 +15,43 @@ Use Strings.nui  // String manipulation for VDF
 Use buttons.utl
 Use cProcessStatusPanel.pkg
 
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
  Define t.Wait.Question    for "Vraag"
  Define t.Wait.Cancel      for "Operatie afbreken?"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH // 03/10/2002 25/01/2004 Pepe Guimar∆es Moose Software  pg@moose-software.com
+#IF VDFQ_Language=Language$Espanol // 03/10/2002 25/01/2004 Pepe Guimar∆es Moose Software  pg@moose-software.com
  Define t.Wait.Question    for "Pregunta"
  Define t.Wait.Cancel      for "®Cancelar Operaci¢n?"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
  Define t.Wait.Question    for "Question"
  Define t.Wait.Cancel      for "Cancel operation?"
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  Define t.Wait.Question    for "SpõrgsmÜl"
  Define t.Wait.Cancel      for "ùnsker du at afbryde?"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH
+#IF VDFQ_Language=Language$Svenska
  Define t.Wait.Question    for "Question"
  Define t.Wait.Cancel      for "Cancel operation?"
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN   // 22.04.1999 torkild.resheim@emmaedb.no
+#IF VDFQ_Language=Language$Norsk   // 22.04.1999 torkild.resheim@emmaedb.no
  Define t.Wait.Question    for "SpõrsmÜl"
  Define t.Wait.Cancel      for "Avbryt jobben?"
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN
+#IF VDFQ_Language=Language$Deutsch
  Define t.Wait.Question    for "Frage"
  Define t.Wait.Cancel      for "Verarbeitung abbrechen?"
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE
+#IF VDFQ_Language=Language$Portugues
  Define t.Wait.Question    for "Confirme"
  Define t.Wait.Cancel      for "Cancelar operaá∆o?"
 #ENDIF
-#If LNG_DEFAULT=LNG_FRENCH // by Arnaud Mallick (Fr) (Arnaud.mallick@wanadoo.fr)
+#If VDFQ_Language=Language$Francais // by Arnaud Mallick (Fr) (Arnaud.mallick@wanadoo.fr)
  Define t.Wait.Question    for "Question"
  Define t.Wait.Cancel      for "Annuler opÇration?"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN // 16/10/2002 Paolo Zanni CO.AS.CO.
+#IF VDFQ_Language=Language$Italiano // 16/10/2002 Paolo Zanni CO.AS.CO.
  Define t.Wait.Question    for "Conferma"
  Define t.Wait.Cancel      for "Annulla operazione?"
 #ENDIF

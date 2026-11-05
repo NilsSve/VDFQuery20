@@ -33,7 +33,7 @@ Integer Vpe$ReturnGrb#
 Use Files.utl    // Utilities for handling file related stuff
 Use WinUser.nui  // User_Windows_User_Name function
 Use FList.nui    // A lot of FLIST- procedures and functions
-Use Language.pkg
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 Use Html.utl
 
 //External_Function VpeSetPictureEmbedInDoc     "VpeSetPictureEmbedInDoc"     VPE_DLL DWord hdoc Integer on_off Returns Integer // New for VPE4.x
@@ -363,34 +363,34 @@ Class cVPE is an Array
     Move (VpeSetScalePercent(hDoc,100)) to Vpe$ReturnGrb#                  // Scale 100%.
     Move (VpeSetGuiTheme(hDoc, VGUI_THEME_OFFICE2003)) to Vpe$ReturnGrb#   // Office 2003 Theme.
 
-    #IF LNG_DEFAULT=LNG_DUTCH
+    #IF VDFQ_Language=Language$Nederlands
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_DUTCH     )) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
-    #IF LNG_DEFAULT=LNG_ITALIAN
+    #IF VDFQ_Language=Language$Italiano
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_ITALIAN   )) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
-    #IF LNG_DEFAULT=LNG_SPANISH
+    #IF VDFQ_Language=Language$Espanol
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_SPANISH   )) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
-    #IF LNG_DEFAULT=LNG_ENGLISH
+    #IF VDFQ_Language=Language$English
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_ENGLISH   )) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
-    #IF LNG_DEFAULT=LNG_DANISH
+    #IF VDFQ_Language=Language$Dansk
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_DANISH    )) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
-    #IF LNG_DEFAULT=LNG_SWEDISH
+    #IF VDFQ_Language=Language$Svenska
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_SWEDISH   )) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
-    #IF LNG_DEFAULT=LNG_NORWEGIAN
+    #IF VDFQ_Language=Language$Norsk
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_NORWEGIAN )) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
-    #IF LNG_DEFAULT=LNG_GERMAN
+    #IF VDFQ_Language=Language$Deutsch
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_GERMAN    )) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
-    #IF LNG_DEFAULT=LNG_PORTUGUESE
+    #IF VDFQ_Language=Language$Portugues
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_PORTUGUESE)) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
-    #IF LNG_DEFAULT=LNG_FRENCH
+    #IF VDFQ_Language=Language$Francais
     Move (VpeSetGuiLanguage(hDoc, VGUI_LANGUAGE_FRENCH    )) to Vpe$ReturnGrb#  // Forced to Dutch language.
     #ENDIF
 

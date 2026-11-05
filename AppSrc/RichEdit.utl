@@ -25,7 +25,7 @@
 Use Aps.pkg
 Use cToolbar.Pkg
 Use cImageList.Pkg
-Use Language.pkg
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 Use tWinStructs.pkg
 
 Register_Object oNumbering
@@ -98,7 +98,7 @@ Object oRichEditFind is a ModalPanel
 
 
     Object oSearchText is a Form
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Sõg:"
 #ELSE
         Set Label to "What:"
@@ -161,7 +161,7 @@ Object oRichEditFind is a ModalPanel
     End_Object    // oFindButton
 
     Object oMatchWholeWord is a CheckBox
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Hele ord"
 #ELSE
         Set Label to "Match Whole Word"
@@ -178,7 +178,7 @@ Object oRichEditFind is a ModalPanel
     End_Object    // oMatchWholeWord
 
     Object oMatchCase is a CheckBox
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Forskel pÜ store og smÜ bogstaver"
 #ELSE
         Set Label to "Match Case"
@@ -195,7 +195,7 @@ Object oRichEditFind is a ModalPanel
     End_Object    // oMatchCase
 
     Object oStartAtTop is a CheckBox
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Start fra top"
 #ELSE
         Set Label to "Start at Top of Control"
@@ -212,7 +212,7 @@ Object oRichEditFind is a ModalPanel
     End_Object    // oStartAtTop
 
     Object oCancelButton is a Button
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Luk"
 #ELSE
         Set Label to "&Close"
@@ -252,7 +252,7 @@ Object oRichEditFindReplace is a ModalPanel
 
 
     Set Border_Style to Border_Thick
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
     Set Label to "Sõg og erstat"
 #ELSE
     Set Label to "Find & Replace"
@@ -266,7 +266,7 @@ Object oRichEditFindReplace is a ModalPanel
 
 
     Object oSearchText is a Form
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Sõg:"
 #ELSE
         Set Label to "What:"
@@ -287,7 +287,7 @@ Object oRichEditFindReplace is a ModalPanel
     End_Object    // oSearchText
 
     Object oReplaceText is a Form
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Erstat med:"
 #ELSE
         Set Label to "Replace with:"
@@ -308,7 +308,7 @@ Object oRichEditFindReplace is a ModalPanel
     End_Object    // oReplaceText
 
     Object oFindButton is a Button
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "&Find nëste"
 #ELSE
         Set Label to "&Find Next"
@@ -354,7 +354,7 @@ Object oRichEditFindReplace is a ModalPanel
     End_Object    // oFindButton
 
     Object oReplaceButton is a Button
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Erstat"
 #ELSE
         Set Label to "&Replace"
@@ -392,7 +392,7 @@ Object oRichEditFindReplace is a ModalPanel
     End_Object    // oReplaceButton
 
     Object oReplaceAllButton is a Button
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Erstal &alle"
 #ELSE
         Set Label to "Replace &All"
@@ -416,7 +416,7 @@ Object oRichEditFindReplace is a ModalPanel
     End_Object    // oReplaceAllButton
 
     Object oMatchWholeWord is a CheckBox
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Kun hele ord"
 #ELSE
         Set Label to "Match Whole Word"
@@ -433,7 +433,7 @@ Object oRichEditFindReplace is a ModalPanel
     End_Object    // oMatchWholeWord
 
     Object oMatchCase is a CheckBox
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Forskel pÜ smÜ og store bogstaver"
 #ELSE
         Set Label to "Match Case"
@@ -450,7 +450,7 @@ Object oRichEditFindReplace is a ModalPanel
     End_Object    // oMatchCase
 
     Object oStartAtTop is a CheckBox
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Start fra top"
 #ELSE
         Set Label to "Start at Top of Control"
@@ -467,7 +467,7 @@ Object oRichEditFindReplace is a ModalPanel
     End_Object    // oStartAtTop
 
     Object oCancelButton is a Button
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
         Set Label to "Luk"
 #ELSE
         Set Label to "&Close"
@@ -497,7 +497,7 @@ End_Object    // oRichEditFindReplace
 
 
 Object oRTFOpenDialog1 is a OpenDialog
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
     Set Dialog_Caption to "Select a file"
     Set Filter_String to "RTF Documents (*.rtf)|*.rtf|All Files (*.*)|*.*"
 #ELSE
@@ -510,7 +510,7 @@ End_Object    // oOpenDialog1
 
 Object oRTFSaveAsDialog1 is a SaveAsDialog
     Set FileMustExist_State to FALSE
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
     Set Filter_String to "RTF dokumenter (*.rtf)|*.rtf"
 #ELSE
     Set Filter_String to "RTF Documents (*.rtf)|*.rtf"
@@ -601,7 +601,7 @@ class RTF_NumberingMenu is a DFBaseEditPullDown
     procedure end_construct_object
       forward send end_construct_object
     // drop down menu items for oNumbering
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
     Send Add_Item msg_OnNumbersNone "Ingen"
     Set Aux_Value 0 To self
     Send Add_Item msg_OnNumbersArabicNumbers "Arabiske tal"
@@ -699,7 +699,7 @@ class cRTF_ToolBar is a cToolBar
       Set phoImageList To oImages
 
       Object oNew is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Nyt tomt dokument (Ctrl+N)'
           Set psStatusHelp To 'Opertter et nyt tomt dokument (fjerner nuvërende indhold)'
 #ELSE
@@ -711,7 +711,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oOpen is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'èbn (Ctrl+O)'
           Set psStatusHelp To 'èbner et dokument'
 #ELSE
@@ -723,7 +723,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oSave is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip to 'Gem (Ctrl+S)'
           Set psStatusHelp to 'Gemmer det aktuelle dokument'
 #ELSE
@@ -735,7 +735,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oBold is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip to 'Fed skrift(Ctrl+B)'
           Set psStatusHelp to 'Skifter den markerede tekst mellem fed og normel'
 #ELSE
@@ -747,7 +747,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oItalics is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Kursiv (Ctrl+I)'
           Set psStatusHelp To 'Skifter den markerede tekst mellem kursiv og normel'
 #ELSE
@@ -759,7 +759,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oUnderline is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Understregning (Ctrl+U)'
           Set psStatusHelp To 'Skifter den markerede tekst mellem understreget og normel'
 #ELSE
@@ -775,7 +775,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oAlignLeft is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Juster til venstre'
           Set psStatusHelp To 'Venstre-justerer den valgte tekst'
 #ELSE
@@ -787,7 +787,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oAlignCenter is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Centrer'
           Set psStatusHelp To 'Centrer den valgte tekst'
 #ELSE
@@ -799,7 +799,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oAlignRight is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Juster til hõjre'
           Set psStatusHelp To 'Hõjre-justerer den valgte tekst'
 #ELSE
@@ -813,7 +813,7 @@ class cRTF_ToolBar is a cToolBar
       Object oNumbering is a cRTF_ToolbarButton
           Set peStyle To bsDropDown
           Set pbAutoSize To True
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psLabel To 'Nummerering'
           Set psTooltip To 'Nummerering'
           Set psStatusHelp To 'Tilfõjer nummerering til den valgte tekst'
@@ -828,7 +828,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object  // oViews
 
       Object oBullets is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Bullets'
           Set psStatusHelp To 'Applies bullets to selected text'
 #ELSE
@@ -840,7 +840,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oOutdent is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Ryk ud'
           Set psStatusHelp To 'Ophëver indrykning pÜ den valgte tekst'
 #ELSE
@@ -852,7 +852,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oIndent is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Ryk ind'
           Set psStatusHelp To 'Indrykker den valgte tekst'
 #ELSE
@@ -868,7 +868,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oCut is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Klip (Ctrl+X)'
           Set psStatusHelp To 'Klipper den valgte tekst til udklipsholderen (Ctrl+X)'
 #ELSE
@@ -880,7 +880,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oCopy is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Kopier (Ctrl+C)'
           Set psStatusHelp To 'Kopierer den valgte tekst til udklipsholderen (Ctrl+C)'
 #ELSE
@@ -892,7 +892,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oPaste is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Sët ind (Ctrl+V)'
           Set psStatusHelp To 'Indsëtter indholdet af udklipsholderen (Ctrl+V)'
 #ELSE
@@ -904,7 +904,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oUndo is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Fortryd (Ctrl+Z)'
           Set psStatusHelp To 'Fortryder den sidste handling'
 #ELSE
@@ -916,7 +916,7 @@ class cRTF_ToolBar is a cToolBar
       End_Object
 
       Object oRedo is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Annuller fortryd (Ctrl+Y)'
           Set psStatusHelp To 'Annullerer fortryd'
 #ELSE
@@ -928,7 +928,7 @@ class cRTF_ToolBar is a cToolBar
       end_object
 
       object oFind is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Find Tekst (Ctrl+F)'
           Set psStatusHelp To 'Sõger tekst i dokumentet'
 #ELSE
@@ -940,7 +940,7 @@ class cRTF_ToolBar is a cToolBar
       end_object
 
       object oFindReplace is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Sõg && erstat (Ctrl+H)'
           Set psStatusHelp To 'Erstatter en tekst i dokumentet'
 #ELSE
@@ -952,7 +952,7 @@ class cRTF_ToolBar is a cToolBar
       end_object
 
       Object oOutdent is a cRTF_ToolbarButton
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
           Set psTooltip To 'Font og fontstõrrelse'
           Set psStatusHelp To 'Sëtter font og fontstõrrelse pÜ den valgte tekst'
 #ELSE
@@ -970,7 +970,7 @@ End_class // cRTF_ToolBar
         class cRTF_FloatMenu is a FloatingPopupMenu
           procedure construct_object // cRTF_FloatMenu
             forward send construct_object
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
             Send Add_Item msg_Undo "&Fortryd"
             Send Add_Item msg_Redo "&Annuller fortryd"
             Send Add_Item msg_None "" // create a spacer
@@ -1199,7 +1199,7 @@ class cRTF_Mixin is a mixin
             end
             // if there are changes, ask user whether to abandon them or not
             else begin
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
                 move (YesNo_Box("Teksten er ëndret. Fortryd rettelser og Übn et nyt dokument?", "Fortryd retteler?", MB_DEFBUTTON2)) to eResponse
 #ELSE
                 move (YesNo_Box("Changes Exist. Abandon changes and open new document?", "Abandon Changes?", MB_DEFBUTTON2)) to eResponse
@@ -1292,7 +1292,7 @@ class cRTF_Mixin is a mixin
             end
             // if there are changes, ask user whether to abandon them or not
             else begin
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
                 move (YesNo_Box("Teksten er ëndret. Fortryd rettelser og Übn et nyt dokument?", "Fortryd retteler?", MB_DEFBUTTON2)) to eResponse
 #ELSE
                 move (YesNo_Box("Changes Exist. Abandon changes and open new document?", "Abandon Changes?", MB_DEFBUTTON2)) to eResponse
@@ -1351,7 +1351,7 @@ class cRTF_Mixin is a mixin
                 // select search text found
                 send SetSel iStart iSelEnd
             end
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
             else send Info_Box ("Tekster '" + sSearchText + "' ikke fundet") "Find tekst"
 #ELSE
             else send Info_Box ("Text '" + sSearchText + "' not found") "Find Text"
@@ -1382,7 +1382,7 @@ class cRTF_Mixin is a mixin
             else begin
                 get ReplaceAll sSearchText sReplaceText to iReplacementCount
                 // tell user how many replacements were made
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
                 send Info_Box (string(iReplacementCount) + " erstatninger foretaget") "Erstat alle"
 #ELSE
                 send Info_Box (string(iReplacementCount) + " replacements made") "Replace All"

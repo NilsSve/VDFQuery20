@@ -3,7 +3,7 @@ Use Driver.nui   // This package is used to load a driver DLL
 // Marcelo Nachbar da Silva [nachbar@mertechdata.com]
 
 #HEADER
-Use language.pkg    // Set default languange if not set by compiler command line
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 Use seq_chnl.pkg    // Defines global sequential device management operations (DAW)
 use buttons.utl
 use dbms.utl

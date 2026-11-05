@@ -18,7 +18,7 @@ Use Files.utl    // Utilities for handling file related stuff
 Use FDX.nui      // cFDX class
 #ENDHEADER
 
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
  define t.FDX.Btn.SelectOpen   for "Selecteer autom."          // PvM
  define t.FDX.Btn.SelectAll    for "Selecteer alles"
  define t.FDX.Btn.SelectNone   for "Selecteer niets"
@@ -31,7 +31,7 @@ Use FDX.nui      // cFDX class
  define t.FDX.RootName         for "Bestandsnaam"
  define t.FDX.Selected         for "Geselecteerd:"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH        // 03/10/2002 25/01/2004 Pepe GuimarÆes Moose Software  pg@moose-software.com
+#IF VDFQ_Language=Language$Espanol        // 03/10/2002 25/01/2004 Pepe GuimarÆes Moose Software  pg@moose-software.com
  define t.FDX.Btn.SelectOpen   for "Autoseleccionar"
  define t.FDX.Btn.SelectAll    for "Seleccionar todos"
  define t.FDX.Btn.SelectNone   for "No Seleccionar ninguno"
@@ -44,7 +44,7 @@ Use FDX.nui      // cFDX class
  define t.FDX.RootName         for "Nombre del Archivo"
  define t.FDX.Selected         for "Seleccionados:"
 #ENDIF
-#IF LNG_DEFAULT=LNG_FRENCH
+#IF VDFQ_Language=Language$Francais
  define t.FDX.Btn.SelectOpen   for "Auto select"
  define t.FDX.Btn.SelectAll    for "Select all"
  define t.FDX.Btn.SelectNone   for "Clear selection"
@@ -57,7 +57,7 @@ Use FDX.nui      // cFDX class
  define t.FDX.RootName         for "File name"
  define t.FDX.Selected         for "Selected:"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
  define t.FDX.Btn.SelectOpen   for "Auto select"
  define t.FDX.Btn.SelectAll    for "Select all"
  define t.FDX.Btn.SelectNone   for "Clear selection"
@@ -70,7 +70,7 @@ Use FDX.nui      // cFDX class
  define t.FDX.RootName         for "File name"
  define t.FDX.Selected         for "Selected:"
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  define t.FDX.Btn.SelectOpen   for "Auto valg"
  define t.FDX.Btn.SelectAll    for "V‘lg alle"
  define t.FDX.Btn.SelectNone   for "Nulstil"
@@ -83,7 +83,7 @@ Use FDX.nui      // cFDX class
  define t.FDX.RootName         for "Fil navn"
  define t.FDX.Selected         for "Antal valgt:"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH
+#IF VDFQ_Language=Language$Svenska
  define t.FDX.Btn.SelectOpen   for "Automatiskt val"
  define t.FDX.Btn.SelectAll    for "V„lj alla"
  define t.FDX.Btn.SelectNone   for "Nollst„ll val"
@@ -96,7 +96,7 @@ Use FDX.nui      // cFDX class
  define t.FDX.RootName         for "Fil namn"
  define t.FDX.Selected         for "Antal valda:"
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN   // 22.04.1999 torkild.resheim@emmaedb.no
+#IF VDFQ_Language=Language$Norsk   // 22.04.1999 torkild.resheim@emmaedb.no
  define t.FDX.Btn.SelectOpen   for "Automatisk valg"
  define t.FDX.Btn.SelectAll    for "Velg alle"
  define t.FDX.Btn.SelectNone   for "Velg ingen"
@@ -109,7 +109,7 @@ Use FDX.nui      // cFDX class
  define t.FDX.RootName         for "Filnavn"
  define t.FDX.Selected         for "Utvalg:"
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN
+#IF VDFQ_Language=Language$Deutsch
  define t.FDX.Btn.SelectOpen   for "Auto Auswahl"
  define t.FDX.Btn.SelectAll    for "Alles ausw„hlen"
  define t.FDX.Btn.SelectNone   for "Ausw. aufheben"
@@ -122,7 +122,7 @@ Use FDX.nui      // cFDX class
  define t.FDX.RootName         for "File Name"
  define t.FDX.Selected         for "Ausgew„hlt:"
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE    // by Claudio Rossoni (SP-Brasil)
+#IF VDFQ_Language=Language$Portugues    // by Claudio Rossoni (SP-Brasil)
  define t.FDX.Btn.SelectOpen   for "Auto seleciona"
  define t.FDX.Btn.SelectAll    for "Seleciona tudo"
  define t.FDX.Btn.SelectNone   for "Retira sele‡Æo"
@@ -135,7 +135,7 @@ Use FDX.nui      // cFDX class
  define t.FDX.RootName         for "Nome Base"
  define t.FDX.Selected         for "Selecionados:"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN
+#IF VDFQ_Language=Language$Italiano
  define t.FDX.Btn.SelectOpen   for "Selezione automatica"
  define t.FDX.Btn.SelectAll    for "Seleziona tutto"
  define t.FDX.Btn.SelectNone   for "Pulisci selezioni"

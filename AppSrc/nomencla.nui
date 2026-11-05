@@ -1,9 +1,9 @@
 // Use Nomencla.nui // Define nomenclature
 
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes (No User Interface)
-Use Language.pkg     // Default language setup
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
   define t.nomencla.record           for "record"                                 // PvM
   define t.nomencla.save_changes     for "Bewaar wijzigingen voor dit #?"         // PvM
   define t.nomencla.create_new       for "Aanmaken nieuw #?"                      // PvM
@@ -12,7 +12,7 @@ Use Language.pkg     // Default language setup
   define t.nomencla.cpy_no_active    for "Geen # om te kopiâren"                  // PvM
   define t.nomencla.cpy_save_before  for "Bewaar # voor het kopiâren"             // PvM
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH                 // 26/01/2004 Pepe Guimar∆es  Moose Software pg@moose-software.com
+#IF VDFQ_Language=Language$Espanol                 // 26/01/2004 Pepe Guimar∆es  Moose Software pg@moose-software.com
   define t.nomencla.record           for "registro"
   define t.nomencla.save_changes     for "®Grabar cambios de este #?"
   define t.nomencla.create_new       for "®Crear nuevo #?"
@@ -21,7 +21,7 @@ Use Language.pkg     // Default language setup
   define t.nomencla.cpy_no_active    for "No hay # para copiar"
   define t.nomencla.cpy_save_before  for "Grabar # antes de copiar"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
   define t.nomencla.record           for "record"
   define t.nomencla.save_changes     for "Save changes to this #?"
   define t.nomencla.create_new       for "Create new #?"
@@ -30,7 +30,7 @@ Use Language.pkg     // Default language setup
   define t.nomencla.cpy_no_active    for "No # to copy"
   define t.nomencla.cpy_save_before  for "Save # before copying"
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
   define t.nomencla.record           for "post"
   define t.nomencla.save_changes     for "Gem ëndringer pÜ denne #?"
   define t.nomencla.create_new       for "Opret ny #?"
@@ -39,7 +39,7 @@ Use Language.pkg     // Default language setup
   define t.nomencla.cpy_no_active    for "Ingen # at kopiere"
   define t.nomencla.cpy_save_before  for "Gem # fõr kopiering"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH
+#IF VDFQ_Language=Language$Svenska
   define t.nomencla.record           for "record"
   define t.nomencla.save_changes     for "Save changes to this #?"
   define t.nomencla.create_new       for "Create new #?"
@@ -48,7 +48,7 @@ Use Language.pkg     // Default language setup
   define t.nomencla.cpy_no_active    for "No # to copy"
   define t.nomencla.cpy_save_before  for "Save # before copying"
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN
+#IF VDFQ_Language=Language$Norsk
   define t.nomencla.record           for "record"
   define t.nomencla.save_changes     for "Save changes to this #?"
   define t.nomencla.create_new       for "Create new #?"
@@ -57,7 +57,7 @@ Use Language.pkg     // Default language setup
   define t.nomencla.cpy_no_active    for "No # to copy"
   define t.nomencla.cpy_save_before  for "Save # before copying"
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN
+#IF VDFQ_Language=Language$Deutsch
   define t.nomencla.record           for "record"
   define t.nomencla.save_changes     for "Save changes to this #?"
   define t.nomencla.create_new       for "Create new #?"
@@ -66,7 +66,7 @@ Use Language.pkg     // Default language setup
   define t.nomencla.cpy_no_active    for "No # to copy"
   define t.nomencla.cpy_save_before  for "Save # before copying"
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE
+#IF VDFQ_Language=Language$Portugues
   define t.nomencla.record           for "record"
   define t.nomencla.save_changes     for "Save changes to this #?"
   define t.nomencla.create_new       for "Create new #?"
@@ -75,7 +75,7 @@ Use Language.pkg     // Default language setup
   define t.nomencla.cpy_no_active    for "No # to copy"
   define t.nomencla.cpy_save_before  for "Save # before copying"
 #ENDIF
-#IF LNG_DEFAULT=LNG_FRENCH
+#IF VDFQ_Language=Language$Francais
   define t.nomencla.record           for "record"
   define t.nomencla.save_changes     for "Save changes to this #?"
   define t.nomencla.create_new       for "Create new #?"
@@ -84,7 +84,7 @@ Use Language.pkg     // Default language setup
   define t.nomencla.cpy_no_active    for "No # to copy"
   define t.nomencla.cpy_save_before  for "Save # before copying"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN
+#IF VDFQ_Language=Language$Italiano
   define t.nomencla.record           for "record"
   define t.nomencla.save_changes     for "Save changes to this #?"
   define t.nomencla.create_new       for "Create new #?"

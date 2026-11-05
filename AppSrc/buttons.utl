@@ -1,7 +1,7 @@
 // Use Buttons.utl  // Button texts
-Use Language.pkg
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
  define t.btn.apply      for "Apply"                       // LNG_ENGLISH
  define t.btn.help       for "Help"                        // LNG_ENGLISH
  define t.btn.ok         for "OK"                          // LNG_ENGLISH
@@ -38,7 +38,7 @@ Use Language.pkg
  define t.key.return     for "Return"                      // LNG_ENGLISH
  define t.key.esc        for "Esc"                         // LNG_ENGLISH
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN
+#IF VDFQ_Language=Language$Italiano
  define t.btn.apply      for "Applica"                     // LNG_ITALIAN
  define t.btn.help       for "Aiuto"                       // LNG_ITALIAN
  define t.btn.ok         for "OK"                          // LNG_ITALIAN
@@ -75,7 +75,7 @@ Use Language.pkg
  define t.key.return     for "Return"                      // LNG_ITALIAN
  define t.key.esc        for "Esc"                         // LNG_ITALIAN
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  define t.btn.apply      for "Anvend"                      // LNG_DANISH
  define t.btn.help       for "Hj‘lp"                       // LNG_DANISH
  define t.btn.ok         for "OK"                          // LNG_DANISH
@@ -112,7 +112,7 @@ Use Language.pkg
  define t.key.return     for "Retur"                       // LNG_DANISH
  define t.key.esc        for "Esc"                         // LNG_DANISH
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH
+#IF VDFQ_Language=Language$Svenska
  define t.btn.apply      for "Apply"                       // LNG_SWEDISH
  define t.btn.help       for "Hj„lp"                       // LNG_SWEDISH
  define t.btn.ok         for "OK"                          // LNG_SWEDISH
@@ -149,7 +149,7 @@ Use Language.pkg
  define t.key.return     for "Retur"                       // LNG_SWEDISH
  define t.key.esc        for "Esc"                         // LNG_SWEDISH
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN
+#IF VDFQ_Language=Language$Norsk
  define t.btn.apply      for "Apply"                       // LNG_NORWEGIAN
  define t.btn.help       for "Hjelp"                       // LNG_NORWEGIAN
  define t.btn.ok         for "OK"                          // LNG_NORWEGIAN
@@ -186,7 +186,7 @@ Use Language.pkg
  define t.key.return     for "Retur"                       // LNG_NORWEGIAN
  define t.key.esc        for "Esc"                         // LNG_NORWEGIAN
 #ENDIF
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
  define t.btn.apply      for "Toepassen"                   // LNG_DUTCH         // PvM
  define t.btn.help       for "Help"                        // LNG_DUTCH
  define t.btn.ok         for "OK"                          // LNG_DUTCH
@@ -223,7 +223,7 @@ Use Language.pkg
  define t.key.return     for "Return"                      // LNG_DUTCH
  define t.key.esc        for "Esc"                         // LNG_DUTCH
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN
+#IF VDFQ_Language=Language$Deutsch
  define t.btn.help       for "Hilfe"                       // LNG_GERMAN
  define t.btn.ok         for "OK"                          // LNG_GERMAN
  define t.btn.continue   for "Fortsetzen"                  // LNG_GERMAN
@@ -259,7 +259,7 @@ Use Language.pkg
  define t.key.return     for "Return"                      // LNG_GERMAN
  define t.key.esc        for "Esc"                         // LNG_GERMAN
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH
+#IF VDFQ_Language=Language$Espanol
  define t.btn.apply      for "Aplicar"                     // LNG_SPANISH
  define t.btn.help       for "Ayuda"                       // LNG_SPANISH
  define t.btn.ok         for "Aceptar"                     // LNG_SPANISH
@@ -296,7 +296,7 @@ Use Language.pkg
  define t.key.return     for "Volver"                      // LNG_SPANISH
  define t.key.esc        for "Esc"                         // LNG_SPANISH
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE
+#IF VDFQ_Language=Language$Portugues
  define t.btn.apply      for "Apply"                       // LNG_PORTUGUESE
  define t.btn.help       for "Ajuda"                       // LNG_PORTUGUESE
  define t.btn.ok         for "OK"                          // LNG_PORTUGUESE
@@ -333,7 +333,7 @@ Use Language.pkg
  define t.key.return     for "Return"                      // LNG_PORTUGUESE
  define t.key.esc        for "Esc"                         // LNG_PORTUGUESE
 #ENDIF
-#If LNG_DEFAULT=LNG_FRENCH
+#If VDFQ_Language=Language$Francais
  define t.btn.apply      for "Apply"                       // LNG_FRENCH
  Define t.btn.help       For "Aide"                        // LNG_FRENCH
  Define t.btn.ok         For "OK"                          // LNG_FRENCH

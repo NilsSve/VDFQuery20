@@ -1,0 +1,16 @@
+// Use VdfqLanguage.pkg // Which language VDFQuery's own texts use
+//
+// It follows DataFlex's own setting, Language$Current (LanguageText.pkg and Language_Current.inc), so a program has one
+// language setting and not two. A copy of Language_Current.inc that the compiler finds before the installed one picks
+// another language, and DataFlex ships those files under Usr\Language.
+//
+// VDFQuery holds texts for the ten languages named below. With any other setting its texts are English. #IFSAME compares
+// the names instead of calculating with them, so a setting that was never defined takes that same path and does not stop
+// the compile: DataFlex's Czech files name Language$Czech, and LanguageText.pkg does not define it.
+Use LanguageText.pkg
+
+#IFSAME Language$Current Language$English Language$Nederlands Language$Svenska Language$Deutsch Language$Dansk Language$Portugues Language$Francais Language$Italiano Language$Espanol Language$Norsk
+ Define VDFQ_Language For Language$Current
+#ELSE
+ Define VDFQ_Language For Language$English
+#ENDIF

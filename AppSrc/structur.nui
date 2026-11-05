@@ -5,32 +5,35 @@ Use Strings.nui  // String manipulation for VDF (No User Interface)
 Use API_Attr.nui // Functions for querying API attributes (No User Interface)
 Use OpenStat.nui // cTablesOpenStatus class (formely cFileAllFiles) (No User Interface)
 
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
  define t.STRUCT.Restart for "Het programma zal nu proberen opnieuw te starten"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH  // 03/10/2002 Pepe Guimar∆es Moose Software  jec@ieee.org
+#IF VDFQ_Language=Language$Espanol  // 03/10/2002 Pepe Guimar∆es Moose Software  jec@ieee.org
  define t.STRUCT.Restart for "Programa se re-inicializar†"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
  define t.STRUCT.Restart for "The program will now attempt to re-start"
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  define t.STRUCT.Restart for "Programmet vil forsõge at genstarte"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH
+#IF VDFQ_Language=Language$Svenska
  define t.STRUCT.Restart for "Programmet forsîker nu att Üterstarta"
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN
+#IF VDFQ_Language=Language$Norsk
  define t.STRUCT.Restart for "Programmet vil forsõke Ü starte om"
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN
+#IF VDFQ_Language=Language$Deutsch
  define t.STRUCT.Restart for "Das Programm wird jetzt neu gestartet"
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE
+#IF VDFQ_Language=Language$Portugues
  define t.STRUCT.Restart for "O programa tentar† re-comeáar agora"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN
+#IF VDFQ_Language=Language$Italiano
  define t.STRUCT.Restart for "Il programma provera' a riavviarsi"
+#ENDIF
+#IF VDFQ_Language=Language$Francais
+ define t.STRUCT.Restart for "Le programme va maintenant tenter de redÇmarrer"
 #ENDIF
 
 #IFDEF Struc$ErrDescr

@@ -5,7 +5,7 @@ Use FTSWrdSp.nui // cFTS_WordSplitter class (to be used internally by cFreeText_
 Use Dates.nui    // Date routines (No User Interface)
 Use LogFile.nui  // Class for handling a log file (No User Interface)
 Use ItemProp.nui // ITEM_PROPERTY command for use within arrays
-Use Language.pkg     // Set default languange if not set by compiler command line
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 
 Use FTSData.nui // cFTS_TableAccess class.
 
@@ -25,7 +25,7 @@ enumeration_list
   define FTIS_MAX               // This is just a marker that may ne used to offset new user errors
 end_enumeration_list
 
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
   function FT_ErrorText global integer liError returns string
     if (liError=FTIS_NO_ERROR)          function_return "Ingen fejl"
     if (liError=FTIS_MISSING_VALUE)     function_return "S›gev‘rdi ikke specificeret"
@@ -214,7 +214,7 @@ class cFTS_ResultBrowser is a cArray
     integer liFile liExecTime
     get piFile.i of (phTableAccessObject(self)) FTSTABLE_SEARCH to liFile
     get_field_value liFile 7 to liExecTime // EXECUTION_TIME
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
     set psSearchTime to (NumToStr(liExecTime/1000.0,3)+" sekunder")
 #ELSE
     set psSearchTime to (NumToStr(liExecTime/1000.0,3)+" seconds")
@@ -260,7 +260,7 @@ class cFTS_ResultBrowser is a cArray
            end
          until (lbSeqEof<>0 or liLine>=liArticlesPerPage)
 
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
          move "Resultat # til # ud af #" to lsValue
 #ELSE
          move "Results # to # out of #" to lsValue

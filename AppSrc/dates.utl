@@ -82,7 +82,7 @@
 //        Currently there are sections for dutch, english, danish, swedish,
 //        norwegian, spanish, german and portuguese
 //
-//        These sections may be identified by searching the symbol LNG_DEFAULT
+//        These sections may be identified by searching the symbol VDFQ_Language
 //
 // ***********************************************************************
 Use Dates.nui    // Date routines (No User Interface)
@@ -155,7 +155,7 @@ end_procedure
     Procedure UpdateDayName
         Integer iDay
         Get _piDayNumber to iDay
-        #IF LNG_DEFAULT=LNG_DUTCH // The dutch only wants the first 2 letters of the weekday
+        #IF VDFQ_Language=Language$Nederlands // The dutch only wants the first 2 letters of the weekday
          Set Value to (Left(vdfq_DayName(iDay),2))
         #ELSE
          Set Value to (Left(vdfq_DayName(iDay),3))
@@ -234,7 +234,7 @@ end_procedure
                 set size to 12 17
                 Set location to 0 (liItm*17.6+1)
                 Set _piDayNumber to (liItm+1)
-                #IF LNG_DEFAULT=LNG_DUTCH // The dutch only wants the first 2 letters of the weekday
+                #IF VDFQ_Language=Language$Nederlands // The dutch only wants the first 2 letters of the weekday
                  Set value to (left(vdfq_DayName(liItm+1),2))
                 #ELSE
                  Set value to (left(vdfq_DayName(liItm+1),3))

@@ -12,7 +12,7 @@
 // Programmed by Sture Andersen for Sture ApS. E-mail: sture@stureaps.dk, Tel: +45 40 59 70 20
 
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes
-Use Language.pkg
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 
 define FTS_WORDCHARACTERS_DANISH  for "ABCDEFGHIJKLMNOPQRSTUVWXYZíùèéôöµê÷‡ÈÌ∑‘ﬁ„ÎabcdefghijklmnopqrstuvwxyzëõÜÑîÅ†Ç°¢£ÏÖäçïó"
 define FTS_WORDCHARACTERS_ENGLISH for "ABCDEFGHIJKLMNOPQRSTUVWXYZµê÷‡ÈÌ∑‘ﬁ„ÎabcdefghijklmnopqrstuvwxyzÅ†Ç°¢£ÏÖäçïó§"
@@ -43,7 +43,7 @@ function FTS_Parameter global integer liItm returns string
 end_function
 
 // Set up default parameters
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
   set FTS_Parameter FTS_WORDCHARACTERS   to FTS_WORDCHARACTERS_DANISH
 #ELSE
   set FTS_Parameter FTS_WORDCHARACTERS   to FTS_WORDCHARACTERS_ENGLISH

@@ -20,7 +20,7 @@ Use VdfBase.pkg // Define FMAC_VERSION and FMAC_REVISION
   // CompilerWarnings Suspend
 #ENDIF
 
-Use language.pkg // Set default languange if not set by compiler command line
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 Use seq_chnl.pkg // Defines global sequential device management operations (DAW)
 Use Base.nui     // Item_Property command, Various macros (FOR_EX...), cArray, cSet and cStack classes (No User Interface)
 Use Strings.nui  // String manipulation for VDF (No User Interface)
@@ -35,7 +35,7 @@ CompilerWarnings Suspend
 
 // Påske søndag: Forårsjævndøgn -> Fuldmåne -> Søndag
 
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
  define t.calendar.year           for "Jaar"                                           // LNG_DUTCH
  define t.calendar.month          for "Maand"                                          // LNG_DUTCH
  define t.calendar.day            for "Dag"                                            // LNG_DUTCH
@@ -64,7 +64,7 @@ CompilerWarnings Suspend
  define t.calendar.Cancel         for "Annuleren"                                      // LNG_DUTCH
  define t.calendar.Activate       for "Activeer popup kalender (Ctrl+D)"               // LNG_DUTCH
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN
+#IF VDFQ_Language=Language$Italiano
  define t.calendar.year           for "Anno"                                           // LNG_ITALIAN
  define t.calendar.month          for "Mese"                                           // LNG_ITALIAN
  define t.calendar.day            for "Giorno"                                         // LNG_ITALIAN
@@ -93,7 +93,7 @@ CompilerWarnings Suspend
  define t.calendar.Cancel         for "Annulla"                                        // LNG_ITALIAN
  define t.calendar.Activate       for "Attiva calendario popup (Ctrl+D)"               // LNG_ITALIAN
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH  // 03/10/2002 25/01/2004 Pepe Guimarães Moose Software  pg@moose-software.com
+#IF VDFQ_Language=Language$Espanol  // 03/10/2002 25/01/2004 Pepe Guimarães Moose Software  pg@moose-software.com
  define t.calendar.year           for "Año"                                            // LNG_SPANISH
  define t.calendar.month          for "Mes"                                            // LNG_SPANISH
  define t.calendar.day            for "Día"                                            // LNG_SPANISH
@@ -122,7 +122,7 @@ CompilerWarnings Suspend
  define t.calendar.Cancel         for "Cancelar"                                       // LNG_SPANISH
  define t.calendar.Activate       for "Active el calendario del popup (Ctrl+D)"        // LNG_SPANISH
 #ENDIF
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
  define t.calendar.year           for "Year"                                           // LNG_ENGLISH
  define t.calendar.month          for "Month"                                          // LNG_ENGLISH
  define t.calendar.day            for "Day"                                            // LNG_ENGLISH
@@ -151,7 +151,7 @@ CompilerWarnings Suspend
  define t.calendar.Cancel         for "Cancel"                                         // LNG_ENGLISH
  define t.calendar.Activate       for "Activate popup calendar (Ctrl+D)"               // LNG_ENGLISH
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  define t.calendar.year           for "År"                                             // LNG_DANISH
  define t.calendar.month          for "Måned"                                          // LNG_DANISH
  define t.calendar.day            for "Dag"                                            // LNG_DANISH
@@ -180,7 +180,7 @@ CompilerWarnings Suspend
  define t.calendar.Cancel         for "Annuller"                                       // LNG_DANISH
  define t.calendar.Activate       for "Aktiver popup kalender (Ctrl+D)"                // LNG_DANISH
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH
+#IF VDFQ_Language=Language$Svenska
  define t.calendar.year           for "År"                                             // LNG_SWEDISH
  define t.calendar.month          for "Månad"                                          // LNG_SWEDISH
  define t.calendar.day            for "Dag"                                            // LNG_SWEDISH
@@ -209,7 +209,7 @@ CompilerWarnings Suspend
  define t.calendar.Cancel         for "Avbryt"                                         // LNG_SWEDISH
  define t.calendar.Activate       for "Aktivera popup kalendar (Ctrl+D)"               // LNG_SWEDISH
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN   // 22.04.1999 torkild.resheim@emmaedb.no (noen mindre endringer)
+#IF VDFQ_Language=Language$Norsk   // 22.04.1999 torkild.resheim@emmaedb.no (noen mindre endringer)
  define t.calendar.year           for "År"                                             // LNG_NORWEGIAN
  define t.calendar.month          for "Måned"                                          // LNG_NORWEGIAN
  define t.calendar.day            for "Dag"                                            // LNG_NORWEGIAN
@@ -238,7 +238,7 @@ CompilerWarnings Suspend
  define t.calendar.Cancel         for "Annuller"                                       // LNG_NORWEGIAN
  define t.calendar.Activate       for "Aktiver kalender (Ctrl+D)"                      // LNG_NORWEGIAN
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN
+#IF VDFQ_Language=Language$Deutsch
  define t.calendar.year           for "Jahr"                                           // LNG_GERMAN
  define t.calendar.month          for "Monat"                                          // LNG_GERMAN
  define t.calendar.day            for "Tag"                                            // LNG_GERMAN
@@ -267,7 +267,7 @@ CompilerWarnings Suspend
  define t.calendar.Cancel         for "Abbrechen"                                      // LNG_GERMAN
  define t.calendar.Activate       for "Popupkalender aktivieren (Ctrl+D)"              // LNG_GERMAN
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE
+#IF VDFQ_Language=Language$Portugues
  define t.calendar.year           for "Ano"                                            // LNG_PORTUGUESE
  define t.calendar.month          for "Mês"                                            // LNG_PORTUGUESE
  define t.calendar.day            for "Day"                                            // LNG_PORTUGUESE
@@ -296,7 +296,7 @@ CompilerWarnings Suspend
  define t.calendar.Cancel         for "Cancelar"                                       // LNG_PORTUGUESE
  define t.calendar.Activate       for "Ativar calendário suspenso (Ctrl+D)"            // LNG_PORTUGUESE
 #ENDIF
-#IF LNG_DEFAULT=LNG_FRENCH
+#IF VDFQ_Language=Language$Francais
  Define t.calendar.year           For "Année"                                          // LNG_FRENCH
  Define t.calendar.month          For "Mois"                                           // LNG_FRENCH
  Define t.calendar.day            For "Jour"                                           // LNG_FRENCH

@@ -12,7 +12,7 @@ Use Buttons.utl  // Button texts
 register_object oFrm1
 register_object oFrm2
 register_object oFrm3
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
 object oLogFilePropertiesPanel is a aps.ModalPanel label "Log file settings"
 #ELSE
 object oLogFilePropertiesPanel is a aps.ModalPanel label "Log fil"
@@ -20,7 +20,7 @@ object oLogFilePropertiesPanel is a aps.ModalPanel label "Log fil"
   set locate_mode to CENTER_ON_SCREEN
   property integer phLogFile 0
   on_key kcancel send close_panel
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
   object oFrm1 is a aps.Form abstract AFT_ASCII60 label "Logfilnavn:"
 #ELSE
   object oFrm1 is a aps.Form abstract AFT_ASCII60 label "Current log file is:"
@@ -30,7 +30,7 @@ object oLogFilePropertiesPanel is a aps.ModalPanel label "Log fil"
   end_object
   send aps_new_field_row
   send aps_make_row_space 5
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
   object oFrm2 is a aps.Form abstract AFT_ASCII15 label "Stõrrelse:"
 #ELSE
   object oFrm2 is a aps.Form abstract AFT_ASCII15 label "Size:"
@@ -60,7 +60,7 @@ object oLogFilePropertiesPanel is a aps.ModalPanel label "Log fil"
     send DeleteFile to (phLogFile(self))
     send DoUpdateFile
   end_procedure
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
   object oFrm3 is a aps.Form abstract AFT_ASCII25 label "Time stamp:" snap SL_RIGHT_SPACE
 #ELSE
   object oFrm3 is a aps.Form abstract AFT_ASCII25 label "Tidsstempling:" snap SL_RIGHT_SPACE
@@ -68,14 +68,14 @@ object oLogFilePropertiesPanel is a aps.ModalPanel label "Log fil"
     set object_shadow_state to DFTRUE
   end_object
   object oBtn1 is a aps.Multi_Button
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
     on_item "èbn fil"   send DoView
 #ELSE
     on_item "View file"   send DoView
 #ENDIF
   end_object
   object oBtn1 is a aps.Multi_Button
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
     on_item "Nulstil fil"  send DoReset
 #ELSE
     on_item "Reset file"  send DoReset

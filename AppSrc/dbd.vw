@@ -21,7 +21,7 @@ Use TrckBr.pkg   // TrackBar class
 Use DeoCnfrm.pkg // DEO confirm save/delete functions
 Use dbd.rv // DBD - Report object
 
-Use Language.pkg     // Set default languange if not set by compiler command line
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 
 Use FdxSet.nui   // cFdxSetOfTables, cFdxSetOfFields, cFdxSetOfIndices
 Use FdxSet.pkg   // cFdxSetOfFieldsList class

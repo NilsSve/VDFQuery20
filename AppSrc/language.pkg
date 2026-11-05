@@ -1,5 +1,8 @@
 // Use Language     // Default language setup
 // Sets default languange
+//
+// No VDFQuery file uses this any more: they use VdfqLanguage.pkg, which follows DataFlex's Language$Current.
+// It stays for programs that say Use Language.pkg themselves.
 
 Use LangSymb.pkg // Language symbols
 

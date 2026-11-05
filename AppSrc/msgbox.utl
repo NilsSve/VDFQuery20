@@ -1,64 +1,64 @@
-Use language.pkg
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 
 #IF ((FMAC_VERSION*10+FMAC_REVISION)>190)
   // CompilerWarnings Suspend
 #ENDIF
 
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
  Define t.MsgBox.Question for "Vraag"
  Define t.MsgBox.Message for "Mededeling"
  Define t.MsgBox.Yes    for "Ja"
  Define t.MsgBox.No     for "Nee"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH // 03/10/2002 25/01/2004 Pepe GuimarÆes Moose Software  pg@moose-software.com
+#IF VDFQ_Language=Language$Espanol // 03/10/2002 25/01/2004 Pepe GuimarÆes Moose Software  pg@moose-software.com
  Define t.MsgBox.Question for "Pregunta"
  Define t.MsgBox.Message for "Mensaje"
  Define t.MsgBox.Yes    for "Si"
  Define t.MsgBox.No     for "No"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
  Define t.MsgBox.Question for "Question"
  Define t.MsgBox.Message for "Message"
  Define t.MsgBox.Yes    for "Yes"
  Define t.MsgBox.No     for "No"
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  Define t.MsgBox.Question for "Sp›rgsm†l"
  Define t.MsgBox.Message for "Besked"
  Define t.MsgBox.Yes    for "Ja"
  Define t.MsgBox.No     for "Nej"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH
+#IF VDFQ_Language=Language$Svenska
  Define t.MsgBox.Question for "Fr†ga"
  Define t.MsgBox.Message for "Meddelande"
  Define t.MsgBox.Yes    for "Ja"
  Define t.MsgBox.No     for "Nej"
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN
+#IF VDFQ_Language=Language$Norsk
  Define t.MsgBox.Question for "Sp›rsm†l"
  Define t.MsgBox.Message for "Beskjed"
  Define t.MsgBox.Yes    for "Ja"
  Define t.MsgBox.No     for "Nei"
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN
+#IF VDFQ_Language=Language$Deutsch
  Define t.MsgBox.Question for "Frage"
  Define t.MsgBox.Message for "Nachricht"
  Define t.MsgBox.Yes    for "Ja"
  Define t.MsgBox.No     for "Nein"
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE
+#IF VDFQ_Language=Language$Portugues
  Define t.MsgBox.Question for "QuestÆo"
  Define t.MsgBox.Message for "Mensagem"
  Define t.MsgBox.Yes    for "Sim"
  Define t.MsgBox.No     for "NÆo"
 #ENDIF
-#If LNG_DEFAULT=LNG_FRENCH
+#If VDFQ_Language=Language$Francais
  Define t.MsgBox.Question for "Question"
  Define t.MsgBox.Message for "Message"
  Define t.MsgBox.Yes    for "Oui"
  Define t.MsgBox.No     for "Non"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN // 16/10/2002 Zanni Paolo
+#IF VDFQ_Language=Language$Italiano // 16/10/2002 Zanni Paolo
  Define t.MsgBox.Question for "Domanda"
  Define t.MsgBox.Message for "Messaggio"
  Define t.MsgBox.Yes    for "Si"

@@ -1,4 +1,4 @@
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
  define t.DfQuery.DFQuery          for "Database query"
  define t.DfQuery.EQ               for "Equal to"
  define t.DfQuery.LT               for "Less than"
@@ -110,7 +110,7 @@
  define t.DfQuery.AddIndexFields   for "Add fields in index"
  define t.DfQuery.SelCritExpr      for "Selection criteria (expression)"
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  define t.DfQuery.DFQuery          for "Rapportgenerator"
  define t.DfQuery.EQ               for "Lig med"
  define t.DfQuery.LT               for "Mindre end"
@@ -222,7 +222,7 @@
  define t.DfQuery.AddIndexFields   for "Tilfõj felter i index"
  define t.DfQuery.SelCritExpr      for "Udvalgskriterie (udtryk)"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH // Andreas Berg [andreas.berg@capslock.se]
+#IF VDFQ_Language=Language$Svenska // Andreas Berg [andreas.berg@capslock.se]
  define t.DfQuery.DFQuery          for "Rapportgenerator"
  define t.DfQuery.EQ               for "Lika med"
  define t.DfQuery.LT               for "Mindre Ñn"
@@ -334,7 +334,7 @@
  define t.DfQuery.AddIndexFields   for "Tilfõj felter i index"
  define t.DfQuery.SelCritExpr      for "Udvalgskriterie (udtryk)"
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN   // 22.04.1999 torkild.resheim@emmaedb.no
+#IF VDFQ_Language=Language$Norsk   // 22.04.1999 torkild.resheim@emmaedb.no
  define t.DfQuery.DFQuery          for "Rapportgenerator"
  define t.DfQuery.EQ               for "Lik"
  define t.DfQuery.LT               for "Mindre enn"
@@ -446,7 +446,7 @@
  define t.DfQuery.AddIndexFields   for "Tilfõy felter i index"
  define t.DfQuery.SelCritExpr      for "Udvalgskriterie (udtryk)"
 #ENDIF
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
  define t.DfQuery.DFQuery          for "Database query"
  define t.DfQuery.EQ               for "Gelijk aan"
  define t.DfQuery.LT               for "Minder dan"
@@ -558,7 +558,7 @@
  define t.DfQuery.ExprCritAdded    for "Expressie selectiecriteria toegevoegd"
  define t.DfQuery.SelCritExpr      for "Selectie criteria (expressie)"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH  // 03/10/2002 25/01/2004 Pepe Guimar∆es Moose Software  pg@moose-software.com
+#IF VDFQ_Language=Language$Espanol  // 03/10/2002 25/01/2004 Pepe Guimar∆es Moose Software  pg@moose-software.com
  define t.DfQuery.DFQuery          for "Consulta a la Base de Datos"
  define t.DfQuery.EQ               for "Igual a"
  define t.DfQuery.LT               for "Menor que"
@@ -670,7 +670,7 @@
  define t.DfQuery.AddIndexFields   for "A§adir campos al indice"
  define t.DfQuery.SelCritExpr      for "CritÇrio selecci¢n (expresi¢n)"
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN   //by Matthias Burkhardt, MBurkhardt@data-project.net
+#IF VDFQ_Language=Language$Deutsch   //by Matthias Burkhardt, MBurkhardt@data-project.net
  define t.DfQuery.DFQuery          for "Datenbank Abfrage"
  define t.DfQuery.EQ               for "Gleich"
  define t.DfQuery.LT               for "Kleiner"
@@ -782,7 +782,7 @@
  define t.DfQuery.AddIndexFields   for "Felder im Index hinzufÅgen"
  define t.DfQuery.SelCritExpr      for "Auswahlkriterien (Ausdruck)"
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE // Claudio Rossoni (SP-Brasil) and Luiz Kohl (kohl@escelsa.com.br)
+#IF VDFQ_Language=Language$Portugues // Claudio Rossoni (SP-Brasil) and Luiz Kohl (kohl@escelsa.com.br)
  define t.DfQuery.DFQuery          for "Consulta Banco de Dados"
  define t.DfQuery.EQ               for "Igual a"
  define t.DfQuery.LT               for "Menor que"
@@ -894,7 +894,7 @@
  define t.DfQuery.AddIndexFields   for "Add fields in index"
  define t.DfQuery.SelCritExpr      for "Selection criteria (expression)"
 #ENDIF
-#If LNG_DEFAULT=LNG_FRENCH // by Arnaud Mallick (Fr) (Arnaud.mallick@wanadoo.fr)
+#If VDFQ_Language=Language$Francais // by Arnaud Mallick (Fr) (Arnaud.mallick@wanadoo.fr)
  define t.DfQuery.DFQuery          for "Database query"
  define t.DfQuery.Eq               for "Egal Ö"
  define t.DfQuery.Lt               for "Plus petit que"
@@ -1006,7 +1006,7 @@
  define t.DfQuery.AddIndexFields   for "Add fields in index"
  define t.DfQuery.SelCritExpr      for "Selection criteria (expression)"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN
+#IF VDFQ_Language=Language$Italiano
  define t.DfQuery.DFQuery          for "Database query"
  define t.DfQuery.EQ               for "Uguale a"
  define t.DfQuery.LT               for "Minore di"

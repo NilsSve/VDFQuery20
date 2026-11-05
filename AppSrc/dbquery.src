@@ -16,10 +16,6 @@ Use aps.pkg         // Auto Positioning and Sizing classes for VDF
   Use OldFMACCommands.pkg
 #ENDIF
 
-Use LangSymb.pkg // Language symbols
-
-define lng_default for LNG_ENGLISH // <-- Change default language here
-
 Use Splash.utl   // Graphic splish-splash
 Use About.utl    // About dialog
 Use cCJStandardMenuItemClasses.pkg   // ChangeDFCreateMenuToCodeJock: classes of the converted menu

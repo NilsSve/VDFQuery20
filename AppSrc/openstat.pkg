@@ -8,7 +8,7 @@ Use Version.nui
 Use DBMS.nui     // Basic DBMS functions (No User Interface)
 Use fieldinf.pkg // Global field info objects and abstract field types
 
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
  Define t.OpenStat.UserName       for "Gebruikersnaam"
  Define t.OpenStat.DFname         for "Logische naam"
  Define t.OpenStat.RootName       for "Bestandsnaam"
@@ -17,7 +17,7 @@ Use fieldinf.pkg // Global field info objects and abstract field types
  Define t.OpenStat.Driver         for "DB-Driver"
  Define t.OpenStat.PrgNotFound    for "Extern programma # niet gevonden"            // PvM
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH   // 03/10/2002 to 31/01/2005 for 2.3 Pepe GuimarÆes Moose Software  pg@moose-software.com
+#IF VDFQ_Language=Language$Espanol   // 03/10/2002 to 31/01/2005 for 2.3 Pepe GuimarÆes Moose Software  pg@moose-software.com
  Define t.OpenStat.UserName       for "Usuario"
  Define t.OpenStat.DFname         for "Nombre l¢gico"
  Define t.OpenStat.RootName       for "Nombre de la tabla"
@@ -26,7 +26,7 @@ Use fieldinf.pkg // Global field info objects and abstract field types
  Define t.OpenStat.Driver         for "Driver Base de Datos"
  Define t.OpenStat.PrgNotFound    for "Programa # externo no encontrado"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
  Define t.OpenStat.UserName       for "User name"
  Define t.OpenStat.DFname         for "Logical name"
  Define t.OpenStat.RootName       for "File name"
@@ -35,7 +35,7 @@ Use fieldinf.pkg // Global field info objects and abstract field types
  Define t.OpenStat.Driver         for "DB-Driver"
  Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  Define t.OpenStat.UserName       for "Bruger navn"
  Define t.OpenStat.DFname         for "Logisk navn"
  Define t.OpenStat.RootName       for "Filnavn"
@@ -44,7 +44,7 @@ Use fieldinf.pkg // Global field info objects and abstract field types
  Define t.OpenStat.Driver         for "DB-Driver"
  Define t.OpenStat.PrgNotFound    for "Eksternt program '#' ikke fundet"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH
+#IF VDFQ_Language=Language$Svenska
  Define t.OpenStat.UserName       for "Anv„ndar namn"
  Define t.OpenStat.DFname         for "Logiskt namn"
  Define t.OpenStat.RootName       for "Fil namn"
@@ -53,7 +53,7 @@ Use fieldinf.pkg // Global field info objects and abstract field types
  Define t.OpenStat.Driver         for "DB-Driver"
  Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN   // 22.04.1999 torkild.resheim@emmaedb.no
+#IF VDFQ_Language=Language$Norsk   // 22.04.1999 torkild.resheim@emmaedb.no
  Define t.OpenStat.UserName       for "Navn"
  Define t.OpenStat.DFname         for "Logisk navn"
  Define t.OpenStat.RootName       for "Filnavn"
@@ -62,7 +62,7 @@ Use fieldinf.pkg // Global field info objects and abstract field types
  Define t.OpenStat.Driver         for "dB-driver"
  Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN
+#IF VDFQ_Language=Language$Deutsch
  Define t.OpenStat.UserName       for "User Name"
  Define t.OpenStat.DFname         for "Log. Name"
  Define t.OpenStat.RootName       for "File Name"
@@ -71,7 +71,7 @@ Use fieldinf.pkg // Global field info objects and abstract field types
  Define t.OpenStat.Driver         for "DB-Driver"
  Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE    // by Claudio Rossoni (SP-Brasil)
+#IF VDFQ_Language=Language$Portugues    // by Claudio Rossoni (SP-Brasil)
  Define t.OpenStat.UserName       for "Nome para o Usu rio"
  Define t.OpenStat.DFname         for "Nome para o DataFlex"
  Define t.OpenStat.RootName       for "Nome Base"
@@ -80,7 +80,7 @@ Use fieldinf.pkg // Global field info objects and abstract field types
  Define t.OpenStat.Driver         for "DB-Driver"
  Define t.OpenStat.PrgNotFound    for "External program # not found"
 #ENDIF
-#IF LNG_DEFAULT=LNG_FRENCH
+#IF VDFQ_Language=Language$Francais
  Define t.OpenStat.UserName       for "Nom utilisateur"
  Define t.OpenStat.DFname         for "Nom logique"
  Define t.OpenStat.RootName       for "Nom fichier"
@@ -89,7 +89,7 @@ Use fieldinf.pkg // Global field info objects and abstract field types
  Define t.OpenStat.Driver         for "Drivers DB"
  Define t.OpenStat.PrgNotFound    for "Programme externe # non trouv‚"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN  // 16/10/2002 Paolo Zanni CO.AS.CO.
+#IF VDFQ_Language=Language$Italiano  // 16/10/2002 Paolo Zanni CO.AS.CO.
  Define t.OpenStat.UserName       for "Nome utente"
  Define t.OpenStat.DFname         for "Logical name"
  Define t.OpenStat.RootName       for "Nome File"

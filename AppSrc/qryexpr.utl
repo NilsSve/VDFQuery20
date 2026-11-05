@@ -6,7 +6,7 @@ Use FDX_Attr.nui // FDX compatible attribute functions
 Use FdxField.utl // FDX Field things
 Use cCJGrid.pkg
 
-#IF LNG_DEFAULT=LNG_DUTCH
+#IF VDFQ_Language=Language$Nederlands
  define t.QryExpr.Expression    for "Expressie"
  define t.QryExpr.Tables        for "Bestanden"
  define t.QryExpr.Fields        for "Velden"
@@ -27,7 +27,7 @@ Use cCJGrid.pkg
  define t.QryExpr.Type_Date     for "Datum"
  define t.QryExpr.DecimalPlaces for "Decimale waarden"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SPANISH  // 03/10/2002 to 31/01/2005 for 2.3 Pepe Guimar∆es Moose Software  pg@moose-software.com
+#IF VDFQ_Language=Language$Espanol  // 03/10/2002 to 31/01/2005 for 2.3 Pepe Guimar∆es Moose Software  pg@moose-software.com
  define t.QryExpr.Expression    for "Expresi¢n"
  define t.QryExpr.Tables        for "Tablas"
  define t.QryExpr.Fields        for "Columnas"
@@ -48,7 +48,7 @@ Use cCJGrid.pkg
  define t.QryExpr.Type_Date     for "Fecha"
  define t.QryExpr.DecimalPlaces for "N£mero decimales"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ENGLISH
+#IF VDFQ_Language=Language$English
  define t.QryExpr.Expression    for "Expression"
  define t.QryExpr.Tables        for "Tables"
  define t.QryExpr.Fields        for "Fields"
@@ -69,7 +69,7 @@ Use cCJGrid.pkg
  define t.QryExpr.Type_Date     for "Date"
  define t.QryExpr.DecimalPlaces for "Decimal places"
 #ENDIF
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  define t.QryExpr.Expression    for "Udtryk"
  define t.QryExpr.Tables        for "Tabeller"
  define t.QryExpr.Fields        for "Felter"
@@ -90,7 +90,7 @@ Use cCJGrid.pkg
  define t.QryExpr.Type_Date     for "Dato"
  define t.QryExpr.DecimalPlaces for "Decimaler"
 #ENDIF
-#IF LNG_DEFAULT=LNG_SWEDISH
+#IF VDFQ_Language=Language$Svenska
  define t.QryExpr.Expression    for "Expression"
  define t.QryExpr.Tables        for "Tables"
  define t.QryExpr.Fields        for "Fields"
@@ -111,7 +111,7 @@ Use cCJGrid.pkg
  define t.QryExpr.Type_Date     for "Date"
  define t.QryExpr.DecimalPlaces for "Decimal places"
 #ENDIF
-#IF LNG_DEFAULT=LNG_NORWEGIAN
+#IF VDFQ_Language=Language$Norsk
  define t.QryExpr.Expression    for "Expression"
  define t.QryExpr.Tables        for "Tables"
  define t.QryExpr.Fields        for "Fields"
@@ -132,7 +132,7 @@ Use cCJGrid.pkg
  define t.QryExpr.Type_Date     for "Date"
  define t.QryExpr.DecimalPlaces for "Decimal places"
 #ENDIF
-#IF LNG_DEFAULT=LNG_GERMAN
+#IF VDFQ_Language=Language$Deutsch
  define t.QryExpr.Expression    for "Expression"
  define t.QryExpr.Tables        for "Tables"
  define t.QryExpr.Fields        for "Fields"
@@ -153,7 +153,7 @@ Use cCJGrid.pkg
  define t.QryExpr.Type_Date     for "Date"
  define t.QryExpr.DecimalPlaces for "Decimal places"
 #ENDIF
-#IF LNG_DEFAULT=LNG_PORTUGUESE
+#IF VDFQ_Language=Language$Portugues
  define t.QryExpr.Expression    for "Expression"
  define t.QryExpr.Tables        for "Tables"
  define t.QryExpr.Fields        for "Fields"
@@ -174,7 +174,7 @@ Use cCJGrid.pkg
  define t.QryExpr.Type_Date     for "Date"
  define t.QryExpr.DecimalPlaces for "Decimal places"
 #ENDIF
-#IF LNG_DEFAULT=LNG_FRENCH
+#IF VDFQ_Language=Language$Francais
  define t.QryExpr.Expression    for "Expression"
  define t.QryExpr.Tables        for "Tables"
  define t.QryExpr.Fields        for "Fields"
@@ -195,7 +195,7 @@ Use cCJGrid.pkg
  define t.QryExpr.Type_Date     for "Date"
  define t.QryExpr.DecimalPlaces for "Decimal places"
 #ENDIF
-#IF LNG_DEFAULT=LNG_ITALIAN
+#IF VDFQ_Language=Language$Italiano
  define t.QryExpr.Expression    for "Campo calcolato"
  define t.QryExpr.Tables        for "Tabelle"
  define t.QryExpr.Fields        for "Campi"

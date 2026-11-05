@@ -47,12 +47,12 @@ Use Dfmainbt.pkg  // Standard dfMain_ButtonBar (DAC)
 Use Dfmainst.pkg  // Standard Status bar class (DAC)
 Use fieldinf.pkg  // Global field info objects
 Use Msgbox.pkg    // DAC class
-Use language.pkg  // Set default languange if not set by compiler command line
+Use VdfqLanguage.pkg // Which language VDFQuery's texts use
 Use API_Attr.utl // Functions for querying API attributes
 
 Use Dfdeomnu.pkg // Defines class ViewPopupMenu
 
-#IF LNG_DEFAULT=LNG_DANISH
+#IF VDFQ_Language=Language$Dansk
  define t.TbBtn.Bgn.Tip      for "Find fõrste post"
  define t.TbBtn.Bgn.StHlp    for "Find fõrste post (Ctrl+Home)"
  define t.TbBtn.Prev.Tip     for "Find forrige"
@@ -84,7 +84,7 @@ Use Dfdeomnu.pkg // Defines class ViewPopupMenu
  define t.LnkVw.StatusHelp   for "èbner overordnet register (Ctrl+O)"
  define t.LnkVw.DoesNotExist for "Funktionen er ikke tilgëngelig (#)"
 #ELSE
- #IF LNG_DEFAULT=LNG_NORWEGIAN
+ #IF VDFQ_Language=Language$Norsk
   define t.TbBtn.Bgn.Tip      for "Finn fõrste post"
   define t.TbBtn.Bgn.StHlp    for "Finn fõrste post (Ctrl+Home)"
   define t.TbBtn.Prev.Tip     for "Finn forrige"
@@ -116,7 +116,7 @@ Use Dfdeomnu.pkg // Defines class ViewPopupMenu
   define t.LnkVw.StatusHelp   for "èpner overordnet register (Ctrl+O)"
   define t.LnkVw.DoesNotExist for "Funksjonen er ikke tilgengelig (#)"
  #ELSE
-  #IF LNG_DEFAULT=LNG_FRENCH
+  #IF VDFQ_Language=Language$Francais
    Define t.TbBtn.Bgn.Tip      For "DÇbut de fichier"
    Define t.TbBtn.Bgn.StHlp    For "Trouve le premier enregistrement (Ctrl+Home)"
    Define t.TbBtn.Prev.Tip     For "PrÇcÇdent"

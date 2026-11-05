@@ -20,3 +20,8 @@ The original ships its own, old copy of Wil van Antwerpen's vWin32fh files. This
 dependency in its workspace file instead, so adding this package brings in
 https://github.com/NilsSve/Library-vwin32fh (StudioLibrary/vWin32fh-Library-DF26.0.sws) automatically, that compiles with DF 26 and up.
 The workspace file is DataFlex 26 JSON. For DataFlex 20 to 25 use the original repository.
+
+**Language.** VDFQuery's own texts follow DataFlex's language setting, `Language$Current` (`LanguageText.pkg` and
+`Language_Current.inc`), so a program has one language setting and not two. The library holds texts for English, Dutch, Swedish,
+German, Danish, Portuguese, French, Italian, Spanish and Norwegian. With any other setting they are English.
+`Language.pkg` and `LangSymb.pkg` stay for programs that name them, and no file in this library uses them any more.
